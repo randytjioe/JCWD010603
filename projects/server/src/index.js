@@ -2,6 +2,8 @@ require("dotenv/config");
 const express = require("express");
 const cors = require("cors");
 const { join } = require("path");
+const db = require("./models")
+const route = require("./routes")
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -15,6 +17,7 @@ app.use(
 );
 
 app.use(express.json());
+// db.sequelize.sync({alter:true})
 
 //#region API ROUTES
 
@@ -30,6 +33,11 @@ app.get("/api/greetings", (req, res, next) => {
     message: "Hello, Student !",
   });
 });
+
+
+app.use("/user", route.userRoute)
+app.use("/admin", route.adminRoute)
+
 
 // ===========================
 
