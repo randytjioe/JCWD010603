@@ -1,6 +1,7 @@
-// import PageAdmin from "../pages/adminpage";
+import UserPage from "../pages/userpage";
 import PageLogin from "../pages/loginpage";
-// import PageProduct from "../pages/productspage";
+import Reset from "../pages/resetpage";
+import UpdateProfile from "../pages/updateprofilepage";
 // import PageCashier from "../pages/pagecashier";
 // import PageAddProducts from "../pages/pageaddproduct";
 // import ChartComponent from "../components/chart";
@@ -13,6 +14,18 @@ const routes = [
   {
     path: "/login",
     element: <PageLogin />,
+  },
+  {
+    path: "/userpage",
+    element: <UserPage />,
+  },
+  {
+    path: "/reset",
+    element: <Reset />,
+  },
+  {
+    path: "/update-profile",
+    element: <UpdateProfile />,
   },
   //   {
   //     path: "/",
