@@ -18,7 +18,8 @@ module.exports = (sequelize, DataTypes) => {
     district: DataTypes.STRING,
     city: DataTypes.STRING,
     province: DataTypes.STRING,
-    postalCode: DataTypes.STRING
+    postalCode: DataTypes.STRING,
+    isActive: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Address',
