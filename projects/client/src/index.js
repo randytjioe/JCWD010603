@@ -10,19 +10,22 @@ import rootReducer from "./redux/store";
 import { Provider } from "react-redux";
 import thunk from "redux-thunk";
 import AuthProvider from "./hoc/authProvider";
+import AdminAuthProvider from "./hoc/adminAuthProvider";
 
 const store = configureStore({ reducer: rootReducer, middleware: [thunk] });
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   // <React.StrictMode>
   <Provider store={store}>
-    <AuthProvider>
-      <ChakraProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </ChakraProvider>
-    </AuthProvider>
+    <AdminAuthProvider>
+      <AuthProvider>
+        <ChakraProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </ChakraProvider>
+      </AuthProvider>
+    </AdminAuthProvider>
   </Provider>
 
   // </React.StrictMode>
