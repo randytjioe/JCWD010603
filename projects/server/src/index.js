@@ -7,20 +7,16 @@ const route = require("./routes");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
-// app.use(
-//   cors({
-//     origin: [
-//       process.env.WHITELISTED_DOMAIN &&
-//         process.env.WHITELISTED_DOMAIN.split(","),
-//     ],
-//   })
-// );
-
-app.use(cors());
-const options = {
-  origin: "http://localhost:3000",
-};
-app.use(cors(options));
+app.use(
+  cors(
+     {
+  //   origin: [
+  //     process.env.WHITELISTED_DOMAIN &&
+  //       process.env.WHITELISTED_DOMAIN.split(","),
+  //   ],
+  }
+  )
+);
 
 app.use(express.json());
 // db.sequelize.sync({ alter: true });
