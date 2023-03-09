@@ -4,19 +4,20 @@ import user_types from "../auth/types";
 export function userLogin(values) {
   return async function (dispatch) {
     try {
-      const res = await axiosInstance.post("auth/v1", values);
-      const userData = res.data.result;
-      console.log(userData.user);
-      // console.log(values)
+      const res = await axiosInstance.post("/user/v1", values);
+      console.log(res);
+
+      const userData = JSON.stringify(res.data.result);
+      console.log(JSON.stringify(userData));
+
       if (userData) {
         dispatch({
           type: user_types.USER_LOGIN,
-          payload: userData.user,
+          payload: res.data.result,
         });
-        localStorage.setItem("token", userData.token);
-        return { status: true, data: userData.user };
+        localStorage.setItem("data", userData);
+        return { status: true, data: res.data.result };
       }
-
       return { status: false, data: {} };
     } catch (err) {
       console.log(err);

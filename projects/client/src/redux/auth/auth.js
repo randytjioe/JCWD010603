@@ -2,11 +2,9 @@ import user_types from "./types";
 const init_state = {
   id: 0,
   username: "",
-  password: "",
-  name: "",
   email: "",
-  isadmin: false,
-  avatar_url: "",
+  password: "",
+  isVerify: false,
 };
 
 function userReducer(state = init_state, action) {
