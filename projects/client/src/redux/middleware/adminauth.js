@@ -1,21 +1,21 @@
 import { axiosInstance } from "../../config/config";
 import user_types from "../auth/types";
 
-export function userLogin(values) {
+export function adminLogin(values) {
   return async function (dispatch) {
     try {
-      const res = await axiosInstance.post("/user/v1", values);
-      console.log(res);
+      const res = await axiosInstance.post("/admin/adminlogin", values);
+      console.log(res)
 
-      const userData = JSON.stringify(res.data.result);
-      console.log(JSON.stringify(userData));
+      const adminData = JSON.stringify(res.data.result);
+      console.log(JSON.stringify(adminData))
 
-      if (userData) {
+      if (adminData) {
         dispatch({
-          type: user_types.USER_LOGIN,
+          type: user_types.ADMIN_LOGIN,
           payload: res.data.result,
         });
-        localStorage.setItem("data", userData);
+        localStorage.setItem("data", adminData);
         return { status: true, data: res.data.result };
       }
       return { status: false, data: {} };

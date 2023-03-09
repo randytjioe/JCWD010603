@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const { Op } = require("sequelize");
 const {sequelize} = require("../models")
 const secret_key = process.env.secret_key
 const mailer = require("../library/mailer")
@@ -8,6 +9,7 @@ const db = require("../models")
 const User = db.user
 const User_detail = db.user_detail
 const Address = db.address
+
 
 const userController = {
 
@@ -111,10 +113,23 @@ verify : async (req,res) => {
         await t.rollback();
         return res.status(401).send(err)
     }
+},
+keeplogin: async (req, res) => {
+    try {
+      const token = req.headers.authorization;
 
+      const oldUser = jwt.verify(token, process.env.secret_key);
+      const newUSer = await User.findByPk(oldUser.id);
 
+      delete newUSer.dataValues.password;
+
+      res.status(200).json({
+        result: newUSer,
+      });
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  },
 }
 
-}
-
-module.exports = userController
+module.exports = userController;
