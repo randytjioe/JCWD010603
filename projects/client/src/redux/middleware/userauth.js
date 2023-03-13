@@ -4,7 +4,7 @@ import user_types from "../auth/types";
 export function userLogin(values) {
   return async function (dispatch) {
     try {
-      const res = await axiosInstance.post("/user/v1", values);
+      const res = await axiosInstance.post("/user/userlogin", values);
       console.log(res);
 
       const userData = JSON.stringify(res.data.result);

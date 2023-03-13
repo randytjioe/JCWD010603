@@ -34,6 +34,7 @@ import { userLogin } from "../redux/middleware/userauth";
 import { useDispatch } from "react-redux";
 // import { AxiosInstance } from 'axios';
 import { useNavigate } from "react-router-dom";
+import { Link as ReachLink } from "react-router-dom";
 import Logo from "../assets/logo.png";
 export default function UpdateProfile() {
   const dispatch = useDispatch();
@@ -90,19 +91,21 @@ export default function UpdateProfile() {
             flexDir={"column"}
             gap={10}
           >
-            <Flex textAlign={"left"} color="white">
-              <Icon
-                boxSize={"7"}
-                as={IoIosArrowBack}
-                color="white"
-                sx={{
-                  _hover: {
-                    cursor: "pointer",
-                  },
-                }}
-              ></Icon>
-              Back
-            </Flex>
+            <Link to="/userpage" as={ReachLink}>
+              <Flex textAlign={"left"} color="white">
+                <Icon
+                  boxSize={"7"}
+                  as={IoIosArrowBack}
+                  color="white"
+                  sx={{
+                    _hover: {
+                      cursor: "pointer",
+                    },
+                  }}
+                ></Icon>
+                Back
+              </Flex>
+            </Link>
 
             <Center flexDir={"column"} gap={5}>
               <Flex flexDir={"column"}>
@@ -207,20 +210,16 @@ export default function UpdateProfile() {
             </FormControl>
 
             <Button
-              colorScheme={"white"}
+              colorScheme={"black"}
               variant={"solid"}
+              w="350px"
               color="#2C3639"
-              py={7}
+              _hover={{
+                bg: "white",
+                color: "#2C3639",
+              }}
             >
-              <Center
-                w="440px"
-                h="45px"
-                bgColor={"#2C3639"}
-                borderRadius="3%"
-                color="white"
-              >
-                UPDATE
-              </Center>
+              UPDATE
             </Button>
             {enable ? (
               <Alert status="error" zIndex={2} variant="top-accent">

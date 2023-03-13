@@ -30,6 +30,7 @@ import Logo from "../assets/logo.png";
 import { Link as ReachLink } from "react-router-dom";
 import { useRef } from "react";
 import { useSelector } from "react-redux";
+import { AiOutlineMenu } from "react-icons/ai";
 import { FiBell } from "react-icons/fi";
 import { GrMenu } from "react-icons/gr";
 import { SlBasket } from "react-icons/sl";
@@ -105,12 +106,12 @@ export default function Navbar(props) {
                 ></Icon>
               </Flex>
 
-              <Popover trigger={"hover"} placement={"bottom-start"}>
+              <Popover trigger={"hover"} placement={"bottom-start"} gap={10}>
                 <PopoverTrigger>
                   <Flex flexDir={"rows"} px={2} alignContent={"center"}>
                     <Icon
                       boxSize={"7"}
-                      as={GrMenu}
+                      as={AiOutlineMenu}
                       color="#DCD7C9"
                       sx={{
                         _hover: {
@@ -136,17 +137,29 @@ export default function Navbar(props) {
                       fontSize={"14px"}
                       fontFamily="Bebas"
                       color="#7D7D7D"
-                      gap={2}
+                      gap={5}
                     >
                       <ListItem>
-                        <Link to="/login" as={ReachLink}>
+                        <Link to="/userpage" as={ReachLink}>
                           SIGN IN
                         </Link>
                       </ListItem>
 
-                      <Divider orientation="horizontal" py={2} />
+                      <Divider orientation="horizontal" m={2} />
                       <ListItem>
-                        <Link to="/login" as={ReachLink}>
+                        <Link to="/update-profile" as={ReachLink}>
+                          UPDATE PROFILE
+                        </Link>
+                      </ListItem>
+                      <Divider orientation="horizontal" m={2} />
+                      <ListItem>
+                        <Link to="/reset" as={ReachLink}>
+                          RESET PASSWORD
+                        </Link>
+                      </ListItem>
+                      <Divider orientation="horizontal" m={2} />
+                      <ListItem>
+                        <Link to="/userlogin" as={ReachLink}>
                           Logout{" "}
                         </Link>{" "}
                       </ListItem>

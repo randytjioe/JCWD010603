@@ -9,27 +9,49 @@ import ProtectedPage from "./protected";
 import Page404 from "../pages/page404";
 
 const routes = [
-  {
-    path: "/login",
+ {
+    path: "/userlogin",
     element: (
-      <ProtectedPage guestOnly={true}>
+      <ProtectedPage>
         <PageLogin />
       </ProtectedPage>
     ),
   },
   {
-    path: "/userpage",
-    element: <UserPage />,
+    path: "/",
+    element: <HomePage />,
   },
   {
+   path: "/userpage",
+    element: (
+      <ProtectedPage needLogin={true}>
+        <UserPage />
+      </ProtectedPage>
+    ),
+  },
+    {
     path: "/reset",
-    element: <Reset />,
+    element: (
+      <ProtectedPage needLogin={true}>
+        <Reset />
+      </ProtectedPage>
+    ),
   },
-  {
+   {
     path: "/update-profile",
-    element: <UpdateProfile />,
+    element: (
+      <ProtectedPage needLogin={true}>
+        <UpdateProfile />
+      </ProtectedPage>
+    ),
   },
+    path: "/admin",
+    element: <Dashboard/>,
+
   {
+
+  {
+
     path: "/dashboard",
     element: (
       <ProtectedPage needLogin={true}>
@@ -47,6 +69,8 @@ const routes = [
   },
   {
     path: "/admin_setting",
+    element: <AdminSetting/>,
+  }
     element: (
       <ProtectedPage needLogin={true}>
         <AdminSetting />
@@ -58,6 +82,19 @@ const routes = [
     element: <Page404 />
   },
   
+
+    path: "/admin",
+    element: <Dashboard />,
+  },
+  {
+    path: "/admin_login",
+    element: <LoginAdmin />,
+  },
+  {
+    path: "/admin_setting",
+    element: <AdminSetting />,
+  },
+
 ];
 
 export default routes;
