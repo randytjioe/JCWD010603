@@ -15,8 +15,21 @@ import AdminSetting from "../pages/adminSetting";
 
 const routes = [
   {
+<<<<<<< Updated upstream
     path: "/login",
+<<<<<<< Updated upstream
     element: <PageLogin />,
+=======
+    element: (
+      <ProtectedPage guestOnly={true}>
+        <PageLogin />
+      </ProtectedPage>
+    ),
+=======
+    path: "/userlogin",
+    element: <PageLogin />,
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   },
   {
 
@@ -31,9 +44,20 @@ const routes = [
     path: "/update-profile",
     element: <UpdateProfile />,
   },
+<<<<<<< Updated upstream
   
     path: "/admin",
     element: <Dashboard/>,
+=======
+  {
+<<<<<<< Updated upstream
+    path: "/dashboard",
+    element: (
+      <ProtectedPage needLogin={true}>
+        <Dashboard />
+      </ProtectedPage>
+    ),
+>>>>>>> Stashed changes
   },
   {
     path: "/admin_login",
@@ -41,12 +65,42 @@ const routes = [
   },
   {
     path: "/admin_setting",
+<<<<<<< Updated upstream
     element: <AdminSetting/>,
   }
+=======
+    element: (
+      <ProtectedPage needLogin={true}>
+        <AdminSetting />
+      </ProtectedPage>
+    ),
+  },
+  {
+    path: '/page_not_found',
+    element: <Page404 />
+  },
+  
+=======
+    path: "/admin",
+    element: <Dashboard />,
+  },
+  {
+    path: "/admin_login",
+    element: <LoginAdmin />,
+  },
+  {
+    path: "/admin_setting",
+    element: <AdminSetting />,
+  },
+>>>>>>> Stashed changes
   //   {
   //     path: "/",
   //     element: <ProtectedPage needLogin={true}></ProtectedPage>,
   //   },
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 ];
 
 export default routes;
