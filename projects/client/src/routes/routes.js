@@ -48,13 +48,13 @@ const routes = [
   {
     path: "/admin_setting",
     element: (
-      <ProtectedPage needLogin={true} superAdminOnly={true}>
+      <ProtectedPage needLogin={true}>
         <AdminSetting />
       </ProtectedPage>
     ),
   },
   {
-    path: '/?',
+    path: '/page_not_found',
     element: <Page404 />
   },
   
