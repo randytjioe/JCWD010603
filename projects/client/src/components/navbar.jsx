@@ -36,7 +36,8 @@ import { FiBell } from "react-icons/fi";
 import { GrMenu } from "react-icons/gr";
 import { SlBasket } from "react-icons/sl";
 import { useEffect, useState } from "react";
-
+import { useDispatch } from "react-redux";
+import user_types from "../redux/auth/types";
 export default function Navbar(props) {
   const userSelector = useSelector((state) => state.auth);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -45,6 +46,14 @@ export default function Navbar(props) {
   const finalRef = useRef(null);
   const [products, setProducts] = useState([]);
   const [product, setProduct] = useState([]);
+  let dispatch = useDispatch();
+  function logOut() {
+    dispatch({
+      type: user_types.USER_LOGOUT,
+    });
+    localStorage.clear();
+    window.location.reload(true);
+  }
 
   console.log(userSelector);
 
@@ -136,9 +145,7 @@ export default function Navbar(props) {
                       </ListItem>
                       <Divider orientation="horizontal" m={2} />
                       <ListItem>
-                        <Link to="/login" as={ReachLink}>
-                          Logout{" "}
-                        </Link>{" "}
+                        <Link onClick={logOut}>Logout </Link>{" "}
                       </ListItem>
                     </List>
                   </PopoverBody>

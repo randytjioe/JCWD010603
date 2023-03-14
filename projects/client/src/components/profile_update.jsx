@@ -188,21 +188,6 @@ export default function UpdateProfile() {
                 Back
               </Flex>
             </Link>
-            <Link to="/userpage" as={ReachLink}>
-              <Flex textAlign={"left"} color="white">
-                <Icon
-                  boxSize={"7"}
-                  as={IoIosArrowBack}
-                  color="white"
-                  sx={{
-                    _hover: {
-                      cursor: "pointer",
-                    },
-                  }}
-                ></Icon>
-                Back
-              </Flex>
-            </Link>
 
             <Center flexDir={"column"} gap={5}>
               <Flex flexDir={"column"}>
@@ -349,7 +334,12 @@ export default function UpdateProfile() {
               variant={"solid"}
               w="350px"
               color="#2C3639"
-              py={7}
+              _hover={{
+                bg: "white",
+                color: "#2C3639",
+              }}
+              type="submit"
+              onClick={(e) => saveUser(e)}
             >
               UPDATE
             </Button>
