@@ -11,20 +11,24 @@ import {
   Stack,
   Image,
   Alert,
+  Icon,
   AlertIcon,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { userLogin } from "../redux/middleware/userauth";
+import { Link as ReachLink } from "react-router-dom";
+import { IoIosArrowBack } from "react-icons/io";
 import { useDispatch } from "react-redux";
 // import { AxiosInstance } from 'axios';
 import { useNavigate } from "react-router-dom";
+import validator from "validator";
 import Logo from "../assets/logo.png";
 export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [user, setUser] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
@@ -41,15 +45,14 @@ export default function Login() {
   async function login() {
     const isAuth = await dispatch(userLogin(user));
     console.log(isAuth);
-    if (isAuth.status && isAuth.data.isVerivy) {
+    if (isAuth.status && isAuth.data.isVerify) {
       return navigate("/userpage");
-    } else if (isAuth.status && !isAuth.data.isVerivy) {
-      return navigate("/userpage");
+    } else if (isAuth.status && !isAuth.data.isVerify) {
+      return navigate("/");
     }
 
     return setEnable(true);
   }
-
   function inputHandler(event) {
     const { name, value } = event.target;
 
@@ -58,6 +61,18 @@ export default function Login() {
       [name]: value,
     });
   }
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const validateEmail = (event) => {
+    let email = event.target.value;
+    if (!validator.isEmail(email)) {
+      setEmailError("Please enter a valid email address");
+    } else {
+      setEmailError("");
+      setEmail(event.target.value);
+    }
+  };
 
   return (
     <>
@@ -72,6 +87,21 @@ export default function Login() {
           flexDir="column"
           gap={8}
         >
+          <Link to="/userpage" as={ReachLink}>
+            <Flex textAlign={"left"} color="white">
+              <Icon
+                boxSize={"7"}
+                as={IoIosArrowBack}
+                color="white"
+                sx={{
+                  _hover: {
+                    cursor: "pointer",
+                  },
+                }}
+              ></Icon>
+              Back
+            </Flex>
+          </Link>
           <Flex fontSize={"2xl"} flexDir="column" color="#DCD7C9">
             SELAMAT DATANG DI AKUN
           </Flex>
@@ -84,34 +114,32 @@ export default function Login() {
 
           <Center w="282px" flexDir="column" gap={5} color="#DCD7C9">
             <FormControl id="email">
-              <FormLabel>Username</FormLabel>
-              <Input type="text" name="username" onChange={inputHandler} />
+              <FormLabel>Email</FormLabel>
+              <Input type="email" name="email" onChange={inputHandler} />
             </FormControl>
             <FormControl id="password">
               <FormLabel>Password</FormLabel>
               <Input type="password" name="password" onChange={inputHandler} />
             </FormControl>
-            <Flex spacing={6}>
-              <Flex
-                direction={{ base: "column", sm: "row" }}
-                align={"start"}
-                justify={"space-between"}
-                gap={5}
-              >
-                <Checkbox>Remember Me</Checkbox>
-                <Link color={"blue.500"}>Forgot Password?</Link>
+            <Flex>
+              <Flex justifyContent="right" gap={5}>
+                <Link color={"white"}>Forgot Password?</Link>
               </Flex>
             </Flex>
 
             <Button
-              colorScheme={"white"}
+              colorScheme={"black"}
               variant={"solid"}
               onClick={login}
-              color="#2C3639"
+              w="282px"
+              color="#DCD7C9"
+              _hover={{
+                bg: "white",
+                color: "#2C3639",
+                border: "2px solid white",
+              }}
             >
-              <Center w="282px" h="45px" bgColor={"#DCD7C9"} borderRadius="3%">
-                Sign in
-              </Center>
+              Sign in
             </Button>
 
             {enable ? (

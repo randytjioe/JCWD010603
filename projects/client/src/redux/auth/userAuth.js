@@ -1,4 +1,5 @@
 import user_types from "./types";
+
 const init_state = {
   id: 0,
   username: "",
@@ -13,11 +14,9 @@ function userReducer(state = init_state, action) {
       ...state,
       id: action.payload.id,
       username: action.payload.username,
-      password: action.payload.password,
-      name: action.payload.name,
       email: action.payload.email,
-      isadmin: action.payload.isadmin,
-      // avatar_url:action.payload.avatar_url
+      password: action.payload.password,
+      isVerify: action.payload.isVerify,
     };
   } else if (action.type === user_types.USER_LOGOUT) {
     return init_state;

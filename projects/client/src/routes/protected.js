@@ -1,42 +1,27 @@
-import { useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function ProtectedPage({
-    children,
-    needLogin = false,
-    guestOnly = false,
-    authRoles = ["User", "Admin"],
-    isSuperAdmin = false,
-}) {
-    let navigate = useNavigate();
-    const userSelector = useSelector((state) => state.auth);
+function ProtectedPage({ children, needLogin = false }) {
+  let navigate = useNavigate();
+  const userSelector = useSelector((state) => state.auth);
+  console.log(userSelector.isVerify);
 
-    useEffect(() => {
-        if (needLogin && !userSelector?.id) {
-            return navigate("/", { replace: true });
-        }
+  useEffect(() => {
+    if (needLogin && !userSelector.id) {
+      return navigate("/userlogin", { replace: true });
+    }
 
-        if (guestOnly && userSelector.id) {
-            return navigate("/cashier", { replace: true });
-        }
+    if (userSelector.id && userSelector.isVerivy) {
+      return navigate("/");
+    }
 
-        if (authRoles === "Cashier"){
-            return navigate ("/cahsierpage", { replace: true })
-        }
+    if (userSelector.id && !userSelector.isVerify) {
+      return navigate("/");
+    }
+  }, []);
 
-        if (authRoles === "Admin"){
-            return navigate ("/admin", { replace: true })
-        }
-
-        if (isSuperAdmin === false){
-            return navigate ("/admin", {replace: true})
-        }
-
-        if (isSuperAdmin === true){
-            return navigate ("/admin", {replace: true})
-        }
-
-    }, []);
-    return children;
+  return children;
 }
+
+export default ProtectedPage;

@@ -117,28 +117,17 @@ export default function Navbar(props) {
 
                   <PopoverHeader bgColor={"#A27B5C"} color="white">
                     {" "}
-                    SELAMAT DATANG {userSelector?.username}!
+                    SELAMAT DATANG !
                   </PopoverHeader>
                   <PopoverBody>
                     <List fontSize={"14px"} color="#7D7D7D" gap={5}>
-                      <Divider orientation="horizontal" m={2} />
-                      <ListItem>
-                        <Link to={"/update-profile"} as={ReachLink}>
-                          UPDATE PROFILE
-                        </Link>
-                      </ListItem>
-                      <Divider orientation="horizontal" m={2} />
-                      <ListItem>
-                        <Link to="/reset" as={ReachLink}>
-                          CHANGE PASSWORD
-                        </Link>
-                      </ListItem>
-                      <Divider orientation="horizontal" m={2} />
                       <ListItem>
                         <Link to="/userlogin" as={ReachLink}>
-                          LOGOUT{" "}
-                        </Link>{" "}
+                          SIGN IN
+                        </Link>
                       </ListItem>
+
+                      <Divider orientation="horizontal" m={2} />
                     </List>
                   </PopoverBody>
                 </PopoverContent>

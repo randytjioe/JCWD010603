@@ -1,0 +1,152 @@
+import {
+  Button,
+  Checkbox,
+  Center,
+  Flex,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Link,
+  Stack,
+  Icon,
+  Image,
+  Alert,
+  AlertIcon,
+} from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { userLogin } from "../redux/middleware/userauth";
+import { useDispatch } from "react-redux";
+// import { AxiosInstance } from 'axios';
+import { useNavigate } from "react-router-dom";
+import { axiosInstance } from "../config/config";
+import { Link as ReachLink } from "react-router-dom";
+import { IoIosArrowBack } from "react-icons/io";
+import Logo from "../assets/logo.png";
+import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
+export default function ChangePassword({ id }) {
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
+  const userSelector = useSelector((state) => state.auth);
+  const handleChangePassword = async (event) => {
+    event.preventDefault();
+    if (newPassword !== confirmPassword) {
+      setErrorMessage("New password and confirm password do not match");
+      return;
+    }
+    try {
+      const response = await axiosInstance.patch(
+        `/users/${userSelector?.id}/password`,
+        {
+          oldPassword,
+          newPassword,
+        }
+      );
+      navigate("/userpage");
+      console.log("user edited");
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+      setErrorMessage("Failed to change password");
+    }
+  };
+  return (
+    <>
+      <Flex flex={1} align={"center"} justifyContent={"center"}>
+        <Flex
+          spacing={4}
+          maxW={"md"}
+          bgColor="#2C3639"
+          w="430px"
+          h="932px"
+          color="white"
+          flexDir="column"
+          gap={8}
+        >
+          <Link to="/userpage" as={ReachLink}>
+            <Flex textAlign={"left"} py={5} color="white">
+              <Icon
+                boxSize={"7"}
+                as={IoIosArrowBack}
+                color="white"
+                sx={{
+                  _hover: {
+                    cursor: "pointer",
+                  },
+                }}
+              ></Icon>
+              Back
+            </Flex>
+          </Link>
+          <Center flexDir="column" justifyContent={"center"} gap={10}>
+            <Image
+              fontSize={"26px"}
+              color="#F68522"
+              justifyContent="center"
+              src={Logo}
+              py={10}
+            ></Image>
+            <Flex fontSize={"2xl"} flexDir="column" color="#DCD7C9">
+              CHANGE PASSWORD
+            </Flex>
+            <form onSubmit={handleChangePassword}>
+              <Center w="282px" flexDir="column" gap={5} color="#DCD7C9">
+                <FormControl id="email">
+                  <FormLabel>Ketikan Password Lama</FormLabel>
+                  <Input
+                    type="password"
+                    value={oldPassword}
+                    onChange={(event) => setOldPassword(event.target.value)}
+                  />
+                </FormControl>
+                <FormControl id="email">
+                  <FormLabel>Ketikan Password Baru</FormLabel>
+                  <Input
+                    type="password"
+                    value={newPassword}
+                    onChange={(event) => setNewPassword(event.target.value)}
+                  />
+                </FormControl>
+                <FormControl id="password">
+                  <FormLabel>Ketikan Ulang Password Baru</FormLabel>
+                  <Input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                  />
+                </FormControl>
+
+                <Button
+                  colorScheme={"black"}
+                  variant={"solid"}
+                  w="280px"
+                  color="white"
+                  _hover={{
+                    bg: "white",
+                    color: "#2C3639",
+                  }}
+                  type="submit"
+                >
+                  CHANGE PASSWORD
+                </Button>
+                {errorMessage && (
+                  <Flex>
+                    <Alert status="error" zIndex={2} variant="top-accent">
+                      <AlertIcon />
+                      {errorMessage}
+                    </Alert>
+                  </Flex>
+                )}
+              </Center>
+            </form>
+          </Center>
+        </Flex>
+      </Flex>
+    </>
+  );
+}

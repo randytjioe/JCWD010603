@@ -1,5 +1,7 @@
 import Update from "../components/profile_update";
 import { Stack } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { axiosInstance } from "../config/config";
 
 export default function UpdateProfilePage() {
   return (
