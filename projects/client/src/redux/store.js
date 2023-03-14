@@ -3,7 +3,7 @@ import adminReducer from "./auth/adminAuth";
 import userReducer from "./auth/userAuth";
 
 const rootReducer = combineReducers({
-  auth: userReducer,
+  userAuth: userReducer,
   adminAuth: adminReducer,
 });
 

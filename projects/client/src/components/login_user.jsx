@@ -29,7 +29,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import validator from "validator";
 import Logo from "../assets/logo.png";
-export default function Login() {
+export default function LoginUser() {
   const dispatch = useDispatch();
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
@@ -49,17 +49,17 @@ export default function Login() {
   useEffect(() => {
     console.log(user);
   }, [user]);
+  const [status, setStatus] = useState(false);
 
   async function login() {
-    const isAuth = await dispatch(userLogin(user));
+    const isAuth = await dispatch(userLogin({ email, password }));
     console.log(isAuth);
     if (isAuth.status && isAuth.data.isVerify) {
       return navigate("/userpage");
     } else if (isAuth.status && !isAuth.data.isVerify) {
       return navigate("/");
     }
-
-    return setEnable(true);
+    return setStatus(true);
   }
   function inputHandler(event) {
     const { name, value } = event.target;
@@ -69,6 +69,7 @@ export default function Login() {
       [name]: value,
     });
   }
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -107,9 +108,9 @@ export default function Login() {
                   },
                 }}
               ></Icon>
-              Back
             </Flex>
           </Link>
+          Back
           <Center flexDir="column" justifyContent={"center"} gap={10}>
             <Flex fontSize={"2xl"} flexDir="column" color="#DCD7C9" py={5}>
               SELAMAT DATANG DI AKUN

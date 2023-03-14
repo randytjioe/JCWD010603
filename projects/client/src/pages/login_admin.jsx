@@ -7,6 +7,7 @@ import validator from 'validator';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { adminLogin } from "../redux/middleware/adminauth";
+import "../style/admin.css";
 
 import Logo from "../asset/logo.png";
 
@@ -24,8 +25,8 @@ export default function LoginAdmin() {
             })
         );
         if (isAuth.status) {
-            if (isAuth.data.isSuperAdmin) {
-                return navigate('/admin', { state: { admin: isAuth.data }, replace: true });
+            if (isAuth.data.id) {
+                return navigate('/dashboard', { state: { admin: isAuth.data }, replace: true });
             }
             return navigate('/login', { state: { admin: isAuth.data }, replace: true });
         }
@@ -47,9 +48,27 @@ export default function LoginAdmin() {
 
     return (
         <>
-            <Center h='100vh' bg='#DCD7C9'>
-                <Flex m='0 auto' borderRadius='20' overflow='hidden' boxShadow="rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset">
-                    <Box>
+            <Center h='100vh' bg='#DCD7C9' overflow="auto"
+                sx={{
+                    '::-webkit-scrollbar': {
+                        height: '0.3em',
+                        width: '0.3em',
+                        backgroundColor: 'none',
+                        borderRadius: '10px'
+                    },
+                    '::-webkit-scrollbar-thumb': {
+                        // backgroundColor: '#181D31',
+                        backgroundColor: 'gray.200',
+                        borderRadius: '10px'
+                    },
+                    '::-webkit-scrollbar-thumb:hover': {
+                        backgroundColor: '#555555',
+                        borderRadius: '10px'
+                    },
+                }}
+            >
+                <Flex className="login-container" m='0 auto' borderRadius='20' overflow='hidden' boxShadow="rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset">
+                    <Box className="login-img-container">
                         <Image src="https://images.unsplash.com/photo-1606791405792-1004f1718d0c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80" />
                     </Box>
 
@@ -58,9 +77,9 @@ export default function LoginAdmin() {
                         justify={'center'}
                         bg="#2c3639"
                     >
-                        <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={12}>
+                        <Stack className="login-form" spacing={8} mx={'auto'} maxW={'lg'} py={12} px={12}>
                             <Center w='200px' m='0 auto'>
-                                <Image src={Logo} h='auto' objectFit='fill'/>
+                                <Image src={Logo} h='auto' objectFit='fill' />
                             </Center>
                             <Stack align={'center'} px='8'>
                                 <Text fontSize={'lg'} color="white">

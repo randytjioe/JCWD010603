@@ -31,6 +31,7 @@ import { Link as ReachLink } from "react-router-dom";
 import { useRef } from "react";
 import { useSelector } from "react-redux";
 import { AiOutlineMenu } from "react-icons/ai";
+
 import { FiBell } from "react-icons/fi";
 import { GrMenu } from "react-icons/gr";
 import { SlBasket } from "react-icons/sl";
@@ -135,8 +136,8 @@ export default function Navbar(props) {
                       </ListItem>
                       <Divider orientation="horizontal" m={2} />
                       <ListItem>
-                        <Link to="/userlogin" as={ReachLink}>
-                          LOGOUT{" "}
+                        <Link to="/login" as={ReachLink}>
+                          Logout{" "}
                         </Link>{" "}
                       </ListItem>
                     </List>
