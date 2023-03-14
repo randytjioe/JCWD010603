@@ -13,7 +13,7 @@ function ProtectedPage({ children, needLogin = false }) {
     }
 
     if (userSelector.id && userSelector.isVerivy) {
-      return navigate("/");
+      return navigate("/userpage");
     }
 
     if (userSelector.id && !userSelector.isVerify) {

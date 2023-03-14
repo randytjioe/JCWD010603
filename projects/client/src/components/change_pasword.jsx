@@ -33,6 +33,9 @@ export default function ChangePassword({ id }) {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
   const userSelector = useSelector((state) => state.auth);
+
+  const [show, setShow] = useState(false);
+  const handleClick = () => setShow(!show);
   const handleChangePassword = async (event) => {
     event.preventDefault();
     if (newPassword !== confirmPassword) {
@@ -101,8 +104,37 @@ export default function ChangePassword({ id }) {
                   <Input
                     type="password"
                     value={oldPassword}
-                    onChange={(event) => setOldPassword(event.target.value)}
+                    onChange={(event) => {setOldPassword(event.target.value)}}
+                    type={show ? "text" : "password"}
                   />
+                  <InputRightElement>
+                    <Center h="2.5rem" size="sm" onClick={handleClick}>
+                      {show ? (
+                        <Icon
+                          boxSize={"5"}
+                          as={FaEyeSlash}
+                          color="#white"
+                          sx={{
+                            _hover: {
+                              cursor: "pointer",
+                            },
+                          }}
+                        ></Icon>
+                      ) : (
+                        <Icon
+                          boxSize={"5"}
+                          as={FaEye}
+                          color="#white"
+                          sx={{
+                            _hover: {
+                              cursor: "pointer",
+                            },
+                          }}
+                        ></Icon>
+                                      )}
+                    </Center>
+                  </InputRightElement>
+                </InputGroup>
                 </FormControl>
                 <FormControl id="email">
                   <FormLabel>Ketikan Password Baru</FormLabel>

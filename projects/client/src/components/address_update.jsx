@@ -7,7 +7,6 @@ import {
   FormLabel,
   Heading,
   Accordion,
-  FormHelperText,
   Avatar,
   AvatarBadge,
   IconButton,
@@ -40,10 +39,8 @@ import { Link as ReachLink } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import Logo from "../assets/logo.png";
 import { useSelector } from "react-redux";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import YupPassword from "yup-password";
-export default function UpdateProfile() {
+
+export default function UpdateAdress() {
   const [imgUser, setImgUser] = useState("");
   const [firstName, setFirstName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -56,21 +53,11 @@ export default function UpdateProfile() {
   const [User_id, setUser_id] = useState(0);
   const userSelector = useSelector((state) => state.auth);
   console.log(userSelector);
-
   useEffect(() => {
     setUser_id(userSelector?.id);
     fetchuserdetail(userSelector?.id);
   }, []);
-  const formik = useFormik({
-    initialValues: {
-      firstName: "",
-      email: "",
-    },
-    validationSchema: Yup.object().shape({
-      email: Yup.string().email("Mohon isi email @"),
-      firstName: Yup.string().min(3, "min 3 huruf"),
-    }),
-  });
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [saveImage, setSaveImage] = useState(null);
@@ -268,11 +255,9 @@ export default function UpdateProfile() {
                 value={firstName}
                 onChange={(e) => {
                   setFirstName(e.target.value);
-                  formik.setFieldValue("firstName", e.target.value);
                 }}
                 bgColor="white"
               />
-              <FormHelperText>{formik.errors.firstName}</FormHelperText>
             </FormControl>
             <FormControl id="lastname">
               <FormLabel>Lastname</FormLabel>
@@ -292,11 +277,9 @@ export default function UpdateProfile() {
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  formik.setFieldValue("email", e.target.value);
                 }}
                 bgColor="white"
               />
-              <FormHelperText>{formik.errors.email}</FormHelperText>
             </FormControl>
 
             <FormControl id="gender">
@@ -340,10 +323,15 @@ export default function UpdateProfile() {
               }}
               type="submit"
               onClick={(e) => saveUser(e)}
-              isDisabled={enable ? true : null}
             >
               UPDATE
             </Button>
+            {enable ? (
+              <Alert status="error" zIndex={2} variant="top-accent">
+                <AlertIcon />
+                wrong username/password
+              </Alert>
+            ) : null}
           </Flex>
         </Flex>
       </Center>
