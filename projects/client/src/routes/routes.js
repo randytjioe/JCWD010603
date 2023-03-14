@@ -1,5 +1,6 @@
 import UserPage from "../pages/userpage";
 import PageLogin from "../pages/loginpage";
+import PageRegister from "../pages/register_user";
 import Reset from "../pages/resetpage";
 import UpdateProfile from "../pages/updateprofilepage";
 // import PageCashier from "../pages/pagecashier";
@@ -28,10 +29,14 @@ const routes = [
     element: <Reset />,
   },
   {
-    path: "/update-profile",
+    path: "/update_profile",
     element: <UpdateProfile />,
   },
+<<<<<<< Updated upstream
   
+=======
+  {
+>>>>>>> Stashed changes
     path: "/admin",
     element: <Dashboard/>,
   },

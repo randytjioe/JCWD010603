@@ -7,7 +7,7 @@ const Admins = db.admin;
 const adminController = {
     login: async (req, res) => {
         const { email, password } = req.body;
-        const result = await Admins.findOne({
+        const result = await Admin.findOne({
             where: {
                 email: email,
                 password: password
