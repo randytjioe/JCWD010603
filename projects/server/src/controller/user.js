@@ -1,19 +1,45 @@
-const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken")
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
-const {sequelize} = require("../models")
-const secret_key = process.env.secret_key
-const mailer = require("../library/mailer")
+const { sequelize } = require("../models");
+const secret_key = process.env.secret_key;
+const mailer = require("../library/mailer");
 
-const db = require("../models")
-const User = db.user
-const User_detail = db.user_detail
-const Address = db.address
-
+const db = require("../models");
+const User = db.user;
+const User_detail = db.user_detail;
+const Address = db.address;
 
 const userController = {
+  login: async (req, res) => {
+    const { email, password } = req.body;
+    const result = await User.findOne({
+      where: {
+        email: email,
+        password: password,
+      },
+    });
 
-register: async (req,res) => {
+    if (!result) {
+      return res.status(400).json({
+        message: "User not found",
+      });
+    } else {
+      const check = bcrypt.compare(password, result.password);
+
+      if (!check) {
+        return res.status(400).json({
+          message: "Wrong password",
+        });
+      } else {
+        return res.status(200).json({
+          message: "Logged in",
+          result: result,
+        });
+      }
+    }
+  },
+  register: async (req,res) => {
     const data = req.body
 
     const t = await sequelize.transaction();
@@ -335,21 +361,22 @@ verify : async (req,res) => {
     }
 },
 keeplogin: async (req, res) => {
-    try {
-      const token = req.headers.authorization;
+  try {
+    const token = req.headers.authorization;
 
-      const oldUser = jwt.verify(token, process.env.secret_key);
-      const newUSer = await User.findByPk(oldUser.id);
+    const oldUser = jwt.verify(token, process.env.secret_key);
+    const newUSer = await User.findByPk(oldUser.id);
 
-      delete newUSer.dataValues.password;
+    delete newUSer.dataValues.password;
 
-      res.status(200).json({
-        result: newUSer,
-      });
-    } catch (err) {
-      res.status(400).send(err);
-    }
-  },
-}
+    res.status(200).json({
+      result: newUSer,
+    });
+  } catch (err) {
+    res.status(400).send(err);
+  }
+},
+};
 
 module.exports = userController;
+
