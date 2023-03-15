@@ -5,8 +5,10 @@ import {
     Flex,
     FormControl,
     FormLabel,
+    FormHelperText,
     Heading,
     Input,
+    Select,
     Link,
     Stack,
     Image,
@@ -21,6 +23,9 @@ import {
   import { useDispatch } from "react-redux";
   import { axiosInstance } from "../config/config";
   import { useNavigate } from "react-router-dom";
+  import * as Yup from "yup";
+  import YupPassword from 'yup-password';
+  import { useFormik } from "formik";
   
   import Logo from "../assets/logo.png";
 
@@ -29,13 +34,16 @@ import {
     const dispatch = useDispatch();
     const navigate = useNavigate();
   
-    const [user, setUser] = useState({
+    const [errors, setErrors] = useState({})
+
+    const formik = useFormik({
+      initialValues : {   
       email: "",
       username: "",
       firstName: "",
       lastName: "",
       gender: "",
-      birthdate: "",
+      birthDate: "",
       province:"",
       city:"",
       postalCode:"",
@@ -43,51 +51,48 @@ import {
       phoneNumber:"",
       password: "",
       passwordConfirm:""
-    });
+      } ,
+      validationSchema : Yup.object().shape({
+          email: Yup.string().required("Email must be filled").email("This is not email"),
+          username: Yup.string().required("Username must be filled").min(8, "Username should have min 8 characters"),
+          phoneNumber: Yup.string(),
+          // city: Yup.string().required("City must be filled"),
+          // province: Yup.string().required("Province must be filled"),
+          district: Yup.string().required("District must be filled"),
+          address: Yup.string().required("Address must be filled"),
+          gender: Yup.string().required("Gender must be filled"),
+          birthDate: Yup.string().required("Birth Date must be filled"),
+          firstName: Yup.string().required("First Name must be filled").min(3, "First Name should have min 8 characters"), 
+          password : Yup.string().required("Password must be filled").min(8, "Password length should have min 8 characters").max(16, "Password length should have max 16 characters").matches(/^[ A-Za-z0-9_@-]*$/, `only "_", "@","-" characters are allowed`),
+          passwordConfirm : Yup.string().required("Password confirm must be filled").oneOf([Yup.ref('password'), null], 'Passwords must match')
+      }),
+      onSubmit:  async ()=> {
+          // alert("test")
+          const res =  await axiosInstance.post("/user/register", formik.values)
 
-    console.log(user);
-  
-    const [disabled, setDisabled] = useState(true);
-  
-   async function signUp() {
-        const res =  await axiosInstance.post("/user/register", user)
-        console.log(res);
+          console.log(res.data);
+          const [name, value] = res.data
 
-        const userData = res.data;
-        
-        console.log(userData);
-        if(userData) 
-       { dispatch({
-            type: user_types.USER_LOGIN,
-            payload: userData
-        })
-        
-        localStorage.setItem("user_data", JSON.stringify(userData))
-       return navigate("/",{ state : { user :res.data[0] }, replace: true }) 
-        
-        }
-      // return  setStatus(true)
-        
+          // cond
+          if(res.status=== 201)
+          navigate("/login",{ replace: true })
+          
+      }
+  })
 
-    }
   
-    function inputHandler(event) {
-      const { name, value } = event.target;
-  
-      setUser({
-        ...user,
-        [name]: value,
-      });
-    }
+    const [enable, setEnable] = useState(false); 
+    
     useEffect(()=>{
-      if(user.firstName && user.lastName && user.gender && user.birthDate && user.phoneNumber && user.address && user.city && user.province && user.postalCode && user.email && user.password && user.username && user.passwordConfirm ) { 
-          setDisabled(false)
+      let { email,password,username, address, city, province, district, postalCode, birthDate, firstName, passwordConfirm } = formik.values 
+    if(email && password && username && address && city && province && district && postalCode && birthDate && firstName && passwordConfirm) { 
+          setEnable(true)
       }
       else{
-          setDisabled(true)
+          setEnable(false)
       }
 
-  },[user])
+  },[formik.values])
   
     return (
       <>
@@ -115,67 +120,116 @@ import {
             <Center w="282px" flexDir="column" gap={3} color="#DCD7C9">
               <FormControl id="email">
                 <FormLabel>Email</FormLabel>
-                <Input type="text" name="email" onChange={inputHandler} />
+                <Input type="text" name="email" onChange={(e)=> formik.setFieldValue("email", e.target.value )} />
+                 <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+            {formik.errors.email}
+            </FormHelperText>
               </FormControl>
               <FormControl id="username">
                 <FormLabel>Username</FormLabel>
-                <Input type="text" name="username" onChange={inputHandler} />
+                <Input type="text" name="username" onChange={(e)=> formik.setFieldValue("username", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+            {formik.errors.username}
+            </FormHelperText>
               </FormControl>
               <FormControl id="firstName">
                 <FormLabel>First Name</FormLabel>
-                <Input type="text" name="firstName" onChange={inputHandler} />
+                <Input type="text" name="firstName" onChange={(e)=> formik.setFieldValue("firstName", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+            {formik.errors.firstName}
+            </FormHelperText>
               </FormControl>
               <FormControl id="lastName">
                 <FormLabel>Last Name</FormLabel>
-                <Input type="text" name="lastName" onChange={inputHandler} />
+                <Input type="text" name="lastName" onChange={(e)=> formik.setFieldValue("lastName", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+            {formik.errors.lastName}
+            </FormHelperText>
               </FormControl>
               <Grid w={'inherit'} templateColumns= 'repeat(2, 1fr)' gap = '3'>
               <FormControl id="gender" w={'100%'}>
                 <FormLabel>Gender</FormLabel>
-                <Input type="text" name="gender" onChange={inputHandler} />
+                <Select name="gender" placeholder="--- ---" onChange={(e)=> formik.setFieldValue("gender", e.target.value )}>
+                <option value="0">Woman</option>
+                <option value="1">Man</option>
+                </Select>
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+            {formik.errors.gender}
+            </FormHelperText>
               </FormControl>
-              <FormControl id="birthd ate" w={"100%"}>
+              <FormControl id="birthDate" w={"100%"}>
                 <FormLabel>Birth Date</FormLabel>
-                <Input type="date" name="birthdate" onChange={inputHandler} fontSize= '15px' />
+                <Input type="date" name="birthDate" onChange={(e)=> formik.setFieldValue("birthDate", e.target.value )} fontSize= '15px'/>
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+            {formik.errors.birthDate}
+            </FormHelperText>
               </FormControl>
               </Grid>
               <FormControl id="province">
                 <FormLabel>Province</FormLabel>
-                <Input type="text" name="province" onChange={inputHandler} />
+                <Input type="text" name="province" onChange={(e)=> formik.setFieldValue("province", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+            {formik.errors.province}
+            </FormHelperText>
               </FormControl>
               <Grid w={'inherit'} templateColumns= 'repeat(2, 1fr)' gap = '3'>
               <FormControl id="city">
                 <FormLabel>City</FormLabel>
-                <Input type="text" name="city" onChange={inputHandler} />
+                <Input type="text" name="city" onChange={(e)=> formik.setFieldValue("city", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+            {formik.errors.city}
+            </FormHelperText>
               </FormControl>
               <FormControl id="postalCode">
                 <FormLabel>Postal Code</FormLabel>
-                <Input type="text" name="postalCode" onChange={inputHandler} />
+                <Input type="text" name="postalCode" onChange={(e)=> formik.setFieldValue("postalCode", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+            {formik.errors.postalCode}
+            </FormHelperText>
               </FormControl>
               </Grid>
+              <FormControl id="district">
+                <FormLabel>District</FormLabel>
+                <Input type="text" name="district" onChange={(e)=> formik.setFieldValue("district", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+            {formik.errors.district}
+            </FormHelperText>
+            </FormControl>
               <FormControl id="address">
                 <FormLabel>Address</FormLabel>
-                <Textarea type="text" name="address" maxH={"150px"} onChange={inputHandler} />
+                <Textarea type="text" name="address" maxH={"150px"} onChange={(e)=> formik.setFieldValue("address", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+            {formik.errors.address}
+            </FormHelperText>
               </FormControl>
               <FormControl id="phoneNumber">
                 <FormLabel>Phone Number</FormLabel>
-                <Input type="text" name="phoneNumber" onChange={inputHandler} />
+                <Input type="text" name="phoneNumber" onChange={(e)=> formik.setFieldValue("phoneNumber", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+            {formik.errors.phoneNumber}
+            </FormHelperText>
               </FormControl>
               <FormControl id="password">
                 <FormLabel>Password</FormLabel>
-                <Input type="password" name="password" onChange={inputHandler} />
+                <Input type="password" name="password" onChange={(e)=> formik.setFieldValue("password", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+            {formik.errors.password}
+            </FormHelperText>
               </FormControl>
               <FormControl id="passwordConfirm">
                 <FormLabel>Password Confirmation</FormLabel>
-                <Input type="password" name="passwordConfirm" onChange={inputHandler} />
+                <Input type="password" name="passwordConfirm" onChange={(e)=> formik.setFieldValue("passwordConfirm", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+            {formik.errors.passwordConfirm}
+            </FormHelperText>
               </FormControl>
   
               <Button
-                // disabled = {disabled? "disabled" : null}
+                onClick={formik.handleSubmit}
+                disabled={enable? null : "disabled"}
                 marginTop={"25px"}
                 colorScheme={"white"}
                 variant={"solid"}
-                onClick={signUp}
                 color="#2C3639"
                 w={"inherit"}
                 borderRadius="3%"

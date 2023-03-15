@@ -37,7 +37,7 @@ register: async (req,res) => {
 
     const dataUserDetail = {
         UserId: user.dataValues.id,  
-        birthdate : data.birthdate,
+        birthDate : data.birthDate,
         gender : data.gender,
         firstName : data.firstName,
         lastName : data.lastName,
@@ -326,7 +326,7 @@ verify : async (req,res) => {
             }
         }, {transaction: t})
 
-        res.status(202).send('Verify user success')
+        res.status(201).send('Verify user success')
         await t.commit();
         
     } catch (err) {

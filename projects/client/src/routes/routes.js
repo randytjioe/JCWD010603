@@ -20,6 +20,10 @@ const routes = [
     element: <PageLogin />,
   },
   {
+    path: "/register",
+    element: <PageRegister />,
+  },
+  {
 
     path: "/userpage",
     element: <UserPage />,
@@ -32,11 +36,7 @@ const routes = [
     path: "/update_profile",
     element: <UpdateProfile />,
   },
-<<<<<<< Updated upstream
-  
-=======
   {
->>>>>>> Stashed changes
     path: "/admin",
     element: <Dashboard/>,
   },
