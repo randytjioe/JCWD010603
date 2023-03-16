@@ -20,8 +20,8 @@ const routes = [
     ),
   },
   {
-    path: "/userpage",
-    element: <UserPage />,
+    path: "/",
+    element: <HomePage />,
   },
   {
     path: "/userpage",
