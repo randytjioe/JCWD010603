@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import user_types from "../redux/auth/types";
+import { axiosInstance, AxiosInstance } from "../config/config";
+import { useEffect, useState } from "react";
 import Loading from "../components/loading";
 
 const UserAuthProvider = ({ children }) => {
@@ -8,15 +9,26 @@ const UserAuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchData = async () => {
-    const data = localStorage.getItem("data");
-
-    if (data) {
-      dispatch({
-        type: user_types.USER_LOGIN,
-        payload: JSON.parse(data),
+    const token = localStorage.getItem("token");
+    await axiosInstance
+      .get("/user/keeplogin", { headers: { Authorization: token } })
+      .then((res) => {
+        dispatch({
+          type: user_types.USER_LOGIN,
+          payload: res.data.result,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err) {
+          if (token) {
+            localStorage.removeItem("token");
+          }
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
-    }
-    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -25,5 +37,4 @@ const UserAuthProvider = ({ children }) => {
 
   return isLoading ? <Loading /> : children;
 };
-
 export default UserAuthProvider;

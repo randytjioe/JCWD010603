@@ -9,7 +9,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import rootReducer from "./redux/store";
 import { Provider } from "react-redux";
 import thunk from "redux-thunk";
-import AuthProvider from "./hoc/authProvider";
+import UserAuthProvider from "./hoc/userAuthProvider";
 import AdminAuthProvider from "./hoc/adminAuthProvider";
 
 const store = configureStore({ reducer: rootReducer, middleware: [thunk] });
@@ -17,15 +17,15 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   // <React.StrictMode>
   <Provider store={store}>
-    <AdminAuthProvider>
-      <AuthProvider>
+    <UserAuthProvider>
+      <AdminAuthProvider>
         <ChakraProvider>
           <BrowserRouter>
             <App />
           </BrowserRouter>
         </ChakraProvider>
-      </AuthProvider>
-    </AdminAuthProvider>
+      </AdminAuthProvider>
+    </UserAuthProvider>
   </Provider>
 
   // </React.StrictMode>
