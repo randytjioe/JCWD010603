@@ -26,15 +26,29 @@ import {
   import * as Yup from "yup";
   import YupPassword from 'yup-password';
   import { useFormik } from "formik";
+  import axios from "axios"
   
   import Logo from "../assets/logo.png";
 
 
-  export default function Register() {
+  export default function Register() {  
     const dispatch = useDispatch();
     const navigate = useNavigate();
   
-    const [errors, setErrors] = useState({})
+    const [province, setProvince] = useState([])
+    const [provinces, setProvinces] = useState({
+      province_id : 0,
+      province : ""
+    })
+
+
+    const fetchProvince = async () => {
+      await axios.get("http://localhost:8000/api_rajaongkir/province").then((res)=>{
+        setProvince([...province, res.data])
+      }).catch((err) => {console.log(err)})
+    }
+
+    console.log(province)
 
     const formik = useFormik({
       initialValues : {   
@@ -56,8 +70,8 @@ import {
           email: Yup.string().required("Email must be filled").email("This is not email"),
           username: Yup.string().required("Username must be filled").min(8, "Username should have min 8 characters"),
           phoneNumber: Yup.string(),
-          // city: Yup.string().required("City must be filled"),
-          // province: Yup.string().required("Province must be filled"),
+          city: Yup.string().required("City must be filled"),
+          province: Yup.string().required("Province must be filled"),
           district: Yup.string().required("District must be filled"),
           address: Yup.string().required("Address must be filled"),
           gender: Yup.string().required("Gender must be filled"),
@@ -82,18 +96,23 @@ import {
 
   
     const [enable, setEnable] = useState(false); 
+
     
     useEffect(()=>{
       let { email,password,username, address, city, province, district, postalCode, birthDate, firstName, passwordConfirm } = formik.values 
-    if(email && password && username && address && city && province && district && postalCode && birthDate && firstName && passwordConfirm) { 
-          setEnable(true)
+      if(email && password && username && address && city && province && district && postalCode && birthDate && firstName && passwordConfirm) { 
+        setEnable(true)
       }
       else{
-          setEnable(false)
+        setEnable(false)
       }
+      
+    },[formik.values])
+    
+    useEffect(() => {
+      fetchProvince();
 
-  },[formik.values])
-  
+  },[])
     return (
       <>
         <Center flex={1} align={"center"} justifyContent={"center"}>
@@ -165,13 +184,26 @@ import {
             </FormHelperText>
               </FormControl>
               </Grid>
+              
               <FormControl id="province">
                 <FormLabel>Province</FormLabel>
-                <Input type="text" name="province" onChange={(e)=> formik.setFieldValue("province", e.target.value )} />
+                <Select name="province" placeholder="--- ---" onChange={(e)=> formik.setFieldValue("province", e.target.value )}>
+              {
+                province?.map((val,idx) => {
+                    return (
+                      <>
+                <option key={idx}>{val}</option>
+                </>
+                    )
+                })
+              }
+                  </Select>  
                 <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
             {formik.errors.province}
             </FormHelperText>
               </FormControl>
+
+
               <Grid w={'inherit'} templateColumns= 'repeat(2, 1fr)' gap = '3'>
               <FormControl id="city">
                 <FormLabel>City</FormLabel>
