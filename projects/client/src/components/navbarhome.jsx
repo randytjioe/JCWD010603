@@ -31,13 +31,11 @@ import { Link as ReachLink } from "react-router-dom";
 import { useRef } from "react";
 import { useSelector } from "react-redux";
 import { AiOutlineMenu } from "react-icons/ai";
-
 import { FiBell } from "react-icons/fi";
 import { GrMenu } from "react-icons/gr";
 import { SlBasket } from "react-icons/sl";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import user_types from "../redux/auth/types";
+
 export default function Navbar(props) {
   const userSelector = useSelector((state) => state.auth);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -46,14 +44,6 @@ export default function Navbar(props) {
   const finalRef = useRef(null);
   const [products, setProducts] = useState([]);
   const [product, setProduct] = useState([]);
-  let dispatch = useDispatch();
-  function logOut() {
-    dispatch({
-      type: user_types.USER_LOGOUT,
-    });
-    localStorage.clear();
-    window.location.reload(true);
-  }
 
   console.log(userSelector);
 
@@ -127,32 +117,17 @@ export default function Navbar(props) {
 
                   <PopoverHeader bgColor={"#A27B5C"} color="white">
                     {" "}
-                    SELAMAT DATANG {userSelector?.username}!
+                    SELAMAT DATANG !
                   </PopoverHeader>
                   <PopoverBody>
                     <List fontSize={"14px"} color="#7D7D7D" gap={5}>
-                      <Divider orientation="horizontal" m={2} />
                       <ListItem>
-                        <Link to={"/update-profile"} as={ReachLink}>
-                          UPDATE PROFILE
+                        <Link to="/userlogin" as={ReachLink}>
+                          SIGN IN
                         </Link>
                       </ListItem>
+
                       <Divider orientation="horizontal" m={2} />
-                      <ListItem>
-                        <Link to={"/list-address"} as={ReachLink}>
-                          UPDATE ADDRESS
-                        </Link>
-                      </ListItem>
-                      <Divider orientation="horizontal" m={2} />
-                      <ListItem>
-                        <Link to="/reset" as={ReachLink}>
-                          CHANGE PASSWORD
-                        </Link>
-                      </ListItem>
-                      <Divider orientation="horizontal" m={2} />
-                      <ListItem>
-                        <Link onClick={logOut}>LOGOUT </Link>{" "}
-                      </ListItem>
                     </List>
                   </PopoverBody>
                 </PopoverContent>

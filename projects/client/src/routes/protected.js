@@ -1,24 +1,27 @@
-import { useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function ProtectedPage({
-    children,
-    needLogin = false,
-    guestOnly = false,
-}) {
-    let navigate = useNavigate();
-    const adminSelector = useSelector((state) => state.adminAuth);
-    const userSelector = useSelector((state) => state.auth);
+function ProtectedPage({ children, needLogin = false }) {
+  let navigate = useNavigate();
+  const userSelector = useSelector((state) => state.auth);
+  console.log(userSelector.isVerify);
 
-    useEffect(() => {
+  useEffect(() => {
+    if (needLogin && !userSelector.id) {
+      return navigate("/userlogin", { replace: true });
+    }
 
-        if (!guestOnly && !adminSelector?.id) {
-            return navigate("/admin_login", { replace: true });
-        }
-        if (needLogin && !adminSelector.isSuperAdmin && adminSelector.id) {
-            return navigate("/dashboard", { replace: true });
-        }
-    }, []);
-    return children;
+    if (userSelector.id && userSelector.isVerivy) {
+      return navigate("/userpage");
+    }
+
+    if (userSelector.id && !userSelector.isVerify) {
+      return navigate("/");
+    }
+  }, []);
+
+  return children;
 }
+
+export default ProtectedPage;

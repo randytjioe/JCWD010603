@@ -1,4 +1,4 @@
-import NavBar from "../components/navbar";
+import NavBar from "../components/navbarhome";
 import Banner from "../components/banner";
 import { Flex, Center, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -16,6 +16,7 @@ export default function UserPage() {
 
     setTimeout(() => {
       setIsLoading(false);
+      // if (!state) navigate("/");
     }, 500);
   }, []);
   return (
