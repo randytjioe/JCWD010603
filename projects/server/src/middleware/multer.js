@@ -20,13 +20,17 @@ const fileUploader = ({
   });
   const uploader = multer({
     storage: storageConfig,
-
+    limits: {
+      fileSize: 1000000, //Byte
+    },
     fileFilter: (req, file, cb) => {
       console.log(file);
       if (file.mimetype.split("/")[0] != fileType) {
         return cb(null, false);
       }
-
+      if (file.mimetype.split("/")[1] != "jpg" || "png" || "gif" || "jpeg") {
+        return cb(null, false);
+      }
       cb(null, true);
     },
   });
@@ -36,7 +40,7 @@ const fileUploader = ({
 
 const upload = multer({
   limits: {
-    fileSize: 100000000000, //Byte
+    fileSize: 1000000, //Byte
   },
   fileFilter: (req, file, cb) => {
     console.log(file);

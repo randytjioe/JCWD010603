@@ -130,10 +130,11 @@ app.patch("/editprofile", (req, res) => {
     });
   });
 });
-app.patch("/updatefoto", (req, res) => {
+
+app.patch("/editaddress", (req, res) => {
   // console.log(req.query.id);
   console.log(req.body);
-  const qString = `update user_details  set imgUser="${req.body.imgUser}" where UserId=${req.body.User_id}`;
+  const qString = `update addresses set district ="${req.body.district}",province ="${req.body.province}",city="${req.body.city}",postalCode=${req.body.postalCode},address="${req.body.address}" where UserId=${req.body.User_id}`;
   db.query(qString, (err, result) => {
     if (err) {
       console.log(err);
@@ -147,12 +148,47 @@ app.patch("/updatefoto", (req, res) => {
     });
   });
 });
+
+// app.patch("/updatefoto", (req, res) => {
+//   // console.log(req.query.id);
+//   console.log(req.body);
+//   const qString = `update user_details  set imgUser="${req.body.imgUser}" where UserId=${req.body.User_id}`;
+//   db.query(qString, (err, result) => {
+//     if (err) {
+//       console.log(err);
+//       return res.status(400).json({
+//         message: "query error",
+//       });
+//     }
+//     res.status(200).json({
+//       message: "data fetched",
+//       result: result,
+//     });
+//   });
+// });
 app.patch("/edit-password", (req, res) => {
   const qString = `update users set password ="${req.body.password}" `;
   db.query(qString, (err, result) => {
     if (err) {
       console.log(err);
       res.status(400).json({
+        message: "query error",
+      });
+    }
+    res.status(200).json({
+      message: "data fetched",
+      result: result,
+    });
+  });
+});
+
+app.delete("/delete-address", (req, res) => {
+  // console.log(req.query.id);
+  // console.log(req.body);
+  const qString = `delete from addresses where id=${req.query.id}`;
+  db.query(qString, (err, result) => {
+    if (err) {
+      return res.status(400).json({
         message: "query error",
       });
     }
@@ -181,9 +217,40 @@ app.get("/users/:UserId", (req, res) => {
   });
 });
 
+app.get("/update-address/:id", (req, res) => {
+  console.log(req.params);
+  const qString = "SELECT  * FROM addresses where id =" + req.params.id;
+  db.query(qString, (err, result) => {
+    if (err) {
+      return res.status(400).json({
+        message: "query error",
+      });
+    }
+    res.status(200).json({
+      message: "data fetched",
+      result: result,
+    });
+  });
+});
+app.get("/listaddress/:Userid", (req, res) => {
+  console.log(req.params);
+  const qString = "SELECT  * FROM addresses where Userid =" + req.params.Userid;
+  db.query(qString, (err, result) => {
+    if (err) {
+      return res.status(400).json({
+        message: "query error",
+      });
+    }
+    res.status(200).json({
+      message: "data fetched",
+      result: result,
+    });
+  });
+});
 app.use("/user", route.userRoute);
 app.use("/admin", route.adminRoute);
-
+app.use("/post_image", express.static(`${__dirname}/public/POST`));
+app.use("/user/avatar", express.static(`${__dirname}/public/IMAGE_PRODUCT`));
 // ===========================
 
 // not found

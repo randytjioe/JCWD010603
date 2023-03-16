@@ -7,6 +7,9 @@ import Dashboard from "../pages/dashboard";
 import LoginAdmin from "../pages/login_admin";
 import AdminSetting from "../pages/adminSetting";
 import ProtectedPage from "./protected";
+import AdressPage from "../pages/updateadress_page";
+import ListAddressPage from "../pages/listaddress_page";
+import AddAddressPage from "../pages/addadress_page";
 const routes = [
   {
     path: "/userlogin",
@@ -25,6 +28,30 @@ const routes = [
     element: (
       <ProtectedPage needLogin={true}>
         <UserPage />
+      </ProtectedPage>
+    ),
+  },
+  {
+    path: "/update-address/:id",
+    element: (
+      <ProtectedPage needLogin={true}>
+        <AdressPage />
+      </ProtectedPage>
+    ),
+  },
+  {
+    path: "/add-address",
+    element: (
+      <ProtectedPage needLogin={true}>
+        <AddAddressPage />
+      </ProtectedPage>
+    ),
+  },
+  {
+    path: "/list-address",
+    element: (
+      <ProtectedPage needLogin={true}>
+        <ListAddressPage />
       </ProtectedPage>
     ),
   },

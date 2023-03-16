@@ -4,7 +4,7 @@ const { Op } = require("sequelize");
 const { sequelize } = require("../models");
 const secret_key = process.env.secret_key;
 const mailer = require("../library/mailer");
-
+const { nanoid } = require("nanoid");
 const db = require("../models");
 const User = db.user;
 const User_detail = db.user_detail;
@@ -178,34 +178,37 @@ const userController = {
       console.log(err);
     }
   },
-  updateFoto: async (req, res) => {
+  addAddress: async (req, res) => {
     try {
-      const { UserId } = req.body;
-      const data = { UserId };
+      const { address, city, province, district, postalCode, isUtama, Ket } =
+        req.body;
+      const data = {
+        address,
+        city,
+        province,
+        district,
+        postalCode,
+        isUtama,
+        Ket,
+      };
+      console.log(data);
+      const checkAddress = await Address.findOne({
+        where: {
+          address: address,
+        },
+      });
 
-      if (req.file) {
-        const image_url = process.env.render_image + req.file.filename;
-        console.log(image_url);
-        const checkFoto = await User_detail.findOne({
-          where: {
-            UserId: UserId,
-          },
-        });
-
-        const file = checkFoto.image_url.split("/")[3];
-        const path = path.dirname(`${__dirname}../public/IMAGE_PRODUCT`);
-        await fs.unlink(path, file);
-
-        const updateFoto = await User_detail.update({
-          ...data,
-          image_url,
-        });
-
-        res.status(200).json({
-          message: "foto updated",
-          result: updateFoto,
+      if (checkAddress) {
+        return res.status(400).json({
+          message: "address sudah tersedia",
         });
       }
+
+      const addAddress = await Address.create({ ...data });
+      res.status(200).json({
+        message: "address berhasil ditambahkan",
+        result: addAddress,
+      });
     } catch (err) {
       console.log(err);
       res.status(400).json({
@@ -213,7 +216,56 @@ const userController = {
       });
     }
   },
+  updateFoto: async (req, res) => {
+    try {
+      const UserId = req.params.UserId;
 
+      const data = {};
+
+      if (req.file) {
+        console.log(req.file);
+        data.imgUser = process.env.render_avatar + req.file.filename;
+      }
+
+      await User_detail.update(
+        {
+          ...data,
+        },
+        {
+          where: {
+            UserId,
+          },
+        }
+      );
+
+      const result = await User_detail.findByPk(UserId);
+
+      return res.status(200).json({
+        message: "user edited",
+        result: result,
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err.toString(),
+      });
+    }
+  },
+  renderAvatar: async (req, res) => {
+    try {
+      // const id = req.params.id; //27
+      var fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
+      const avatar = await User_detail.findOne({
+        where: {
+          imgUser: fullUrl,
+        },
+      });
+      console.log(avatar.id);
+
+      res.set("Content-type", "image/**");
+    } catch (err) {
+      res.send(err);
+    }
+  },
   editProfile: async (req, res) => {
     try {
       const { id, firstName, lastName, birthDate, email, gender } = req.body;
@@ -244,24 +296,7 @@ const userController = {
       });
     }
   },
-  renderAvatar: async (req, res) => {
-    try {
-      // const id = req.params.id; //27
-      var fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
-      const avatar = await User.findOne({
-        where: {
-          avatar_url: fullUrl,
-        },
-      });
-      console.log(avatar.id);
 
-      res.set("Content-type", "image/png");
-
-      res.send(avatar.avatar_buffer);
-    } catch (err) {
-      res.send(err);
-    }
-  },
   editPassword: async (req, res) => {
     const { oldPassword, newPassword } = req.body;
 

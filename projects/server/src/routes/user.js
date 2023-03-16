@@ -3,7 +3,7 @@ const router = express.Router();
 const adminController = require("../controller/admin");
 const { validate, userValidateRules } = require("../middleware/validator");
 const { userController } = require("../controller");
-const { upload } = require("../middleware/multer");
+const { fileUploader, upload } = require("../middleware/multer");
 const { verifyToken } = require("../middleware/auth");
 
 router.post(
@@ -13,15 +13,20 @@ router.post(
   userController.register
 );
 router.patch(
-  "/editprofile/:id",
-  upload.single("image"),
-  userController.editProfile
+  "/updatefoto/:UserId",
+  fileUploader({
+    destinationFolder: "IMAGE_PRODUCT",
+    fileType: "image",
+    prefix: "POST",
+  }).single("image"),
+  userController.updateFoto
 );
 // router.patch("/updatefoto", upload.single("image"), userController.updateFoto);
-router.get("/avatar/:id", userController.renderAvatar);
+// router.get("/avatar/:id", userController.renderAvatar);
 router.get("/verify/:token", userController.verify);
 router.get("/keeplogin", userController.keeplogin);
 router.post("/adminlogin", adminController.login);
 router.post("/userlogin", userController.login);
+router.post("/add-address", userController.addAddress);
 // router.patch("/editpassword", verifyToken, userController.editPassword);
 module.exports = router;

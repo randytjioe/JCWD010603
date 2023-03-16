@@ -23,6 +23,7 @@ import {
   InputGroup,
   Image,
   Alert,
+  Text,
   AlertIcon,
   useToast,
 } from "@chakra-ui/react";
@@ -43,8 +44,11 @@ import { useSelector } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import YupPassword from "yup-password";
-export default function UpdateProfile() {
+import { useRef } from "react";
+import user_types from "../redux/auth/types";
+export default function UpdateProfile(props) {
   const [imgUser, setImgUser] = useState("");
+  const data = props.data;
   const [firstName, setFirstName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [lastName, setLastName] = useState("");
@@ -55,22 +59,14 @@ export default function UpdateProfile() {
   const toast = useToast();
   const [User_id, setUser_id] = useState(0);
   const userSelector = useSelector((state) => state.auth);
-  console.log(userSelector);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const inputFileRef = useRef(null);
 
   useEffect(() => {
     setUser_id(userSelector?.id);
     fetchuserdetail(userSelector?.id);
   }, []);
-  const formik = useFormik({
-    initialValues: {
-      firstName: "",
-      email: "",
-    },
-    validationSchema: Yup.object().shape({
-      email: Yup.string().email("Mohon isi email @"),
-      firstName: Yup.string().min(3, "min 3 huruf"),
-    }),
-  });
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [saveImage, setSaveImage] = useState(null);
@@ -80,12 +76,6 @@ export default function UpdateProfile() {
   });
   const [userdetail, setUserDetail] = useState([]);
   const [enable, setEnable] = useState(false);
-
-  const handleFile = (event) => {
-    const uploaded = event.target.files[0];
-    console.log(uploaded);
-    setImgUser(URL.createObjectURL(uploaded));
-  };
 
   useEffect(() => {
     fetchuserdetail(User_id);
@@ -107,6 +97,71 @@ export default function UpdateProfile() {
         console.log({ error });
       });
   };
+  const MAX_FILE_SIZE = 1000000; //100KB
+
+  const validFileExtensions = {
+    imgUser: ["jpg", "gif", "png"],
+  };
+
+  function isValidFileType(fileName, fileType) {
+    return (
+      fileName &&
+      validFileExtensions[fileType].indexOf(fileName.split(".").pop()) > -1
+    );
+  }
+  const formik = useFormik({
+    initialValues: {
+      firstName: "",
+      email: "",
+      avatar: selectedFile,
+      avatar_url: data?.imgUser || imgUser,
+      imgUser: imgUser,
+    },
+    validationSchema: Yup.object().shape({
+      email: Yup.string().email("Mohon isi email @"),
+      firstName: Yup.string().min(3, "min 3 huruf"),
+      imgUser: Yup.mixed()
+        .required("Required")
+        .test("is-valid-type", "Not a valid image type", (value) =>
+          isValidFileType(value && value.name.toLowerCase(), "image")
+        )
+        .test(
+          "is-valid-size",
+          "Max allowed size is 1000KB",
+          (value) => value && value.size <= MAX_FILE_SIZE
+        ),
+    }),
+    onSubmit: async (value) => {
+      const { avatar } = value;
+      const formData = new FormData();
+      formData.append("image", avatar);
+      await axiosInstance
+        .patch(`user/updatefoto/${props?.user.id}`, formData)
+        .then(async (res) => {
+          console.log(res.data.result);
+          // await dispatch({
+          //   type: user_types.USER_LOGIN,
+          //   payload: res.data.result,
+          // });
+          toast({
+            title: "Account created",
+            description: " Your Profile has been Updated",
+            status: "success",
+            duration: 2000,
+            isClosable: true,
+          });
+        })
+        .catch((err) => {
+          toast({
+            title: "Error",
+            description: err.message,
+            status: "error",
+            duration: 2000,
+            isClosable: true,
+          });
+        });
+    },
+  });
 
   function inputHandler(event) {
     const { name, value } = event.target;
@@ -129,30 +184,39 @@ export default function UpdateProfile() {
     };
 
     try {
-      console.log(Data);
       await axiosInstance.patch("/editprofile?id=" + User_id, Data);
       navigate("/userpage");
-      console.log("user edited");
     } catch (error) {
       console.error(error);
     }
   };
-
-  const saveFoto = async (e) => {
-    e.preventDefault();
-    const Data1 = {
-      User_id,
-      imgUser,
-    };
-
-    try {
-      await axiosInstance.patch("/updatefoto", Data1);
-      navigate("/update-profile");
-      setErrorMessage("Sukses");
-    } catch (error) {
-      setErrorMessage("Gagal");
-    }
+  const handleFile = (event) => {
+    // const uploaded = event.target.files[0];
+    // console.log(uploaded);
+    // setImgUser(URL.createObjectURL(uploaded));
+    // setSaveImage(uploaded);
+    setSelectedFile(event.target.files[0]);
+    const url = URL.createObjectURL(event.target.files[0]);
+    formik.setFieldValue("avatar_url", url);
+    formik.setFieldValue("avatar", event.target.files[0]);
   };
+  // const saveFoto = async (e) => {
+  //   e.preventDefault();
+
+  //   const Data1 = {
+  //     User_id,
+  //     saveImage,
+  //   };
+  //   console.log(Data1);
+  //   try {
+  //     await axiosInstance.patch("/user/updatefoto/" + User_id, Data1);
+  //     navigate("/update-profile");
+  //     setErrorMessage("Sukses");
+  //   } catch (error) {
+  //     setErrorMessage("Gagal");
+  //   }
+  // };
+
   return (
     <>
       <Center flex={1} align={"center"} justifyContent={"center"}>
@@ -196,11 +260,17 @@ export default function UpdateProfile() {
                     {" "}
                     <Center fontSize={"30px"}> EDIT PROFILE</Center>
                   </FormLabel>
-                  <form onSubmit={(e) => saveFoto(e)}>
-                    <Stack direction={["column"]} spacing={6}>
-                      <Center>
-                        <Avatar size="2xl" src={imgUser}></Avatar>
-                      </Center>
+
+                  <Stack direction={["column"]} spacing={6} py={5}>
+                    <Flex>
+                      <Avatar
+                        size="2xl"
+                        src={formik.values.avatar_url || imgUser}
+                        id="avatar"
+                      ></Avatar>
+                      <FormHelperText color={"white"}>
+                        {formik.errors.imgUser}
+                      </FormHelperText>
 
                       <Center
                         w="full"
@@ -208,52 +278,49 @@ export default function UpdateProfile() {
                         flexDir="column"
                         gap={3}
                       >
-                        <Input
-                          id=""
-                          type="file"
-                          accept="image/*"
-                          onChange={handleFile}
-                          w="full"
-                          placeholder="Image URL"
-                          name={imgUser}
-                        ></Input>
-
-                        <Button
-                          colorScheme={"black"}
-                          variant={"solid"}
-                          w="350px"
-                          color="white"
-                          _hover={{
-                            bg: "white",
-                            color: "#2C3639",
-                          }}
-                          type="submit"
-                          onClick={(errorMessage) => {
-                            if ((errorMessage = "Sukses")) {
-                              toast({
-                                title: "Update Foto Sukses",
-                                description: "Foto Berhasil di Update",
-                                status: "success",
-                                duration: 9000,
-                                isClosable: true,
-                              });
-                            } else {
-                              toast({
-                                title: "Update Foto Gagal",
-                                description: "Foto Tidak Berhasil di Update",
-                                status: "error",
-                                duration: 9000,
-                                isClosable: true,
-                              });
-                            }
-                          }}
-                          // onClick={(e) => saveUser(e)}
-                        >
-                          Change Profile Picture
-                        </Button>
+                        <Flex flexDir={"column"}>
+                          <Text fontWeight="bold">{props?.user.username}</Text>
+                          <Text
+                            color="#0095F6"
+                            fontWeight="bold"
+                            cursor={"pointer"}
+                            onClick={() => inputFileRef.current.click()}
+                          >
+                            Change Profile Picture
+                          </Text>
+                          <Input
+                            id=""
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              handleFile(e);
+                              formik.setFieldValue("imgUser", e.target.value);
+                            }}
+                            w="full"
+                            placeholder="Image URL"
+                            display="none"
+                            ref={inputFileRef}
+                            name={imgUser}
+                          ></Input>
+                        </Flex>
                       </Center>
-                    </Stack>
-                  </form>
+                    </Flex>
+
+                    <Button
+                      colorScheme={"black"}
+                      variant={"solid"}
+                      w="350px"
+                      color="white"
+                      _hover={{
+                        bg: "white",
+                        color: "#2C3639",
+                      }}
+                      type="submit"
+                      onClick={formik.handleSubmit}
+                    >
+                      Upload
+                    </Button>
+                  </Stack>
                 </FormControl>
                 <Flex justifyContent={"bottom"}></Flex>
               </Flex>

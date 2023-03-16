@@ -47,7 +47,7 @@ import { useLocation } from "react-router-dom";
 import Logo from "../assets/logo.png";
 import { useSelector } from "react-redux";
 
-export default function UpdateAdress(props) {
+export default function AddAdress(props) {
   const [imgUser, setImgUser] = useState("");
   const [address, setAddress] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -60,42 +60,22 @@ export default function UpdateAdress(props) {
   const location = useLocation();
   const toast = useToast();
   const [User_id, setUser_id] = useState(0);
-  const [isUtama, setIsUtama] = useState();
-  const [id, setId] = useState(0);
-  const [idAddress, setidAddress] = useState(0);
+  const userSelector = useSelector((state) => state.auth);
+  console.log(userSelector);
+  useEffect(() => {
+    setUser_id(userSelector?.id);
+    fetchuserdetail(userSelector?.id);
+  }, []);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const userSelector = useSelector((state) => state.auth);
   const [saveImage, setSaveImage] = useState(null);
   const [user, setUser] = useState({
     username: "",
     password: "",
   });
-  const [addressdetail, setAddressDetail] = useState([]);
+  const [userdetail, setUserDetail] = useState([]);
   const [enable, setEnable] = useState(false);
-  useEffect(() => {
-    setidAddress(location.pathname?.split("/")[2]);
-    fetchaddressdetail(location.pathname?.split("/")[2]);
-  }, []);
-
-  const fetchaddressdetail = async (idAddress) => {
-    await axiosInstance
-      .get("/update-address/" + idAddress)
-      .then((response) => {
-        setAddressDetail(response.data.result[0]);
-        console.log(response.data.result[0]);
-        setId(response.data.result[0].id);
-        setDistrict(response.data.result[0].district);
-        setProvince(response.data.result[0].province);
-        setAddress(response.data.result[0].address);
-        setPostalCode(response.data.result[0].postalCode);
-        setCity(response.data.result[0].city);
-        setIsUtama(response.data.result[0].isUtama);
-      })
-      .catch((error) => {
-        console.log({ error });
-      });
-  };
 
   const handleFile = (event) => {
     const uploaded = event.target.files[0];
@@ -103,8 +83,27 @@ export default function UpdateAdress(props) {
     setImgUser(URL.createObjectURL(uploaded));
   };
 
-  const handleEditToAddress = (address) => {
-    setAddressList([...addressList, address]);
+  const handleEditToAddress = (product) => {
+    setAddressList([...addressList, product]);
+  };
+  useEffect(() => {
+    fetchuserdetail(User_id);
+  }, []);
+  const fetchuserdetail = async (User_id) => {
+    await axiosInstance
+      .get("/address/" + User_id)
+      .then((response) => {
+        setUserDetail(response.data.result);
+        console.log(response.data.result);
+        setDistrict(response.data.result.district);
+        setProvince(response.data.result.province);
+        setAddress(response.data.result.address);
+        setPostalCode(response.data.result.postalCode);
+        setCity(response.data.result.city);
+      })
+      .catch((error) => {
+        console.log({ error });
+      });
   };
 
   function inputHandler(event) {
@@ -116,33 +115,20 @@ export default function UpdateAdress(props) {
     });
   }
 
-  const CheckUtama = (e, param) => {
-    let newUtama;
-    if (e.target.checked) {
-      props.setUtama([...props.isUtama, param]);
-    } else {
-      newUtama = props.utama.filter((val) => {
-        return val !== param;
-      });
-      props.setUtama([...newUtama]);
-    }
-  };
-
-  const saveAddress = async (e) => {
+  const saveUser = async (e) => {
     e.preventDefault();
     const Data = {
-      id,
+      User_id,
       district,
       province,
       postalCode,
       address,
       city,
-      isUtama,
     };
 
     try {
       console.log(Data);
-      await axiosInstance.patch("/editaddress?id=" + id, Data);
+      await axiosInstance.patch("/editaddress?id=" + User_id, Data);
       navigate("/userpage");
       console.log("user edited");
     } catch (error) {
@@ -190,7 +176,7 @@ export default function UpdateAdress(props) {
               <Flex flexDir={"column"}>
                 <FormControl id="productName">
                   <FormLabel>
-                    <Center fontSize={"30px"}> EDIT ADDRESS</Center>
+                    <Center fontSize={"30px"}> ADD ADDRESS</Center>
                   </FormLabel>
                 </FormControl>
               </Flex>
@@ -256,17 +242,10 @@ export default function UpdateAdress(props) {
               />
             </FormControl>
             <FormControl id="email">
-              {isUtama === 1 ? (
-                <Center gap={3}>
-                  <Flex justifyContent={"center"}>Jadikan Alamat Utama</Flex>
-                  <Switch
-                    onChange={(e) => {
-                      CheckUtama(e, "1");
-                    }}
-                    colorScheme="teal"
-                  />
-                </Center>
-              ) : null}
+              <Center gap={3}>
+                <Flex justifyContent={"center"}>Jadikan Alamat Utama</Flex>
+                <Switch colorScheme="teal" />
+              </Center>
             </FormControl>
             <Button
               colorScheme={"black"}
@@ -278,9 +257,9 @@ export default function UpdateAdress(props) {
                 color: "#2C3639",
               }}
               type="submit"
-              onClick={(e) => saveAddress(e)}
+              onClick={(e) => saveUser(e)}
             >
-              UPDATE
+              ADD
             </Button>
           </Flex>
         </Flex>

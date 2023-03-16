@@ -139,13 +139,19 @@ export default function Navbar(props) {
                       </ListItem>
                       <Divider orientation="horizontal" m={2} />
                       <ListItem>
+                        <Link to={"/list-address"} as={ReachLink}>
+                          UPDATE ADDRESS
+                        </Link>
+                      </ListItem>
+                      <Divider orientation="horizontal" m={2} />
+                      <ListItem>
                         <Link to="/reset" as={ReachLink}>
                           CHANGE PASSWORD
                         </Link>
                       </ListItem>
                       <Divider orientation="horizontal" m={2} />
                       <ListItem>
-                        <Link onClick={logOut}>Logout </Link>{" "}
+                        <Link onClick={logOut}>LOGOUT </Link>{" "}
                       </ListItem>
                     </List>
                   </PopoverBody>
