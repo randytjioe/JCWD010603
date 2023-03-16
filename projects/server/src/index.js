@@ -36,6 +36,7 @@ app.get("/api/greetings", (req, res, next) => {
 
 app.use("/user", route.userRoute);
 app.use("/admin", route.adminRoute);
+app.use("/api_rajaongkir", route.rajaOngkirRoute)
 
 // ===========================
 

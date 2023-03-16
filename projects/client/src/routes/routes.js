@@ -5,11 +5,17 @@ import UpdateProfile from "../pages/updateprofilepage";
 import Dashboard from "../pages/dashboard";
 import LoginAdmin from "../pages/login_admin";
 import AdminSetting from "../pages/adminSetting";
+import RegisterPage from "../pages/register_user";
 
 const routes = [
   {
     path: "/login",
     element: <PageLogin />,
+  },
+  {
+
+    path: "/register",
+    element: <RegisterPage />,
   },
   {
 
