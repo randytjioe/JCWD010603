@@ -9,7 +9,7 @@ const Branch = db.branch;
 const adminController = {
     login: async (req, res) => {
         const { email, password } = req.body;
-        const result = await Admins.findOne({
+        const result = await Admin.findOne({
             where: {
                 email: {
                     [Op.eq]: sequelize.literal(`BINARY '${email}'`)

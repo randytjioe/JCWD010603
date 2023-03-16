@@ -16,12 +16,13 @@ module.exports = (sequelize, DataTypes) => {
       firstName: DataTypes.STRING,
       lastName: DataTypes.STRING,
       birthDate: DataTypes.DATEONLY,
-      imgUser: DataTypes.TEXT,
       gender: DataTypes.BOOLEAN,
+      imgUser: DataTypes.TEXT,
     },
     {
       sequelize,
       modelName: "User_detail",
+      paranoid: true,
     }
   );
   return User_detail;

@@ -20,8 +20,8 @@ const routes = [
     ),
   },
   {
-    path: "/",
-    element: <HomePage />,
+    path: "/userpage",
+    element: <UserPage />,
   },
   {
     path: "/userpage",
@@ -57,19 +57,11 @@ const routes = [
   },
   {
     path: "/reset",
-    element: (
-      <ProtectedPage needLogin={true}>
-        <Reset />
-      </ProtectedPage>
-    ),
+    element: <Reset />,
   },
   {
     path: "/update-profile",
-    element: (
-      <ProtectedPage needLogin={true}>
-        <UpdateProfile />
-      </ProtectedPage>
-    ),
+    element: <UpdateProfile />,
   },
   {
     path: "/admin",
