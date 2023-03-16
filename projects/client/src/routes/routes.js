@@ -24,6 +24,10 @@ const routes = [
     element: <HomePage />,
   },
   {
+    path: "/register",
+    element: <RegisterPage />,
+  },
+  {
     path: "/userpage",
     element: (
       <ProtectedPage needLogin={true}>
