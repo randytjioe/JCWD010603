@@ -4,7 +4,7 @@ const cors = require("cors");
 const { join } = require("path");
 const db = require("./models");
 const route = require("./routes");
-
+const mysql = require("mysql2");
 const PORT = process.env.PORT || 8000;
 const app = express();
 // app.use(
@@ -46,7 +46,7 @@ app.use(express.json());
 
 app.get("/update-user", (req, res) => {
   const qString = "Select * FROM user_details";
-  db.query(qString, (err, result) => {
+  db_project.query(qString, (err, result) => {
     if (err) {
       res.status(400).json({
         message: "query error",
@@ -58,6 +58,22 @@ app.get("/update-user", (req, res) => {
     });
   });
 });
+
+app.get("/product-all", (req, res) => {
+  const qString = "Select * FROM products";
+  db_project.query(qString, (err, result) => {
+    if (err) {
+      res.status(400).json({
+        message: "query error",
+      });
+    }
+    res.status(200).json({
+      message: "data fetched",
+      result: result,
+    });
+  });
+});
+
 app.patch("/users/:id/password", (req, res) => {
   const id = parseInt(req.params.id);
   const { oldPassword, newPassword } = req.body;

@@ -122,6 +122,12 @@ export default function Navbar(props) {
                   <PopoverBody>
                     <List fontSize={"14px"} color="#7D7D7D" gap={5}>
                       <ListItem>
+                        <Link to="/register" as={ReachLink}>
+                          REGISTER
+                        </Link>
+                      </ListItem>
+                      <Divider orientation="horizontal" m={2} />
+                      <ListItem>
                         <Link to="/userlogin" as={ReachLink}>
                           SIGN IN
                         </Link>

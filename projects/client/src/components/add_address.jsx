@@ -27,6 +27,7 @@ import {
   AlertIcon,
   Badge,
   useToast,
+  FormHelperText,
   InputRightElement,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -46,27 +47,41 @@ import { Link as ReachLink } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import Logo from "../assets/logo.png";
 import { useSelector } from "react-redux";
-
+import { useFormik } from "formik";
+import * as Yup from "yup";
 export default function AddAdress(props) {
   const [imgUser, setImgUser] = useState("");
   const [address, setAddress] = useState("");
+  const [isUtama, setIsUtama] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [district, setDistrict] = useState("");
   const [addressList, setAddressList] = useState("");
   const [city, setCity] = useState("");
   const [province, setProvince] = useState("");
+  const [ket, setKet] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const data = props.data;
   const location = useLocation();
   const toast = useToast();
   const [User_id, setUser_id] = useState(0);
+  const [status, setStatus] = useState(false);
+  const [msg, setMsg] = useState("");
   const userSelector = useSelector((state) => state.auth);
   console.log(userSelector);
-  useEffect(() => {
-    setUser_id(userSelector?.id);
-    fetchuserdetail(userSelector?.id);
-  }, []);
-
+  const CheckUtama = (e, param) => {
+    let newUtama;
+    if (e.target.checked) {
+      props.setIsUtama([...props.utama, param]);
+    } else {
+      newUtama = props.utama.filter((val) => {
+        return val !== param;
+      });
+      props.setIsUtama([...newUtama]);
+    }
+  };
+  // useEffect(() => {
+  //   setUser_id(location.pathname?.split("/")[2]);
+  // }, []);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [saveImage, setSaveImage] = useState(null);
@@ -77,35 +92,6 @@ export default function AddAdress(props) {
   const [userdetail, setUserDetail] = useState([]);
   const [enable, setEnable] = useState(false);
 
-  const handleFile = (event) => {
-    const uploaded = event.target.files[0];
-    console.log(uploaded);
-    setImgUser(URL.createObjectURL(uploaded));
-  };
-
-  const handleEditToAddress = (product) => {
-    setAddressList([...addressList, product]);
-  };
-  useEffect(() => {
-    fetchuserdetail(User_id);
-  }, []);
-  const fetchuserdetail = async (User_id) => {
-    await axiosInstance
-      .get("/address/" + User_id)
-      .then((response) => {
-        setUserDetail(response.data.result);
-        console.log(response.data.result);
-        setDistrict(response.data.result.district);
-        setProvince(response.data.result.province);
-        setAddress(response.data.result.address);
-        setPostalCode(response.data.result.postalCode);
-        setCity(response.data.result.city);
-      })
-      .catch((error) => {
-        console.log({ error });
-      });
-  };
-
   function inputHandler(event) {
     const { name, value } = event.target;
 
@@ -115,22 +101,84 @@ export default function AddAdress(props) {
     });
   }
 
-  const saveUser = async (e) => {
+  const formik = useFormik({
+    initialValues: {
+      UserId: userSelector?.id,
+      district: "",
+      province: "",
+      postalCode: 0,
+      address: "",
+      city: "",
+      isUtama: 0,
+    },
+    validationSchema: Yup.object().shape({
+      city: Yup.string().required("City must be filled"),
+      province: Yup.string().required("Province must be filled"),
+      district: Yup.string().required("District must be filled"),
+      address: Yup.string().required("Address must be filled"),
+      postalCode: Yup.number().required("maksimal 5 dan harus angka"),
+    }),
+    onSubmit: async () => {
+      console.log(formik.values);
+      const res = await axiosInstance
+        .post("/user/addaddress", formik.values)
+        .then(async (res) => {
+          toast({
+            title: "Address created.",
+            description: "Your Address has been added",
+            status: "success",
+            duration: 2000,
+            isClosable: true,
+          });
+          navigate("/list-address");
+        })
+        .catch((error) => {
+          toast({
+            title: "Error",
+            description: "ERROR",
+            status: "error",
+            duration: 2000,
+            isClosable: true,
+          });
+          console.log(error);
+          setStatus(true);
+          setMsg(error.response.data.message);
+        });
+      console.log(res.data);
+      // alert(res.status);
+
+      if (res.status === 200) {
+        navigate("/list-address", { replace: true });
+      }
+    },
+  });
+  useEffect(() => {
+    let { district, city, address, province, postalCode } = formik.values;
+    if (district && city && address && province && postalCode) {
+      setEnable(true);
+    } else {
+      setEnable(false);
+    }
+  }, [formik.values]);
+  const saveAddress = async (e) => {
     e.preventDefault();
-    const Data = {
-      User_id,
-      district,
-      province,
-      postalCode,
-      address,
-      city,
-    };
+
+    const formData = new FormData();
+    formData.append("UserId", User_id);
+    formData.append("address", address);
+    formData.append("district", district);
+    formData.append("city", city);
+    formData.append("province", province);
+    formData.append("postalCode", postalCode);
+    formData.append("isUtama", isUtama);
+    formData.append("Ket", ket);
+    console.log(formData);
 
     try {
-      console.log(Data);
-      await axiosInstance.patch("/editaddress?id=" + User_id, Data);
-      navigate("/userpage");
-      console.log("user edited");
+      // alert("asd");
+      await axiosInstance.post("/user/addaddress", formData);
+      navigate("/list-address");
+      console.log("address added");
     } catch (error) {
       console.error(error);
     }
@@ -184,67 +232,92 @@ export default function AddAdress(props) {
           </Flex>
 
           <Flex w="430px" flexDir="column" gap={5} color="#2C3639" px="40px">
-            <FormControl id="firstname">
+            <FormControl id="address">
               <FormLabel>Address</FormLabel>
               <Input
                 type="text"
-                value={address}
-                onChange={(e) => {
-                  setAddress(e.target.value);
-                }}
+                onChange={(e) =>
+                  formik.setFieldValue("address", e.target.value)
+                }
                 bgColor="white"
               />
+              <FormHelperText w={"268px"}>
+                {formik.errors.address}
+              </FormHelperText>
             </FormControl>
-            <FormControl id="lastname">
+
+            <FormControl id="district">
               <FormLabel>District</FormLabel>
               <Input
                 type="text"
-                value={district}
-                onChange={(e) => {
-                  setDistrict(e.target.value);
-                }}
+                onChange={(e) =>
+                  formik.setFieldValue("district", e.target.value)
+                }
                 bgColor="white"
-              />
+              />{" "}
+              <FormHelperText w={"268px"}>
+                {formik.errors.district}
+              </FormHelperText>
             </FormControl>
-            <FormControl id="email">
+
+            <FormControl id="city">
               <FormLabel>City</FormLabel>
               <Input
                 type="text"
-                value={city}
-                onChange={(e) => {
-                  setCity(e.target.value);
-                }}
+                onChange={(e) => formik.setFieldValue("city", e.target.value)}
                 bgColor="white"
               />
+              <FormHelperText w={"268px"}>{formik.errors.city}</FormHelperText>
             </FormControl>
 
-            <FormControl id="email">
+            <FormControl id="province">
               <FormLabel>Province</FormLabel>
               <Input
                 type="text"
-                value={province}
-                onChange={(e) => {
-                  setCity(e.target.value);
-                }}
+                onChange={(e) =>
+                  formik.setFieldValue("province", e.target.value)
+                }
                 bgColor="white"
               />
+              <FormHelperText w={"268px"}>
+                {formik.errors.province}
+              </FormHelperText>
             </FormControl>
 
-            <FormControl id="email">
+            <FormControl id="postalCode">
               <FormLabel>Postal Code</FormLabel>
               <Input
                 type="text"
-                value={postalCode}
-                onChange={(e) => {
-                  setPostalCode(e.target.value);
-                }}
+                onChange={(e) =>
+                  formik.setFieldValue("postalCode", e.target.value)
+                }
+                bgColor="white"
+              />{" "}
+              <FormHelperText w={"268px"}>
+                {formik.errors.postalCode}
+              </FormHelperText>
+            </FormControl>
+
+            <FormControl id="ket">
+              <FormLabel>Ket</FormLabel>
+              <Input
+                type="text"
+                onChange={(e) =>
+                  formik.setFieldValue("address", e.target.value)
+                }
                 bgColor="white"
               />
             </FormControl>
             <FormControl id="email">
               <Center gap={3}>
                 <Flex justifyContent={"center"}>Jadikan Alamat Utama</Flex>
-                <Switch colorScheme="teal" />
+                <Switch
+                  onChange={(e) => {
+                    CheckUtama(e, "1");
+                    formik.setFieldValue("isUtama", e.target.value);
+                  }}
+                  colorScheme="teal"
+                />
               </Center>
             </FormControl>
             <Button
@@ -256,8 +329,7 @@ export default function AddAdress(props) {
                 bg: "white",
                 color: "#2C3639",
               }}
-              type="submit"
-              onClick={(e) => saveUser(e)}
+              onClick={formik.handleSubmit}
             >
               ADD
             </Button>

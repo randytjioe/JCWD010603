@@ -119,7 +119,7 @@ export default function UpdateAdress(props) {
   const CheckUtama = (e, param) => {
     let newUtama;
     if (e.target.checked) {
-      props.setUtama([...props.isUtama, param]);
+      props.setUtama([...props.utama, param]);
     } else {
       newUtama = props.utama.filter((val) => {
         return val !== param;
@@ -256,7 +256,7 @@ export default function UpdateAdress(props) {
               />
             </FormControl>
             <FormControl id="email">
-              {isUtama === 1 ? (
+              {isUtama === 0 ? (
                 <Center gap={3}>
                   <Flex justifyContent={"center"}>Jadikan Alamat Utama</Flex>
                   <Switch

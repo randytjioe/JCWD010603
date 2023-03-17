@@ -47,7 +47,7 @@ import { useLocation } from "react-router-dom";
 import Logo from "../assets/logo.png";
 import { useSelector } from "react-redux";
 
-export default function UpdateAdress(props) {
+export default function ListAdress(props) {
   const [imgUser, setImgUser] = useState("");
   const [address, setAddress] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -190,7 +190,7 @@ export default function UpdateAdress(props) {
                     ))}
                   </Flex>
                   <Center>
-                    <Link to="/add-address" as={ReachLink}>
+                    <Link to={"/add-address/" + User_id} as={ReachLink}>
                       <Button
                         bgColor="#2C3639"
                         _hover={{
@@ -264,6 +264,7 @@ function Address(props) {
               w="22px"
               h="22px"
               as={IoIosCloseCircleOutline}
+              onClick={() => props.delete(props.address?.id)}
               color="red"
               sx={{
                 _hover: {

@@ -109,27 +109,63 @@ export default function UpdateProfile(props) {
       validFileExtensions[fileType].indexOf(fileName.split(".").pop()) > -1
     );
   }
+  const SUPPORTED_FORMATS = [
+    "image/jpg",
+    "image/png",
+    "image/jpeg",
+    "image/gif",
+  ];
   const formik = useFormik({
     initialValues: {
       firstName: "",
       email: "",
       avatar: selectedFile,
       avatar_url: data?.imgUser || imgUser,
-      imgUser: imgUser,
+      image: null,
     },
     validationSchema: Yup.object().shape({
       email: Yup.string().email("Mohon isi email @"),
       firstName: Yup.string().min(3, "min 3 huruf"),
-      imgUser: Yup.mixed()
-        .required("Required")
-        .test("is-valid-type", "Not a valid image type", (value) =>
-          isValidFileType(value && value.name.toLowerCase(), "image")
+      image: Yup.mixed()
+        .nullable()
+        .required("Required Field")
+        // .test(“size”, “File is too large”, (value) => { //*************** THESE ARE ALTERNATIVE WAY TO VALIDATE IMAGE *****************/
+        //   return value && value.size <= 5 * 1024 * 1024;   // 5MB
+        // })
+        // .test(
+        //   “type”,
+        //   “Invalid file format”,
+        //   (value) => {
+        //     return (
+        //       value &&
+        //       value.type === “image/jpeg” ||
+        //       value.type === “image/jpg” ||
+        //       value.type === “image/png”
+        //     );
+        //   }
+        // ),
+        .test(
+          "size",
+          "File size is too big",
+          (value) => value && value.size <= 1000 * 1000 // 5MB
         )
         .test(
-          "is-valid-size",
-          "Max allowed size is 1000KB",
-          (value) => value && value.size <= MAX_FILE_SIZE
+          "type",
+          "Invalid file format selection",
+          (value) =>
+            // console.log(value);
+            !value || (value && SUPPORTED_FORMATS.includes(value?.type))
         ),
+      // imgUser: Yup.mixed()
+      //   .required("Required")
+      //   .test("is-valid-type", "Not a valid image type", (value) =>
+      //     isValidFileType(value && value.name.toLowerCase(), "image")
+      //   )
+      //   .test(
+      //     "is-valid-size",
+      //     "Max allowed size is 1000KB",
+      //     (value) => value && value.size <= MAX_FILE_SIZE
+      //   ),
     }),
     onSubmit: async (value) => {
       const { avatar } = value;
@@ -269,7 +305,7 @@ export default function UpdateProfile(props) {
                         id="avatar"
                       ></Avatar>
                       <FormHelperText color={"white"}>
-                        {formik.errors.imgUser}
+                        {formik.errors.image}
                       </FormHelperText>
 
                       <Center
