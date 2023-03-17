@@ -28,6 +28,11 @@ const routes = [
     element: <RegisterPage />,
   },
   {
+    path: "/register",
+    element: <RegisterPage />,
+  },
+
+  {
     path: "/userpage",
     element: (
       <ProtectedPage needLogin={true}>

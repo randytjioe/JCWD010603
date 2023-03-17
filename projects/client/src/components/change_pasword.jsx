@@ -33,6 +33,7 @@ import { FaEyeSlash, FaEye } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+
 export default function ChangePassword({ id }) {
   const [show, setShow] = useState(false);
   const [show2, setShow2] = useState(false);
