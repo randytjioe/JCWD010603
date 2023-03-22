@@ -21,6 +21,7 @@ import {
   Link,
   Stack,
   InputGroup,
+  FormErrorMessage,
   Image,
   Alert,
   Text,
@@ -44,6 +45,8 @@ import { useSelector } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import YupPassword from "yup-password";
+// import { useDropzone } from "react-dropzone";
+import jimp from "jimp";
 import { useRef } from "react";
 import user_types from "../redux/auth/types";
 export default function UpdateProfile(props) {
@@ -61,6 +64,7 @@ export default function UpdateProfile(props) {
   const userSelector = useSelector((state) => state.auth);
   const [selectedFile, setSelectedFile] = useState(null);
   const inputFileRef = useRef(null);
+  const [enable, setEnable] = useState(false);
 
   useEffect(() => {
     setUser_id(userSelector?.id);
@@ -75,7 +79,6 @@ export default function UpdateProfile(props) {
     password: "",
   });
   const [userdetail, setUserDetail] = useState([]);
-  const [enable, setEnable] = useState(false);
 
   useEffect(() => {
     fetchuserdetail(User_id);
@@ -97,18 +100,13 @@ export default function UpdateProfile(props) {
         console.log({ error });
       });
   };
-  const MAX_FILE_SIZE = 1000000; //100KB
 
-  const validFileExtensions = {
-    imgUser: ["jpg", "gif", "png"],
+  const handleFile = (event) => {
+    setSelectedFile(event.target.files[0]);
+    const url = URL.createObjectURL(event.target.files[0]);
+    formik.setFieldValue("avatar_url", url);
   };
 
-  function isValidFileType(fileName, fileType) {
-    return (
-      fileName &&
-      validFileExtensions[fileType].indexOf(fileName.split(".").pop()) > -1
-    );
-  }
   const SUPPORTED_FORMATS = [
     "image/jpg",
     "image/png",
@@ -121,33 +119,17 @@ export default function UpdateProfile(props) {
       email: "",
       avatar: selectedFile,
       avatar_url: data?.imgUser || imgUser,
-      image: null,
     },
     validationSchema: Yup.object().shape({
       email: Yup.string().email("Mohon isi email @"),
       firstName: Yup.string().min(3, "min 3 huruf"),
-      image: Yup.mixed()
+      avatar: Yup.mixed()
         .nullable()
         .required("Required Field")
-        // .test(“size”, “File is too large”, (value) => { //*************** THESE ARE ALTERNATIVE WAY TO VALIDATE IMAGE *****************/
-        //   return value && value.size <= 5 * 1024 * 1024;   // 5MB
-        // })
-        // .test(
-        //   “type”,
-        //   “Invalid file format”,
-        //   (value) => {
-        //     return (
-        //       value &&
-        //       value.type === “image/jpeg” ||
-        //       value.type === “image/jpg” ||
-        //       value.type === “image/png”
-        //     );
-        //   }
-        // ),
         .test(
           "size",
           "File size is too big",
-          (value) => value && value.size <= 1000 * 1000 // 5MB
+          (value) => value && value.size <= 1000 * 1000 // 1MB
         )
         .test(
           "type",
@@ -156,16 +138,6 @@ export default function UpdateProfile(props) {
             // console.log(value);
             !value || (value && SUPPORTED_FORMATS.includes(value?.type))
         ),
-      // imgUser: Yup.mixed()
-      //   .required("Required")
-      //   .test("is-valid-type", "Not a valid image type", (value) =>
-      //     isValidFileType(value && value.name.toLowerCase(), "image")
-      //   )
-      //   .test(
-      //     "is-valid-size",
-      //     "Max allowed size is 1000KB",
-      //     (value) => value && value.size <= MAX_FILE_SIZE
-      //   ),
     }),
     onSubmit: async (value) => {
       const { avatar } = value;
@@ -198,6 +170,14 @@ export default function UpdateProfile(props) {
         });
     },
   });
+  useEffect(() => {
+    let { avatar } = formik.values;
+    if (!avatar) {
+      setEnable(true);
+    } else {
+      setEnable(false);
+    }
+  }, [formik.values]);
 
   function inputHandler(event) {
     const { name, value } = event.target;
@@ -226,16 +206,7 @@ export default function UpdateProfile(props) {
       console.error(error);
     }
   };
-  const handleFile = (event) => {
-    // const uploaded = event.target.files[0];
-    // console.log(uploaded);
-    // setImgUser(URL.createObjectURL(uploaded));
-    // setSaveImage(uploaded);
-    setSelectedFile(event.target.files[0]);
-    const url = URL.createObjectURL(event.target.files[0]);
-    formik.setFieldValue("avatar_url", url);
-    formik.setFieldValue("avatar", event.target.files[0]);
-  };
+
   // const saveFoto = async (e) => {
   //   e.preventDefault();
 
@@ -289,7 +260,7 @@ export default function UpdateProfile(props) {
               </Flex>
             </Link>
 
-            <Center flexDir={"column"} gap={5}>
+            <Center flexDir={"column"} gap={3}>
               <Flex flexDir={"column"}>
                 <FormControl id="productName">
                   <FormLabel>
@@ -297,17 +268,18 @@ export default function UpdateProfile(props) {
                     <Center fontSize={"30px"}> EDIT PROFILE</Center>
                   </FormLabel>
 
-                  <Stack direction={["column"]} spacing={6} py={5}>
+                  <Stack direction={["column"]} spacing={6} py={3}>
                     <Flex>
-                      <Avatar
-                        size="2xl"
-                        src={formik.values.avatar_url || imgUser}
-                        id="avatar"
-                      ></Avatar>
-                      <FormHelperText color={"white"}>
-                        {formik.errors.image}
-                      </FormHelperText>
-
+                      <Flex flexDir={"column"}>
+                        <Avatar
+                          size="2xl"
+                          src={formik.values.avatar_url || imgUser}
+                          id="avatar"
+                        ></Avatar>
+                        <FormHelperText color={"white"}>
+                          {formik.errors.avatar}
+                        </FormHelperText>
+                      </Flex>
                       <Center
                         w="full"
                         justifyContent={"center"}
@@ -324,13 +296,14 @@ export default function UpdateProfile(props) {
                           >
                             Change Profile Picture
                           </Text>
+
                           <Input
                             id=""
                             type="file"
                             accept="image/*"
                             onChange={(e) => {
                               handleFile(e);
-                              formik.setFieldValue("imgUser", e.target.value);
+                              formik.setFieldValue("avatar", e.target.files[0]);
                             }}
                             w="full"
                             placeholder="Image URL"
@@ -353,6 +326,7 @@ export default function UpdateProfile(props) {
                       }}
                       type="submit"
                       onClick={formik.handleSubmit}
+                      isDisabled={enable ? true : null}
                     >
                       Upload
                     </Button>

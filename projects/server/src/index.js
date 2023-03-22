@@ -1,5 +1,6 @@
 require("dotenv/config");
 const express = require("express");
+const bcrypt = require("bcrypt");
 const cors = require("cors");
 const { join } = require("path");
 const db = require("./models");
@@ -58,9 +59,117 @@ app.get("/update-user", (req, res) => {
     });
   });
 });
+app.get("/filter", (req, res) => {
+  // console.log(req.query);
+  const { order } = req.query;
+  const { orderby } = req.query;
+  delete req.query.order;
+  delete req.query.orderby;
+  const arrQuery = Object.entries(req.query);
+
+  // console.log(categories);
+  let categories = arrQuery.filter((val) => {
+    return val[0];
+  });
+
+  let where = "";
+
+  /// start
+  if (categories.length) {
+    where = " where (";
+
+    if (categories.length) {
+      // console.log(categories);
+      categories.map((val, idx) => {
+        idx
+          ? (where += `or c.name = '${val[0]}' `)
+          : (where += ` c.name = '${val[0]}' `);
+      });
+    }
+
+    where += ")";
+  }
+
+  ///end
+
+  qString =
+    "Select p.name,p.price,p.imgProduct,c.name as category FROM products p JOIN categories c on p.CategoryId=c.id" +
+    where +
+    " order by " +
+    orderby +
+    " " +
+    order;
+
+  db_project.query(qString, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({
+        message: "query error",
+      });
+    }
+
+    res.status(200).json({
+      message: "data fetched",
+      result: result,
+    });
+  });
+});
+app.get("/user/addresses", (req, res) => {
+  const qString = "Select * FROM addresses";
+  db_project.query(qString, (err, result) => {
+    if (err) {
+      res.status(400).json({
+        message: "query error",
+      });
+    }
+    res.status(200).json({
+      message: "data fetched",
+      result: result,
+    });
+  });
+});
 
 app.get("/product-all", (req, res) => {
-  const qString = "Select * FROM products";
+  const offset = req.query.page ? req.query.page : 0;
+  console.log(offset);
+  const qString =
+    "Select p.name,p.price,p.imgProduct,c.name as category FROM products p JOIN categories c on p.CategoryId=c.id limit 6 offset " +
+    offset;
+  db_project.query(qString, (err, result) => {
+    if (err) {
+      res.status(400).json({
+        message: "query error",
+      });
+    }
+    res.status(200).json({
+      message: "data fetched",
+      result: result,
+    });
+  });
+});
+app.get("/find", (req, res) => {
+  console.log(req.query);
+  let qString = "Select * from products ";
+
+  qString = qString + " where name LIKE '%" + req.query.name + "%' ";
+
+  console.log(qString);
+  db_project.query(qString, (err, result) => {
+    if (err) {
+      return res.status(400).json({
+        message: "query error",
+      });
+    }
+
+    console.log(res.data);
+    res.status(200).json({
+      message: "data fetched",
+      result: result,
+    });
+  });
+});
+app.get("/category", (req, res) => {
+  const qString = "Select * from categories";
   db_project.query(qString, (err, result) => {
     if (err) {
       res.status(400).json({
@@ -140,7 +249,25 @@ app.patch("/editprofile", (req, res) => {
 app.patch("/editaddress", (req, res) => {
   // console.log(req.query.id);
   console.log(req.body);
-  const qString = `update addresses set district ="${req.body.district}",province ="${req.body.province}",city="${req.body.city}",postalCode=${req.body.postalCode},address="${req.body.address}" where UserId=${req.body.User_id}`;
+  const qString = `update addresses set district ="${req.body.district}",province ="${req.body.province}",city="${req.body.city}",postalCode=${req.body.postalCode},address="${req.body.address}" ,isPrimary=${req.body.isPrimary},Ket="${req.body.ket}" where id=${req.body.id}`;
+  db_project.query(qString, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({
+        message: "query error",
+      });
+    }
+    res.status(200).json({
+      message: "data fetched",
+      result: result,
+    });
+  });
+});
+
+app.patch("/editprimary", (req, res) => {
+  // console.log(req.query.id);
+  console.log(req.body);
+  const qString = `update addresses set isPrimary=${req.body.isPrimary} where id=${req.body.id}`;
   db_project.query(qString, (err, result) => {
     if (err) {
       console.log(err);
@@ -224,6 +351,21 @@ app.get("/update-address/:id", (req, res) => {
 app.get("/listaddress/:Userid", (req, res) => {
   console.log(req.params);
   const qString = "SELECT  * FROM addresses where Userid =" + req.params.Userid;
+  db_project.query(qString, (err, result) => {
+    if (err) {
+      return res.status(400).json({
+        message: "query error",
+      });
+    }
+    res.status(200).json({
+      message: "data fetched",
+      result: result,
+    });
+  });
+});
+app.get("/editdetailaddress/:id", (req, res) => {
+  console.log(req.params);
+  const qString = "SELECT  * FROM addresses where id =" + req.params.id;
   db_project.query(qString, (err, result) => {
     if (err) {
       return res.status(400).json({

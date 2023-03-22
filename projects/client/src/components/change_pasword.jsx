@@ -291,7 +291,12 @@ export default function ChangePassword({ id }) {
                 </Button>
                 {errorMessage && (
                   <Flex>
-                    <Alert status="error" zIndex={2} variant="top-accent">
+                    <Alert
+                      status="error"
+                      zIndex={2}
+                      variant="top-accent"
+                      color={"black"}
+                    >
                       <AlertIcon />
                       {errorMessage}
                     </Alert>

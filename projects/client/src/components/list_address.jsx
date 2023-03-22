@@ -220,13 +220,13 @@ function Address(props) {
     <>
       <Flex p={2} gap={2} fontFamily={"Tw Cen MT"} px="5px" bgColor={"white"}>
         <Flex flexDir={"row"} fontSize="12px" w="350px" h="90px" px={5}>
-          <Flex flexDir={"column"} w="280px">
+          <Flex flexDir={"column"} w="260px">
             <Flex gap={5}>
               <Flex fontSize="14px" color="#2C3639">
                 {props.address?.Ket}
               </Flex>
               <Flex fontSize="14px" color="#2C3639">
-                {props.address?.isUtama == 1 ? (
+                {props.address?.isPrimary == 1 ? (
                   <Badge variant="solid" colorScheme="green">
                     Alamat Utama
                   </Badge>
