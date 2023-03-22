@@ -9,6 +9,7 @@ import {
   FaChartLine,
   FaCashRegister,
   FaCog,
+  FaFolder,
 } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import user_types from "../redux/auth/types";
@@ -82,6 +83,18 @@ export default function SidebarAdmin() {
             <FaBoxes />
             <Text sx={spacing} className="sidebar-text">
               Products
+            </Text>
+          </Link>
+          <Link
+            sx={linkStyles}
+            href="/admin_category"
+            display="flex"
+            alignItems="center"
+            className="sidebar-link"
+          >
+            <FaFolder />
+            <Text sx={spacing} className="sidebar-text">
+              Categories
             </Text>
           </Link>
           <Link

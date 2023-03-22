@@ -25,7 +25,6 @@ router.patch(
 // router.get("/avatar/:id", userController.renderAvatar);
 router.get("/verify/:token", userController.verify);
 router.get("/keeplogin", userController.keeplogin);
-router.post("/adminlogin", adminController.login);
 router.post("/userlogin", userController.login);
 router.post("/addaddress", userController.addAddress);
 // router.patch("/editpassword", verifyToken, userController.editPassword);

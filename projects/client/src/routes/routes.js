@@ -7,6 +7,9 @@ import Dashboard from "../pages/dashboard";
 import LoginAdmin from "../pages/login_admin";
 import AdminSetting from "../pages/adminSetting";
 import ProtectedPage from "./protected";
+import Page404 from "../pages/page404";
+import AdminCategory from "../pages/adminCategory";
+
 import AdressPage from "../pages/updateadress_page";
 import ListAddressPage from "../pages/listaddress_page";
 import ListProduk from "../pages/listproduct_page";
@@ -16,11 +19,15 @@ const routes = [
   {
     path: "/userlogin",
     element: (
-      <ProtectedPage>
+      <ProtectedPage guestOnly={true}>
         <PageLogin />
       </ProtectedPage>
     ),
   },
+  // {
+  //   path: "/",
+  //   element: <HomePage />,
+  // },
   {
     path: "/",
     element: <HomePage />,
@@ -72,24 +79,44 @@ const routes = [
   },
   {
     path: "/update-profile",
-    element: <UpdateProfile />,
-  },
-  {
-    path: "/admin",
-    element: <Dashboard />,
+    element: (
+      <ProtectedPage needLogin={true}>
+        <UpdateProfile />
+      </ProtectedPage>
+    ),
   },
   {
     path: "/admin_login",
-    element: <LoginAdmin />,
+    element: (
+      <ProtectedPage guestOnly={true}>
+        <LoginAdmin />
+      </ProtectedPage>
+    ),
+  },
+  {
+    path: "/dashboard",
+    element: (
+      <ProtectedPage needLogin={true}>
+        <Dashboard />
+      </ProtectedPage>
+    ),
   },
   {
     path: "/admin_setting",
-    element: <AdminSetting />,
+    element: (
+      <ProtectedPage>
+        <AdminSetting />
+      </ProtectedPage>
+    ),
   },
-  //   {
-  //     path: "/",
-  //     element: <ProtectedPage needLogin={true}></ProtectedPage>,
-  //   },
+  {
+    path: '/admin_category',
+    element: <AdminCategory />
+  },
+  {
+    path: '*',
+    element: <Page404 />
+  },
 ];
 
 export default routes;
