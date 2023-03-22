@@ -28,7 +28,7 @@ export default function LoginAdmin() {
             if (isAuth.data.id) {
                 return navigate('/dashboard', { state: { admin: isAuth.data }, replace: true });
             }
-            return navigate('/login', { state: { admin: isAuth.data }, replace: true });
+            return navigate('/admin_login', { state: { admin: isAuth.data }, replace: true });
         }
         return setStatus(true);
     }
