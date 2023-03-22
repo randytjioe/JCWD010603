@@ -2,17 +2,17 @@ require("dotenv/config");
 const express = require("express");
 const cors = require("cors");
 const { join } = require("path");
-const db = require("./models");
+// const db = require("./models");
 const route = require("./routes");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
 app.use(
   cors({
-    //   origin: [
-    //     process.env.WHITELISTED_DOMAIN &&
-    //       process.env.WHITELISTED_DOMAIN.split(","),
-    //   ],
+  //   origin: [
+  //     process.env.WHITELISTED_DOMAIN &&
+  //       process.env.WHITELISTED_DOMAIN.split(","),
+  //   ],
   })
 );
 
@@ -36,6 +36,9 @@ app.get("/api/greetings", (req, res, next) => {
 
 app.use("/user", route.userRoute);
 app.use("/admin", route.adminRoute);
+app.use("/api_rajaongkir", route.rajaOngkirRoute)
+app.use("/post_image", express.static(`${__dirname}/public/POST`));
+app.use("/user/avatar", express.static(`${__dirname}/public/IMAGE_PRODUCT`));
 
 // ===========================
 
@@ -65,9 +68,9 @@ const clientPath = "../../client/build";
 app.use(express.static(join(__dirname, clientPath)));
 
 // Serve the HTML page
-app.get("*", (req, res) => {
-  res.sendFile(join(__dirname, clientPath, "index.html"));
-});
+// app.get("*", (req, res) => {
+//   res.sendFile(join(__dirname, clientPath, "index.html"));
+// });
 
 //#endregion
 

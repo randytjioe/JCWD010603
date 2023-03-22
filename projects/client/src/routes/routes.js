@@ -1,3 +1,4 @@
+import HomePage from "../pages/homepage";
 import UserPage from "../pages/userpage";
 import PageLogin from "../pages/loginpage";
 import Reset from "../pages/resetpage";
@@ -9,6 +10,9 @@ import ProtectedPage from "./protected";
 import Page404 from "../pages/page404";
 import AdminCategory from "../pages/adminCategory";
 
+import AdressPage from "../pages/updateadress_page";
+import ListAddressPage from "../pages/listaddress_page";
+import AddAddressPage from "../pages/addadress_page";
 const routes = [
   {
     path: "/userlogin",
@@ -23,6 +27,16 @@ const routes = [
   //   element: <HomePage />,
   // },
   {
+
+    path: "/userpage",
+    element: <UserPage />,
+  },
+  {
+
+    path: "/register",
+    element: <RegisterPage />,
+  },
+  {
     path: "/userpage",
     element: (
       <ProtectedPage needLogin={true}>
@@ -31,12 +45,32 @@ const routes = [
     ),
   },
   {
-    path: "/reset",
+    path: "/update-address/:id",
     element: (
       <ProtectedPage needLogin={true}>
-        <Reset />
+        <AdressPage />
       </ProtectedPage>
     ),
+  },
+  {
+    path: "/add-address",
+    element: (
+      <ProtectedPage needLogin={true}>
+        <AddAddressPage />
+      </ProtectedPage>
+    ),
+  },
+  {
+    path: "/list-address",
+    element: (
+      <ProtectedPage needLogin={true}>
+        <ListAddressPage />
+      </ProtectedPage>
+    ),
+  },
+  {
+    path: "/reset",
+    element: <Reset />,
   },
   {
     path: "/update-profile",

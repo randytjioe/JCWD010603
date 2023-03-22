@@ -45,13 +45,26 @@ db.branch = require("./branch")(sequelize,Sequelize)
 db.user = require("./user")(sequelize,Sequelize)
 db.user_detail = require("./user_detail")(sequelize,Sequelize)
 db.address = require("./address")(sequelize,Sequelize)
+db.product = require("./product")(sequelize,Sequelize)
+db.category = require("./category")(sequelize,Sequelize)
+db.stock = require("./stock")(sequelize,Sequelize)
 
 // associate
 db.admin.belongsTo(db.branch)
 db.branch.hasOne(db.admin)
+
 db.user_detail.belongsTo(db.user)
 db.user.hasOne(db.user_detail)
 db.address.belongsTo(db.user)
+
 db.user.hasMany(db.address)
+db.product.belongsTo(db.category)
+
+db.category.hasMany(db.product)
+db.user.hasMany(db.address)
+
+db.stock.belongsTo(db.product)
+db.product.hasMany(db.stock)
+db.branch.hasMany(db.stock)
 
 module.exports = db;

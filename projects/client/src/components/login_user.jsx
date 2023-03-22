@@ -7,41 +7,66 @@ import {
   FormLabel,
   Heading,
   Input,
+  InputRightElement,
+  InputGroup,
   Link,
   Stack,
   Image,
   Alert,
+  Icon,
   AlertIcon,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { userLogin } from "../redux/middleware/userauth";
+import { Link as ReachLink } from "react-router-dom";
+import { IoIosArrowBack } from "react-icons/io";
+import { FaEyeSlash, FaEye } from "react-icons/fa";
+import * as Yup from "yup";
+import YupPassword from "yup-password";
+import { useFormik } from "formik";
 import { useDispatch } from "react-redux";
 // import { AxiosInstance } from 'axios';
 import { useNavigate } from "react-router-dom";
 import validator from "validator";
 import Logo from "../assets/logo.png";
-export default function LoginUser() {
+export default function Login() {
   const dispatch = useDispatch();
+  const [show, setShow] = useState(false);
+  const handleClick = () => setShow(!show);
   const navigate = useNavigate();
 
-  const [status, setStatus] = useState(false);
+  const [user, setUser] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [enable, setEnable] = useState(false);
+
+  useEffect(() => {
+    setEnable(false);
+    console.log(user);
+  }, []);
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
 
   async function login() {
-    const isAuth = await dispatch(userLogin({ email, password }));
+    const isAuth = await dispatch(userLogin(user));
     console.log(isAuth);
-    if (isAuth.status) {
-      if (isAuth.data.isVerify) {
-        return navigate("/userpage", {
-          state: { admin: isAuth.data },
-          replace: true,
-        });
-      }
-      return navigate("/userlogin", {
-        state: { admin: isAuth.data },
-        replace: true,
-      });
+    if (isAuth.status && isAuth.data.isVerify) {
+      return navigate("/userpage");
+    } else if (isAuth.status && !isAuth.data.isVerify) {
+      return navigate("/");
     }
-    return setStatus(true);
+    return setEnable(true);
+  }
+  function inputHandler(event) {
+    const { name, value } = event.target;
+
+    setUser({
+      ...user,
+      [name]: value,
+    });
   }
 
   const [email, setEmail] = useState("");
@@ -59,8 +84,8 @@ export default function LoginUser() {
 
   return (
     <>
-      <Center p={8} flex={1} align={"center"} justifyContent={"center"}>
-        <Center
+      <Flex flex={1} align={"center"} justifyContent={"center"}>
+        <Flex
           spacing={4}
           maxW={"md"}
           bgColor="#2C3639"
@@ -68,76 +93,113 @@ export default function LoginUser() {
           h="932px"
           color="white"
           flexDir="column"
-          gap={8}
+          gap={5}
         >
-          <Flex fontSize={"2xl"} flexDir="column" color="#DCD7C9">
-            SELAMAT DATANG DI AKUN
-          </Flex>
-          <Image
-            fontSize={"26px"}
-            color="#F68522"
-            justifyContent="center"
-            src={Logo}
-          ></Image>
-
-          <Center w="282px" flexDir="column" gap={5} color="#DCD7C9">
-            <FormControl id="email">
-              <FormLabel>Email</FormLabel>
-              <Input
-                type="email"
-                name="username"
-                onChange={(e) => validateEmail(e)}
-              />
-            </FormControl>
-            <FormControl id="password">
-              <FormLabel>Password</FormLabel>
-              <Input
-                type="password"
-                name="password"
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </FormControl>
-            <Flex spacing={6}>
-              <Flex
-                direction={{ base: "column", sm: "row" }}
-                align={"start"}
-                justify={"space-between"}
-                gap={5}
-              >
-                <Checkbox>Remember Me</Checkbox>
-                <Link color={"blue.500"}>Forgot Password?</Link>
-              </Flex>
+          <Link to="/" as={ReachLink}>
+            <Flex textAlign={"left"} color="white" py={3}>
+              <Icon
+                boxSize={"7"}
+                as={IoIosArrowBack}
+                color="white"
+                sx={{
+                  _hover: {
+                    cursor: "pointer",
+                  },
+                }}
+              ></Icon>
+              Back
             </Flex>
+          </Link>
 
-            <Button
-              colorScheme={"black"}
-              variant={"solid"}
-              onClick={login}
-              w="282px"
-              color="#DCD7C9"
-              _hover={{
-                bg: "white",
-                color: "#2C3639",
-                border: "2px solid white",
-              }}
-            >
-              Sign in
-            </Button>
+          <Center flexDir="column" justifyContent={"center"} gap={10}>
+            <Flex fontSize={"2xl"} flexDir="column" color="#DCD7C9" py={5}>
+              SELAMAT DATANG DI AKUN
+            </Flex>
+            <Image
+              fontSize={"26px"}
+              color="#F68522"
+              justifyContent="center"
+              src={Logo}
+            ></Image>
+            <Center w="282px" flexDir="column" gap={5} color="#DCD7C9">
+              <FormControl id="email">
+                <FormLabel>Email</FormLabel>
+                <Input type="email" name="email" onChange={inputHandler} />
+              </FormControl>
+              <FormControl id="password">
+                <FormLabel>Password</FormLabel>
+                <InputGroup size="md">
+                  <Input
+                    pr="4.5rem"
+                    type={show ? "text" : "password"}
+                    name="password"
+                    onChange={inputHandler}
+                  />
+                  <InputRightElement>
+                    <Center h="2.5rem" size="sm" onClick={handleClick}>
+                      {show ? (
+                        <Icon
+                          boxSize={"5"}
+                          as={FaEyeSlash}
+                          color="#white"
+                          sx={{
+                            _hover: {
+                              cursor: "pointer",
+                            },
+                          }}
+                        ></Icon>
+                      ) : (
+                        <Icon
+                          boxSize={"5"}
+                          as={FaEye}
+                          color="#white"
+                          sx={{
+                            _hover: {
+                              cursor: "pointer",
+                            },
+                          }}
+                        ></Icon>
+                      )}
+                    </Center>
+                  </InputRightElement>
+                </InputGroup>
+              </FormControl>
+              <Flex>
+                <Flex justifyContent="right" gap={5}>
+                  <Link color={"white"}>Forgot Password?</Link>
+                </Flex>
+              </Flex>
 
-            {status ? (
-              <Alert
-                status="error"
-                zIndex={2}
-                variant="top-accent"
-                color="black"
+              <Button
+                colorScheme={"black"}
+                variant={"solid"}
+                onClick={login}
+                w="282px"
+                color="#DCD7C9"
+                _hover={{
+                  bg: "white",
+                  color: "#2C3639",
+                  border: "2px solid white",
+                }}
               >
-                <AlertIcon />
-                Username/ Password Salah
-              </Alert>
-            ) : null}
+                Sign in
+              </Button>
+
+              {enable ? (
+                <Alert
+                  status="error"
+                  zIndex={2}
+                  variant="top-accent"
+                  color="black"
+                >
+                  <AlertIcon />
+                  Username/ Password Salah
+                </Alert>
+              ) : null}
+            </Center>
           </Center>
-        </Center>
-      </Center>
+        </Flex>
+      </Flex>
     </>
   );
 }
