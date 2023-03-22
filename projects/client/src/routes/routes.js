@@ -7,29 +7,30 @@ import LoginAdmin from "../pages/login_admin";
 import AdminSetting from "../pages/adminSetting";
 import ProtectedPage from "./protected";
 import Page404 from "../pages/page404";
+import AdminCategory from "../pages/adminCategory";
 
 const routes = [
- {
+  {
     path: "/userlogin",
     element: (
-      <ProtectedPage>
+      <ProtectedPage guestOnly={true}>
         <PageLogin />
       </ProtectedPage>
     ),
   },
+  // {
+  //   path: "/",
+  //   element: <HomePage />,
+  // },
   {
-    path: "/",
-    element: <HomePage />,
-  },
-  {
-   path: "/userpage",
+    path: "/userpage",
     element: (
       <ProtectedPage needLogin={true}>
         <UserPage />
       </ProtectedPage>
     ),
   },
-    {
+  {
     path: "/reset",
     element: (
       <ProtectedPage needLogin={true}>
@@ -37,25 +38,11 @@ const routes = [
       </ProtectedPage>
     ),
   },
-   {
+  {
     path: "/update-profile",
     element: (
       <ProtectedPage needLogin={true}>
         <UpdateProfile />
-      </ProtectedPage>
-    ),
-  },
-    path: "/admin",
-    element: <Dashboard/>,
-
-  {
-
-  {
-
-    path: "/dashboard",
-    element: (
-      <ProtectedPage needLogin={true}>
-        <Dashboard />
       </ProtectedPage>
     ),
   },
@@ -68,33 +55,29 @@ const routes = [
     ),
   },
   {
-    path: "/admin_setting",
-    element: <AdminSetting/>,
-  }
+    path: "/dashboard",
     element: (
       <ProtectedPage needLogin={true}>
+        <Dashboard />
+      </ProtectedPage>
+    ),
+  },
+  {
+    path: "/admin_setting",
+    element: (
+      <ProtectedPage>
         <AdminSetting />
       </ProtectedPage>
     ),
   },
   {
-    path: '/page_not_found',
+    path: '/admin_category',
+    element: <AdminCategory />
+  },
+  {
+    path: '*',
     element: <Page404 />
   },
-  
-
-    path: "/admin",
-    element: <Dashboard />,
-  },
-  {
-    path: "/admin_login",
-    element: <LoginAdmin />,
-  },
-  {
-    path: "/admin_setting",
-    element: <AdminSetting />,
-  },
-
 ];
 
 export default routes;

@@ -12,11 +12,10 @@ export default function ProtectedPage({
     const userSelector = useSelector((state) => state.auth);
 
     useEffect(() => {
-
-        if (!guestOnly && !adminSelector?.id) {
-            return navigate("/admin_login", { replace: true });
+        if (needLogin && !adminSelector.id) {
+            return navigate("/userpage", { replace: true });
         }
-        if (needLogin && !adminSelector.isSuperAdmin && adminSelector.id) {
+        if (needLogin && adminSelector.id) {
             return navigate("/dashboard", { replace: true });
         }
     }, []);

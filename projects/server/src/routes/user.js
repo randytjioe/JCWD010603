@@ -14,5 +14,5 @@ router.post(
 );
 router.get("/verify/:token", userController.verify);
 router.get("/keeplogin", userController.keeplogin);
-
+router.post("/login", userController.login);
 module.exports = router;
