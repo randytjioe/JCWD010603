@@ -36,8 +36,20 @@ import Pagination from "./pagination";
 
 export default function ProductPage(props) {
   const data = props.data;
+  console.log(data);
   const [search, setSearch] = useState("");
   const [product, setProduct] = useState([]);
+  const [page, setPage] = useState(1);
+  const selectPageHandle = (selectPage) => {
+    if (
+      selectPage >= 1 &&
+      selectPage <= Math.ceil(data.length / 6) &&
+      selectPage !== page
+    ) {
+      setPage(selectPage);
+    }
+  };
+
   function inputHandler(event) {
     const { value, name } = event.target;
 
@@ -122,7 +134,7 @@ export default function ProductPage(props) {
           overflowY={"auto"}
           h="full"
         >
-          {data?.map((product) => {
+          {data.slice(page * 6 - 6, page * 6)?.map((product, index) => {
             return (
               <>
                 <Box minW="246px" h="300px">
@@ -172,7 +184,7 @@ export default function ProductPage(props) {
           })}
         </Flex>
         <Center gap={10}>
-          <Center minW="60px" h={"60px"}>
+          {/* <Center minW="60px" h={"60px"}>
             <IconButton
               aria-label="right-arrow"
               colorScheme="grey"
@@ -193,7 +205,7 @@ export default function ProductPage(props) {
               <BiLeftArrowAlt />
             </IconButton>
           </Center>
-          {/* <Pagination /> */}
+         
           <Center minW="60px" h={"60px"}>
             <IconButton
               aria-label="right-arrow"
@@ -209,7 +221,29 @@ export default function ProductPage(props) {
             >
               <BiRightArrowAlt />
             </IconButton>
-          </Center>
+          </Center> */}
+          {data.length > 0 && (
+            <Flex gap={5}>
+              <Button onClick={() => selectPageHandle(page - 1)}>
+                <BiLeftArrowAlt />
+              </Button>
+              <Flex gap={5}>
+                {[...Array(Math.ceil(data.length / 6))].map((n, i) => {
+                  return (
+                    <>
+                      <Button onClick={() => selectPageHandle(i + 1)}>
+                        {i + 1}
+                      </Button>
+                    </>
+                  );
+                })}
+              </Flex>
+              <Button onClick={() => selectPageHandle(page + 1)}>
+                {" "}
+                <BiRightArrowAlt />
+              </Button>
+            </Flex>
+          )}
         </Center>
       </Flex>
     </>
