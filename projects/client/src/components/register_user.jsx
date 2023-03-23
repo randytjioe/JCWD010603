@@ -1,54 +1,120 @@
 import {
     Button,
-    Checkbox,
     Center,
     Flex,
     FormControl,
     FormLabel,
     FormHelperText,
-    Heading,
     Input,
     Select,
-    Link,
-    Stack,
     Image,
-    Alert,
-    AlertIcon,
     Grid,
-    Textarea
+    Textarea,
   } from "@chakra-ui/react";
+  import { useToast } from '@chakra-ui/react'
   import { useEffect, useState } from "react";
-  import { userLogin } from "../redux/middleware/userauth";
-  import user_types from "../redux/auth/types";
+  // import { userLogin } from "../redux/middleware/userauth";
+  // import user_types from "../redux/auth/types";
   import { useDispatch } from "react-redux";
   import { axiosInstance } from "../config/config";
   import { useNavigate } from "react-router-dom";
   import * as Yup from "yup";
-  import YupPassword from 'yup-password';
+  // import YupPassword from 'yup-password';
   import { useFormik } from "formik";
   import axios from "axios"
-  
+  // import AsyncSelect from "react-select/async"
   import Logo from "../assets/logo.png";
-
 
   export default function Register() {  
     const dispatch = useDispatch();
     const navigate = useNavigate();
   
-    const [province, setProvince] = useState([])
-    const [provinces, setProvinces] = useState({
-      province_id : 0,
-      province : ""
+    const [msg, setMsg] = useState('')
+ 
+    const [province, setProvince] = useState([{
+      'province_id' : 0,
+      'province' : ""
+    }])
+    
+    const [city, setCity] = useState([{
+      'city_id' : 0,
+      'city_name' : "",
+      'type' : "",
+      'postal_code': "",
+      'province_id': 0,
+      'province' : "",
+    }])
+    
+    const NotifyError = useToast({
+      title: 'Failed',
+      description: msg,
+      status: 'error',
+      duration: 5000,
+      isClosable: true,
+      position: "bottom-left",
+    })
+
+    const NotifySuccess = useToast({
+      title: 'Success',
+      description: 'Create Account',
+      status: 'success',
+      duration: 5000,
+      isClosable: true,
+      position: "bottom-left",
+    })
+    
+   
+    const [idProv, setIdProv] = useState(0)
+
+    // province
+    const fetchProvince = async () => {
+      try {
+       const response = await axios.get("http://localhost:8000/api_rajaongkir/province")
+       const result = response.data
+        
+       setProvince(result)
+      } catch(err) {
+        console.log(err.message);
+      }
+    }
+    useEffect(()=> {
+      fetchProvince()
+    }, [])
+
+
+    const handleId = (e => {
+      setIdProv(e)
+    }) 
+
+    const handleError = (() => {
+          NotifyError()
+    })
+    
+    const handleSuccess = (() => {
+      NotifySuccess()
+      setInterval(() => {
+        navigate("/userlogin")
+      }, 6000);
     })
 
 
-    const fetchProvince = async () => {
-      await axios.get("http://localhost:8000/api_rajaongkir/province").then((res)=>{
-        setProvince([...province, res.data])
-      }).catch((err) => {console.log(err)})
-    }
 
-    console.log(province)
+    // city
+    const fetchCity = async () => {
+      try{
+        console.log(idProv); 
+        const response = await axios.get(`http://localhost:8000/api_rajaongkir/city/${idProv}`)
+        const result = response.data
+        setCity(result)
+      } catch(err){
+        console.log(err.message);
+      }
+    }
+    useEffect(()=> {
+      fetchCity()
+    },[idProv])
+
+    // console.log(province)
 
     const formik = useFormik({
       initialValues : {   
@@ -81,15 +147,14 @@ import {
           passwordConfirm : Yup.string().required("Password confirm must be filled").oneOf([Yup.ref('password'), null], 'Passwords must match')
       }),
       onSubmit:  async ()=> {
-          // alert("test")
-          const res =  await axiosInstance.post("/user/register", formik.values)
+          try{
+            await axiosInstance.post("/user/register", formik.values)
+            handleSuccess()
+          }catch(err){
+            setMsg(err.response.data.errors[0].msg);
+            handleError()        
 
-          console.log(res.data);
-          const [name, value] = res.data
-
-          // cond
-          if(res.status=== 201)
-          navigate("/login",{ replace: true })
+          }
           
       }
   })
@@ -108,11 +173,7 @@ import {
       }
       
     },[formik.values])
-    
-    useEffect(() => {
-      fetchProvince();
 
-  },[])
     return (
       <>
         <Center flex={1} align={"center"} justifyContent={"center"}>
@@ -187,17 +248,16 @@ import {
               
               <FormControl id="province">
                 <FormLabel>Province</FormLabel>
-                <Select name="province" placeholder="--- ---" onChange={(e)=> formik.setFieldValue("province", e.target.value )}>
-              {
-                province?.map((val,idx) => {
-                    return (
-                      <>
-                <option key={idx}>{val}</option>
-                </>
-                    )
-                })
-              }
-                  </Select>  
+                <Select name="province" onChange={(e)=> {formik.setFieldValue("province", e.target.value); handleId(e.target.value)}}  >
+                      <option>--Select Province--</option>
+                      {
+                        province.map((p)=> {
+                          return (
+                          <option key = {p.province_id} value= {p.province_id}>{p.province}</option>
+                          )
+                        })
+                      }
+                </Select>
                 <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
             {formik.errors.province}
             </FormHelperText>
@@ -207,7 +267,16 @@ import {
               <Grid w={'inherit'} templateColumns= 'repeat(2, 1fr)' gap = '3'>
               <FormControl id="city">
                 <FormLabel>City</FormLabel>
-                <Input type="text" name="city" onChange={(e)=> formik.setFieldValue("city", e.target.value )} />
+                <Select name="city" onChange={(e)=> formik.setFieldValue("city", e.target.value)}  >
+                      <option>--Select--</option>
+                      {
+                        city.map((c)=> {
+                          return (
+                          <option key = {c.city_id} value= {c.city_id}>{c.city_name}</option>
+                          )
+                        })
+                      }
+                </Select>
                 <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
             {formik.errors.city}
             </FormHelperText>

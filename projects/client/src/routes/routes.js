@@ -7,9 +7,15 @@ import Dashboard from "../pages/dashboard";
 import LoginAdmin from "../pages/login_admin";
 import AdminSetting from "../pages/adminSetting";
 import ProtectedPage from "./protected";
+import RegisterPage from "../pages/register_user"
 import AdressPage from "../pages/updateadress_page";
 import ListAddressPage from "../pages/listaddress_page";
 import AddAddressPage from "../pages/addadress_page";
+import VerifiedEmail from "../pages/email_verifications/verified_email.jsx"
+import EmailVerified from "../pages/email_verifications/email_hasbeen_verified.jsx"
+import VerifyUser from "../pages/email_verifications/user_not_found.jsx"
+import ResetPassReqPage from "../pages/reset_password_request"
+import ResetPassSetPage from "../pages/reset_password_set"
 const routes = [
   {
     path: "/userlogin",
@@ -28,6 +34,14 @@ const routes = [
 
     path: "/register",
     element: <RegisterPage />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPassReqPage />,
+  },
+  {
+    path: "/setup-password",
+    element: <ResetPassSetPage />,
   },
   {
     path: "/userpage",
@@ -81,6 +95,23 @@ const routes = [
     path: "/admin_setting",
     element: <AdminSetting />,
   },
+  {
+    path: "/verify_email",
+    element: <VerifiedEmail/>
+  },
+  {
+    path: "/email_verified",
+    element: <EmailVerified/>
+  },
+  {
+    path: "/email_verified",
+    element: <EmailVerified/>
+  },
+  {
+    path: "/user_notfound",
+    element: <VerifyUser/>
+  }
+
   //   {
   //     path: "/",
   //     element: <ProtectedPage needLogin={true}></ProtectedPage>,

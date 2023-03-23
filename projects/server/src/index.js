@@ -2,7 +2,7 @@ require("dotenv/config");
 const express = require("express");
 const cors = require("cors");
 const { join } = require("path");
-// const db = require("./models");
+const db = require("./models");
 const route = require("./routes");
 
 const PORT = process.env.PORT || 8000;
@@ -36,6 +36,7 @@ app.get("/api/greetings", (req, res, next) => {
 
 app.use("/user", route.userRoute);
 app.use("/admin", route.adminRoute);
+app.use("/product", route.productRoute);
 app.use("/api_rajaongkir", route.rajaOngkirRoute)
 app.use("/post_image", express.static(`${__dirname}/public/POST`));
 app.use("/user/avatar", express.static(`${__dirname}/public/IMAGE_PRODUCT`));
