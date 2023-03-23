@@ -12,7 +12,9 @@ import AdminCategory from "../pages/adminCategory";
 
 import AdressPage from "../pages/updateadress_page";
 import ListAddressPage from "../pages/listaddress_page";
+import ListProduk from "../pages/listproduct_page";
 import AddAddressPage from "../pages/addadress_page";
+import RegisterPage from "../pages/register_user";
 const routes = [
   {
     path: "/userlogin",
@@ -27,15 +29,14 @@ const routes = [
   //   element: <HomePage />,
   // },
   {
-
-    path: "/userpage",
-    element: <UserPage />,
+    path: "/",
+    element: <HomePage />,
   },
   {
-
     path: "/register",
     element: <RegisterPage />,
   },
+
   {
     path: "/userpage",
     element: (
@@ -53,7 +54,7 @@ const routes = [
     ),
   },
   {
-    path: "/add-address",
+    path: "/add-address/:UserId",
     element: (
       <ProtectedPage needLogin={true}>
         <AddAddressPage />
@@ -71,6 +72,10 @@ const routes = [
   {
     path: "/reset",
     element: <Reset />,
+  },
+  {
+    path: "/list-product",
+    element: <ListProduk />,
   },
   {
     path: "/update-profile",

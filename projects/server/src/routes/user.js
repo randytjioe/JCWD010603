@@ -26,6 +26,6 @@ router.patch(
 router.get("/verify/:token", userController.verify);
 router.get("/keeplogin", userController.keeplogin);
 router.post("/userlogin", userController.login);
-router.post("/add-address", userController.addAddress);
+router.post("/addaddress", userController.addAddress);
 // router.patch("/editpassword", verifyToken, userController.editPassword);
 module.exports = router;
