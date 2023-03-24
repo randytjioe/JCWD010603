@@ -286,7 +286,7 @@ const userController = {
         
         </body>
         </html>`,
-      });
+      },{ transaction: t });
       console.log(mail);
 
       await t.commit();
@@ -305,20 +305,25 @@ const userController = {
         throw new Error("Token is undefined");
       }
 
-      const verifyUser = jwt.verify(token, secret_key);
-      console.log(verifyUser.exp);
+      const verifyUser = await jwt.verify(token, secret_key, {ignoreExpiration: true});
+      
+      
+
 
       if (Date.now() >= verifyUser.exp * 1000) {
-        throw new Error("Token has been expired");
+        return res.status(400).redirect('http://localhost:3000/token_expired')
+        // throw new Error("Token has been expired");
       }
 
       const user = await User.findByPk(verifyUser.id, { transaction: t });
       if (!user) {
-        throw new Error("Verify email failed, user not found");
+        return res.redirect('http://localhost:3000/user_notfound')
+        // throw new Error("Verify email failed, user not found");
       }
 
       if (user.dataValues.isVerify === true) {
-        throw new Error("Email has been verified");
+        return res.redirect('http://localhost:3000/email_verified')
+        // throw new Error("Email has been verified");
       }
 
       await User.update(
@@ -332,8 +337,9 @@ const userController = {
         },
         { transaction: t }
       );
-
-      res.status(201).send("Verify user success");
+      
+      // res.status(201).send("Verify user success");
+      res.redirect('http://localhost:3000/verify_email')
       await t.commit();
     } catch (err) {
       await t.rollback();
@@ -541,6 +547,280 @@ const userController = {
       }
     );
   },
+
+  resetRequest: async (req, res) => {
+
+      const email = req.body.email
+    
+      const t = await sequelize.transaction();
+      try {
+        const check= await User.findOne({where: {email : email} },{ transaction: t })
+
+        if(!check){
+          throw new Error('Your email is not registered')
+        }
+        console.log(check.dataValues.isVerify);
+
+        if(check.dataValues.isVerify == 0 || false){
+          throw new Error(`Can't request reset password because your email still not verified`)          
+        }
+
+
+        const token = jwt.sign({...check.dataValues}, secret_key, {expiresIn: '1h'});
+
+        const href = `http://localhost:8000/user/reset_password/${token}`;
+      // verify via email
+      const mail = await mailer({
+        to: email,
+        subject: "Reset Password!",
+        html: `<!DOCTYPE html>
+        <html>
+        <head>
+        
+          <meta charset="utf-8">
+          <meta http-equiv="x-ua-compatible" content="ie=edge">
+          <title>Email Confirmation</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <style type="text/css">
+          /**
+           * Google webfonts. Recommended to include the .woff version for cross-client compatibility.
+           */
+          @media screen {
+            @font-face {
+              font-family: 'Source Sans Pro';
+              font-style: normal;
+              font-weight: 400;
+              src: local('Source Sans Pro Regular'), local('SourceSansPro-Regular'), url(https://fonts.gstatic.com/s/sourcesanspro/v10/ODelI1aHBYDBqgeIAH2zlBM0YzuT7MdOe03otPbuUS0.woff) format('woff');
+            }
+            @font-face {
+              font-family: 'Source Sans Pro';
+              font-style: normal;
+              font-weight: 700;
+              src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url(https://fonts.gstatic.com/s/sourcesanspro/v10/toadOcfmlt9b38dHJxOBGFkQc6VGVFSmCnC_l7QZG60.woff) format('woff');
+            }
+          }
+          /**
+           * Avoid browser level font resizing.
+           * 1. Windows Mobile
+           * 2. iOS / OSX
+           */
+          body,
+          table,
+          td,
+          a {
+            -ms-text-size-adjust: 100%; /* 1 */
+            -webkit-text-size-adjust: 100%; /* 2 */
+          }
+          /**
+           * Remove extra space added to tables and cells in Outlook.
+           */
+          table,
+          td {
+            mso-table-rspace: 0pt;
+            mso-table-lspace: 0pt;
+          }
+          /**
+           * Better fluid images in Internet Explorer.
+           */
+          img {
+            -ms-interpolation-mode: bicubic;
+          }
+          /**
+           * Remove blue links for iOS devices.
+           */
+          a[x-apple-data-detectors] {
+            font-family: inherit !important;
+            font-size: inherit !important;
+            font-weight: inherit !important;
+            line-height: inherit !important;
+            color: inherit !important;
+            text-decoration: none !important;
+          }
+          /**
+           * Fix centering issues in Android 4.4.
+           */
+          div[style*="margin: 16px 0;"] {
+            margin: 0 !important;
+          }
+          body {
+            width: 100% !important;
+            height: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+          /**
+           * Collapse table borders to avoid space between cells.
+           */
+          table {
+            border-collapse: collapse !important;
+          }
+          a {
+            color: #1a82e2;
+          }
+          img {
+            height: auto;
+            line-height: 100%;
+            text-decoration: none;
+            border: 0;
+            outline: none;
+          }
+          </style>
+        
+        </head>
+        <body style="background-color: #e9ecef;">
+          <!-- start body -->
+          <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        
+            <!-- start hero -->
+            <tr>
+              <td align="center" bgcolor="#2C3639">
+                <!--[if (gte mso 9)|(IE)]>
+                <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
+                <tr>
+                <td align="center" valign="top" width="600">
+                <![endif]-->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                  <tr>
+                    <td align="left" bgcolor="#ffffff" style="padding: 36px 24px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; border-top: 3px solid #d4dadf;">
+                      <center><h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">Confirm Your Email </h1>
+                      </center>
+                    </td>
+                  </tr>
+                </table>
+                <!--[if (gte mso 9)|(IE)]>
+                </td>
+                </tr>
+                </table>
+                <![endif]-->
+              </td>
+            </tr>
+            <!-- end hero -->
+        
+            <!-- start copy block -->
+            <tr>
+              <td align="center" bgcolor="#2C3639">
+                <!--[if (gte mso 9)|(IE)]>
+                <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
+                <tr>
+                <td align="center" valign="top" width="600">
+                <![endif]-->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+
+                  <!-- start copy -->
+                  <tr>
+                    <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
+                      <center><p style="margin: 0;">Welcome to KOPIO, please tap the button below to reset your password.</p></center>    
+                    </td>
+                  </tr>
+                  <!-- end copy -->
+        
+                  <!-- start button -->
+                  <tr>
+                    <td align="left" bgcolor="#ffffff">
+                      <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                          <td align="center" bgcolor="#ffffff" style="padding: 12px;">
+                            <table border="0" cellpadding="0" cellspacing="0">
+                              <tr>
+                                <td align="center" bgcolor="#1a82e2" style="border-radius: 6px;">
+                                  <a href="${href}" target="_blank" style="display: inline-block; padding: 10px 20px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">Reset Password!</a>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <!-- end button -->
+        
+                  <!-- start copy -->
+                  <tr>
+                    <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; border-bottom: 3px solid #d4dadf">
+                      <p style="margin: 0;">Cheers,<br> Admin</p>
+                    </td>
+                  </tr>
+                  <!-- end copy -->
+        
+                </table>
+                <!--[if (gte mso 9)|(IE)]>
+                </td>
+                </tr>
+                </table>
+                <![endif]-->
+              </td>
+            </tr>
+            <!-- end copy block -->
+        
+            <!-- start footer -->
+            <tr>
+              <td align="center" bgcolor="#2C3639" style="padding: 24px;">
+                <!--[if (gte mso 9)|(IE)]>
+                <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
+                <tr>
+                <td align="center" valign="top" width="600">
+                <![endif]-->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+        
+                  <!-- start permission -->
+                  <tr>
+                    <td align="center" bgcolor="#2C3639" style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #DCD7C9;">
+                      <p style="margin: 0;">You received this email because we received a request for reset password for your account. If you didn't request reset email, you can safely delete this email.</p>
+                      <p style="margin: 0;">This email will expired in 30 days</p>
+                    </td>
+                  </tr>
+                  <!-- end permission -->
+                </table>
+                <!--[if (gte mso 9)|(IE)]>
+                </td>
+                </tr>
+                </table>
+                <![endif]-->
+              </td>
+            </tr>
+            <!-- end footer -->
+        
+          </table>
+          <!-- end body -->
+        
+        </body>
+        </html>`,
+      }, { transaction: t })
+
+      await t.commit()
+      res.status(201).send("Success send request for reset password")
+    } catch(err) {
+        await t.rollback()
+        res.status(400).json({errors : err.message})
+      }
+  },
+
+  resetPassword: async (req,res) => {
+    const token = req.params.token
+
+    token = req.params.token;
+
+    try {
+      if (!token) {
+        throw new Error("Token is undefined");
+      }
+
+      const verifyUser = await jwt.verify(token, secret_key, {ignoreExpiration: true});
+      
+      
+
+
+      if (Date.now() >= verifyUser.exp * 1000) {
+        return res.redirect('http://localhost:3000/token_expired')
+        // throw new Error("Token has been expired");
+      }
+
+    res.redirect("")
+
+    } catch (err) {
+      console.log(err)
+    }
+  }
 };
 
 module.exports = userController;

@@ -1,6 +1,6 @@
 const express = require("express");
-const adminController = require("../controller/admin");
 const router = express.Router();
+const adminController = require("../controller/admin");
 const {validate, adminValidateRules} = require("../middleware/validator")
 
 router.post('/adminlogin', adminController.login);

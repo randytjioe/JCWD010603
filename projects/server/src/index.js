@@ -396,7 +396,7 @@ app.get("/editdetailaddress/:id", (req, res) => {
 });
 app.use("/user", route.userRoute);
 app.use("/admin", route.adminRoute);
-app.use("/api_rajaongkir", route.rajaOngkirRoute);
+app.use("/api_rajaongkir", route.rajaOngkirRoute)
 app.use("/post_image", express.static(`${__dirname}/public/POST`));
 app.use("/user/avatar", express.static(`${__dirname}/public/IMAGE_PRODUCT`));
 
