@@ -1,4 +1,4 @@
-import { Flex, Image, Center, Link, Text, } from "@chakra-ui/react";
+import { Flex, Image, Center, Link, Text, useToast } from "@chakra-ui/react";
 import Logo from "../asset/logo.png";
 import LogoSM from "../asset/coffee.png";
 import {
@@ -10,6 +10,7 @@ import user_types from "../redux/auth/types";
 
 export default function SidebarAdmin() {
     let dispatch = useDispatch();
+    const toast = useToast();
 
     const linkStyles = {
         fontSize: "2xl",
@@ -39,6 +40,7 @@ export default function SidebarAdmin() {
         localStorage.clear();
         window.location.reload(true);
     };
+    const userData = JSON.parse(localStorage.getItem("data"));
 
     return (
         <>
@@ -49,8 +51,8 @@ export default function SidebarAdmin() {
 
                 <Flex direction='column' w='80%' color='white' m='0 auto'>
                     <Center w='80%' h='150px' m='0 auto'>
-                        <Image src={Logo} h='auto' className="sidebar-text"/>
-                        <Image src={LogoSM} h='auto' className="small-logo"/>
+                        <Image src={Logo} h='auto' className="sidebar-text" />
+                        <Image src={LogoSM} h='auto' className="small-logo" />
                     </Center>
 
                     <Link sx={linkStyles} href="/dashboard" display='flex' alignItems='center' className="sidebar-link">
@@ -89,7 +91,19 @@ export default function SidebarAdmin() {
                             Discount
                         </Text>
                     </Link>
-                    <Link sx={linkStyles} href="/admin_setting" display='flex' alignItems='center' className="sidebar-link">
+                    <Link sx={linkStyles} href="/admin_setting" display='flex' alignItems='center' className="sidebar-link"
+                        onClick={() => {
+                            if (!userData || !userData.isSuperAdmin) {
+                                toast({
+                                    title: "Unauthorized",
+                                    description: "You are not authorized to access this page.",
+                                    status: "warning",
+                                    duration: 3000,
+                                    isClosable: true,
+                                });
+                            }
+                        }}
+                    >
                         <FaCog />
                         <Text sx={spacing} className="sidebar-text">
                             Setting

@@ -24,7 +24,9 @@ export default function LoginAdmin() {
                 password,
             })
         );
+        console.log(isAuth);
         if (isAuth.status) {
+            
             if (isAuth.data.id) {
                 return navigate('/dashboard', { state: { admin: isAuth.data }, replace: true });
             }
