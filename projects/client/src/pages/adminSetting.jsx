@@ -112,6 +112,8 @@ export default function AdminSetting() {
                 .catch((error) => {
                     setStatus('error');
                     setMsg('Password must be atleast 8 character');
+                }).finally(() => {
+                    fetchAdmin();
                 });
         },
     });
@@ -150,6 +152,8 @@ export default function AdminSetting() {
                 .catch((error) => {
                     setBranchStatus('error');
                     setBranchMsg(error.response.data.message);
+                }).finally(() => {
+                    fetchData();
                 });
         },
     });
@@ -226,7 +230,7 @@ export default function AdminSetting() {
                                     >
                                         <Stack spacing={4}>
                                             <Box>
-                                                <FormControl id="username" >
+                                                <FormControl id="username">
                                                     {status === 'success' ? (
                                                         <Alert status="success" zIndex={2} variant="top-accent">
                                                             <AlertIcon />

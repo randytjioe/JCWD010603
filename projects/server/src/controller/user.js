@@ -404,14 +404,24 @@ const userController = {
   },
   addAddress: async (req, res) => {
     try {
-      const { address, city, province, district, postalCode, isUtama, Ket } =
-        req.body;
+      console.log(req.body);
+      const {
+        address,
+        city,
+        province,
+        district,
+        postalCode,
+        isUtama,
+        UserId,
+        Ket,
+      } = req.body;
       const data = {
         address,
         city,
         province,
         district,
         postalCode,
+        UserId,
         isUtama,
         Ket,
       };
@@ -429,13 +439,13 @@ const userController = {
       }
 
       const addAddress = await Address.create({ ...data });
-      res.status(200).json({
+      return res.status(200).json({
         message: "address berhasil ditambahkan",
         result: addAddress,
       });
     } catch (err) {
       console.log(err);
-      res.status(400).json({
+      return res.status(400).json({
         message: err,
       });
     }
