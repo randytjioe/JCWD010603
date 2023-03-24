@@ -7,27 +7,48 @@ import Dashboard from "../pages/dashboard";
 import LoginAdmin from "../pages/login_admin";
 import AdminSetting from "../pages/adminSetting";
 import ProtectedPage from "./protected";
+import Page404 from "../pages/page404";
+import AdminCategory from "../pages/adminCategory";
+
+import RegisterPage from "../pages/register_user"
 import AdressPage from "../pages/updateadress_page";
 import ListAddressPage from "../pages/listaddress_page";
+import ListProduk from "../pages/listproduct_page";
 import AddAddressPage from "../pages/addadress_page";
+import VerifiedEmail from "../pages/email_verifications/verified_email.jsx"
+import EmailVerified from "../pages/email_verifications/email_hasbeen_verified.jsx"
+import VerifyUser from "../pages/email_verifications/user_not_found.jsx"
+import ResetPassReqPage from "../pages/reset_password_request"
+import ResetPassSetPage from "../pages/reset_password_set"
+import RegisterPage from "../pages/register_user";
 const routes = [
   {
     path: "/userlogin",
     element: (
-      <ProtectedPage>
+      <ProtectedPage guestOnly={true}>
         <PageLogin />
       </ProtectedPage>
     ),
   },
+  // {
+  //   path: "/",
+  //   element: <HomePage />,
+  // },
   {
-
-    path: "/userpage",
-    element: <UserPage />,
+    path: "/",
+    element: <HomePage />,
   },
   {
-
     path: "/register",
     element: <RegisterPage />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPassReqPage />,
+  },
+  {
+    path: "/setup-password",
+    element: <ResetPassSetPage />,
   },
   {
     path: "/userpage",
@@ -46,7 +67,7 @@ const routes = [
     ),
   },
   {
-    path: "/add-address",
+    path: "/add-address/:UserId",
     element: (
       <ProtectedPage needLogin={true}>
         <AddAddressPage />
@@ -66,25 +87,66 @@ const routes = [
     element: <Reset />,
   },
   {
-    path: "/update-profile",
-    element: <UpdateProfile />,
+    path: "/list-product",
+    element: <ListProduk />,
   },
   {
-    path: "/admin",
-    element: <Dashboard />,
+    path: "/update-profile",
+    element: (
+      <ProtectedPage needLogin={true}>
+        <UpdateProfile />
+      </ProtectedPage>
+    ),
   },
   {
     path: "/admin_login",
-    element: <LoginAdmin />,
+    element: (
+      <ProtectedPage guestOnly={true}>
+        <LoginAdmin />
+      </ProtectedPage>
+    ),
+  },
+  {
+    path: "/dashboard",
+    element: (
+      <ProtectedPage needLogin={true}>
+        <Dashboard />
+      </ProtectedPage>
+    ),
   },
   {
     path: "/admin_setting",
-    element: <AdminSetting />,
+    element: (
+      <ProtectedPage>
+        <AdminSetting />
+      </ProtectedPage>
+    ),
   },
-  //   {
-  //     path: "/",
-  //     element: <ProtectedPage needLogin={true}></ProtectedPage>,
-  //   },
+  {
+    path: "/verify_email",
+    element: <VerifiedEmail/>
+  },
+  {
+    path: "/email_verified",
+    element: <EmailVerified/>
+  },
+  {
+    path: "/email_verified",
+    element: <EmailVerified/>
+  },
+  {
+    path: "/user_notfound",
+    element: <VerifyUser/>
+  },
+
+  {
+    path: '/admin_category',
+    element: <AdminCategory />
+  },
+  {
+    path: '*',
+    element: <Page404 />
+  },
 ];
 
 export default routes;

@@ -65,6 +65,6 @@ db.user.hasMany(db.address)
 
 db.stock.belongsTo(db.product)
 db.product.hasMany(db.stock)
-db.branch.hasMany(db.stock)
+db.branch.hasMany(db.product)
 
 module.exports = db;
