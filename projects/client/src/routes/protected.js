@@ -24,14 +24,12 @@ function ProtectedPage({
             return navigate("/admin_login", { replace: true });
         }
         if (!adminLogin && adminSelector.id) {
-            return navigate("/dashboard", { replace: true });
-        }
-        if (!adminLogin && adminSelector.id) {
             return navigate("/admin_category", { replace: true });
         }
-        // if (adminSelector.isSuperAdmin && superAdmin) {
-        //     return navigate("/admin_setting", { replace: true });
-        // }
+        console.log("superadmin =",superAdmin);
+        if (!adminSelector.isSuperAdmin && superAdmin) {
+            return navigate("/dashboard", { replace: true });
+        }
     }, []);
     return children;
 }

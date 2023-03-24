@@ -100,7 +100,7 @@ const routes = [
   {
     path: "/admin_setting",
     element: (
-      <ProtectedPage adminLogin={true} adminGuest={false}>
+      <ProtectedPage adminLogin={true} adminGuest={false} superAdmin={true}>
         <AdminSetting />
       </ProtectedPage>
     ),
