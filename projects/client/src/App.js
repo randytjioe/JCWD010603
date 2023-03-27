@@ -1,7 +1,9 @@
 import { Routes, Route } from "react-router-dom";
 import "./App.css";
 import routes from "./routes/routes";
-function App() {
+
+
+function App() {  
   return (
     <Routes key={"route"}>
       {routes.map((val, key) => {

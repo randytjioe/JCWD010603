@@ -5,52 +5,22 @@ import {
   Flex,
   FormControl,
   FormLabel,
-  Switch,
-  Heading,
-  Accordion,
-  Avatar,
-  AvatarBadge,
-  IconButton,
-  AccordionButton,
-  AccordionItem,
-  AccordionIcon,
-  AccordionPanel,
-  Box,
-  Select,
+  Checkbox,
   Input,
-  Spacer,
   Link,
-  Stack,
-  InputGroup,
-  Image,
-  Alert,
-  AlertIcon,
-  Badge,
-  useToast,
-  InputRightElement,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { GrFormPrevious } from "react-icons/gr";
-import { IoIosArrowBack, IoIosCloseCircleOutline } from "react-icons/io";
-import { SmallCloseIcon } from "@chakra-ui/icons";
-import { FaUserCircle } from "react-icons/fa";
-import { FiEdit } from "react-icons/fi";
-import { GrClose } from "react-icons/gr";
 
-import { AiFillCamera } from "react-icons/ai";
-import { userLogin } from "../redux/middleware/userauth";
+import { IoIosArrowBack } from "react-icons/io";
+
 import { useDispatch } from "react-redux";
 import { axiosInstance } from "../config/config";
 import { useNavigate } from "react-router-dom";
 import { Link as ReachLink } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import Logo from "../assets/logo.png";
-import { useSelector } from "react-redux";
 
 export default function UpdateAdress(props) {
-  const [imgUser, setImgUser] = useState("");
   const [address, setAddress] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
   const [district, setDistrict] = useState("");
   const [addressList, setAddressList] = useState("");
   const [city, setCity] = useState("");
@@ -58,21 +28,20 @@ export default function UpdateAdress(props) {
   const [postalCode, setPostalCode] = useState("");
   const data = props.data;
   const location = useLocation();
-  const toast = useToast();
-  const [User_id, setUser_id] = useState(0);
-  const [isUtama, setIsUtama] = useState();
+
+  const [isPrimary, setIsPrimary] = useState(0);
   const [id, setId] = useState(0);
+  const [ket, setKet] = useState("");
   const [idAddress, setidAddress] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const userSelector = useSelector((state) => state.auth);
-  const [saveImage, setSaveImage] = useState(null);
+
   const [user, setUser] = useState({
     username: "",
     password: "",
   });
   const [addressdetail, setAddressDetail] = useState([]);
-  const [enable, setEnable] = useState(false);
+
   useEffect(() => {
     setidAddress(location.pathname?.split("/")[2]);
     fetchaddressdetail(location.pathname?.split("/")[2]);
@@ -90,18 +59,15 @@ export default function UpdateAdress(props) {
         setAddress(response.data.result[0].address);
         setPostalCode(response.data.result[0].postalCode);
         setCity(response.data.result[0].city);
-        setIsUtama(response.data.result[0].isUtama);
+        setIsPrimary(response.data.result[0].isPrimary);
+        setKet(response.data.result[0].Ket);
       })
       .catch((error) => {
         console.log({ error });
       });
   };
-
-  const handleFile = (event) => {
-    const uploaded = event.target.files[0];
-    console.log(uploaded);
-    setImgUser(URL.createObjectURL(uploaded));
-  };
+  console.log(data?.isPrimary);
+  const handleFile = (event) => {};
 
   const handleEditToAddress = (address) => {
     setAddressList([...addressList, address]);
@@ -119,7 +85,7 @@ export default function UpdateAdress(props) {
   const CheckUtama = (e, param) => {
     let newUtama;
     if (e.target.checked) {
-      props.setUtama([...props.isUtama, param]);
+      props.setUtama([...props.utama, param]);
     } else {
       newUtama = props.utama.filter((val) => {
         return val !== param;
@@ -127,7 +93,40 @@ export default function UpdateAdress(props) {
       props.setUtama([...newUtama]);
     }
   };
+  const [addresses, setAddresses] = useState([]);
 
+  useEffect(() => {
+    axiosInstance
+      .get("/user/addresses")
+      .then((response) => {
+        setAddresses(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+  const handlePrimaryChange = (id, isPrimary) => {
+    axiosInstance
+      .patch(`/editaddress/${id}`, { isPrimary })
+      .then((response) => {
+        const updatedAddress = response.data;
+        const updatedAddresses = addresses.map((address) => {
+          if (data?.id === updatedAddress.id) {
+            return updatedAddress;
+          } else {
+            // Hapus atribut "isPrimary" dari alamat lain jika isPrimary diubah ke "true"
+            if (updatedAddress.isPrimary) {
+              delete data?.isPrimary;
+            }
+            return data;
+          }
+        });
+        setAddresses(updatedAddresses);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   const saveAddress = async (e) => {
     e.preventDefault();
     const Data = {
@@ -137,13 +136,14 @@ export default function UpdateAdress(props) {
       postalCode,
       address,
       city,
-      isUtama,
+      isPrimary,
+      ket,
     };
 
     try {
       console.log(Data);
-      await axiosInstance.patch("/editaddress?id=" + id, Data);
-      navigate("/userpage");
+      await axiosInstance.patch("/editaddress?id=" + Data.id, Data);
+      navigate("/list-address");
       console.log("user edited");
     } catch (error) {
       console.error(error);
@@ -238,7 +238,7 @@ export default function UpdateAdress(props) {
                 type="text"
                 value={province}
                 onChange={(e) => {
-                  setCity(e.target.value);
+                  setProvince(e.target.value);
                 }}
                 bgColor="white"
               />
@@ -256,17 +256,25 @@ export default function UpdateAdress(props) {
               />
             </FormControl>
             <FormControl id="email">
-              {isUtama === 1 ? (
-                <Center gap={3}>
-                  <Flex justifyContent={"center"}>Jadikan Alamat Utama</Flex>
-                  <Switch
-                    onChange={(e) => {
-                      CheckUtama(e, "1");
-                    }}
-                    colorScheme="teal"
-                  />
-                </Center>
-              ) : null}
+              <FormLabel>Ket</FormLabel>
+              <Input
+                type="text"
+                value={ket}
+                onChange={(e) => {
+                  setKet(e.target.value);
+                }}
+                bgColor="white"
+              />
+            </FormControl>
+            <FormControl id="email">
+              <Center gap={3}>
+                <Checkbox
+                  isChecked={isPrimary}
+                  onChange={(e) => setIsPrimary(!isPrimary)}
+                >
+                  Primary Address
+                </Checkbox>
+              </Center>
             </FormControl>
             <Button
               colorScheme={"black"}

@@ -11,9 +11,17 @@ import Page404 from "../pages/page404";
 import AdminCategory from "../pages/adminCategory";
 import RegisterPage from "../pages/register_user";
 
+import RegisterPage from "../pages/register_user"
 import AdressPage from "../pages/updateadress_page";
 import ListAddressPage from "../pages/listaddress_page";
+import ListProduk from "../pages/listproduct_page";
 import AddAddressPage from "../pages/addadress_page";
+import VerifiedEmail from "../pages/email_verifications/verified_email.jsx"
+import EmailVerified from "../pages/email_verifications/email_hasbeen_verified.jsx"
+import VerifyUser from "../pages/email_verifications/user_not_found.jsx"
+import ResetPassReqPage from "../pages/reset_password_request"
+import ResetPassSetPage from "../pages/reset_password_set"
+import RegisterPage from "../pages/register_user";
 const routes = [
   {
     path: "/userlogin",
@@ -28,14 +36,20 @@ const routes = [
   //   element: <HomePage />,
   // },
   {
-
-    path: "/userpage",
-    element: <UserPage />,
+    path: "/",
+    element: <HomePage />,
   },
   {
-
     path: "/register",
     element: <RegisterPage />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPassReqPage />,
+  },
+  {
+    path: "/setup-password",
+    element: <ResetPassSetPage />,
   },
   {
     path: "/userpage",
@@ -54,7 +68,7 @@ const routes = [
     ),
   },
   {
-    path: "/add-address",
+    path: "/add-address/:UserId",
     element: (
       <ProtectedPage needLogin={true}>
         <AddAddressPage />
@@ -72,6 +86,10 @@ const routes = [
   {
     path: "/reset",
     element: <Reset />,
+  },
+  {
+    path: "/list-product",
+    element: <ListProduk />,
   },
   {
     path: "/update-profile",
@@ -105,6 +123,23 @@ const routes = [
       </ProtectedPage>
     ),
   },
+  {
+    path: "/verify_email",
+    element: <VerifiedEmail/>
+  },
+  {
+    path: "/email_verified",
+    element: <EmailVerified/>
+  },
+  {
+    path: "/email_verified",
+    element: <EmailVerified/>
+  },
+  {
+    path: "/user_notfound",
+    element: <VerifyUser/>
+  },
+
   {
     path: '/admin_category',
     element:
