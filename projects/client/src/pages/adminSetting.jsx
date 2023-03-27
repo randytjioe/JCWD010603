@@ -104,7 +104,11 @@ export default function AdminSetting() {
         }),
         onSubmit: async () => {
             const res = await axiosInstance
-                .post('/admin/register_branch_admin', formik.values)
+                .post('/admin/register_branch_admin', formik.values, {
+                    headers: {
+                        Authorization: "Bearer" + " " + JSON.parse(localStorage.getItem("admintoken"))
+                    }
+                })
                 .then((res) => {
                     setStatus('success');
                     setMsg('New Admin Created');
