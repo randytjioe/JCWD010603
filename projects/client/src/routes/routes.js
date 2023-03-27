@@ -9,6 +9,7 @@ import AdminSetting from "../pages/adminSetting";
 import ProtectedPage from "./protected";
 import Page404 from "../pages/page404";
 import AdminCategory from "../pages/adminCategory";
+import RegisterPage from "../pages/register_user";
 
 import RegisterPage from "../pages/register_user"
 import AdressPage from "../pages/updateadress_page";
@@ -101,7 +102,7 @@ const routes = [
   {
     path: "/admin_login",
     element: (
-      <ProtectedPage guestOnly={true}>
+      <ProtectedPage adminGuest={true}>
         <LoginAdmin />
       </ProtectedPage>
     ),
@@ -109,7 +110,7 @@ const routes = [
   {
     path: "/dashboard",
     element: (
-      <ProtectedPage needLogin={true}>
+      <ProtectedPage adminLogin={true} adminGuest={false}>
         <Dashboard />
       </ProtectedPage>
     ),
@@ -117,7 +118,7 @@ const routes = [
   {
     path: "/admin_setting",
     element: (
-      <ProtectedPage>
+      <ProtectedPage adminLogin={true} adminGuest={false} superAdmin={true}>
         <AdminSetting />
       </ProtectedPage>
     ),
@@ -141,7 +142,10 @@ const routes = [
 
   {
     path: '/admin_category',
-    element: <AdminCategory />
+    element:
+      <ProtectedPage adminLogin={true} adminGuest={false}>
+        <AdminCategory />
+      </ProtectedPage>
   },
   {
     path: '*',
