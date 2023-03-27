@@ -13,14 +13,14 @@ import {
 } from "@chakra-ui/react";
 import { useToast } from '@chakra-ui/react'
 import { useEffect, useState } from "react";
-// import { userLogin } from "../redux/middleware/userauth";
-// import user_types from "../redux/auth/types";
 import { useDispatch } from "react-redux";
 import { axiosInstance } from "../config/config";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-// import YupPassword from 'yup-password';
 import { useFormik } from "formik";
+// import user_types from "../redux/auth/types";
+// import { userLogin } from "../redux/middleware/userauth";
+// import YupPassword from 'yup-password';
 import axios from "axios"
 // import AsyncSelect from "react-select/async"
 import Logo from "../assets/logo.png";
@@ -229,7 +229,7 @@ export default function Register() {
             <Grid w={'inherit'} templateColumns= 'repeat(2, 1fr)' gap = '3'>
             <FormControl id="gender" w={'100%'}>
               <FormLabel>Gender</FormLabel>
-              <Select name="gender" placeholder="--- ---" onChange={(e)=> formik.setFieldValue("gender", e.target.value )}>
+              <Select textAlign={"center"} name="gender" placeholder="Select" onChange={(e)=> formik.setFieldValue("gender", e.target.value )}>
               <option value="0">Woman</option>
               <option value="1">Man</option>
               </Select>
@@ -248,8 +248,8 @@ export default function Register() {
             
             <FormControl id="province">
               <FormLabel>Province</FormLabel>
-              <Select name="province" onChange={(e)=> {formik.setFieldValue("province", e.target.value); handleId(e.target.value)}}  >
-                    <option>--Select Province--</option>
+              <Select textAlign={"center"} name="province" onChange={(e)=> {formik.setFieldValue("province", e.target.value); handleId(e.target.value)}}  >
+                    <option>Select</option>
                     {
                       province.map((p)=> {
                         return (
@@ -267,8 +267,8 @@ export default function Register() {
             <Grid w={'inherit'} templateColumns= 'repeat(2, 1fr)' gap = '3'>
             <FormControl id="city">
               <FormLabel>City</FormLabel>
-              <Select name="city" onChange={(e)=> formik.setFieldValue("city", e.target.value)}  >
-                    <option>--Select--</option>
+              <Select textAlign={"center"} name="city" onChange={(e)=> formik.setFieldValue("city", e.target.value)}>
+                    <option>Select</option>
                     {
                       city.map((c)=> {
                         return (

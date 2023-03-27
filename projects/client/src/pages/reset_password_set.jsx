@@ -13,17 +13,17 @@ import {
   } from "@chakra-ui/react";
   import { useToast } from '@chakra-ui/react'
   import { useEffect, useState } from "react";
-  // import { userLogin } from "../redux/middleware/userauth";
-  // import user_types from "../redux/auth/types";
   import { useDispatch } from "react-redux";
   import { axiosInstance } from "../config/config";
   import { useNavigate } from "react-router-dom";
   import * as Yup from "yup";
-  // import YupPassword from 'yup-password';
   import { useFormik } from "formik";
-  import axios from "axios"
-  // import AsyncSelect from "react-select/async"
   import Logo from "../assets/logo.png";
+
+  const queryParams = new URLSearchParams(window.location.search)
+  const token = queryParams.get("token")
+  console.log(token);
+
 
   export default function Register() {  
     const dispatch = useDispatch();
@@ -43,7 +43,7 @@ import {
 
     const NotifySuccess = useToast({
       title: 'Success',
-      description: 'Reset password link has been send to your email',
+      description: 'Reset password success',
       status: 'success',
       duration: 5000,
       isClosable: true,
@@ -57,7 +57,7 @@ import {
       NotifyError()
     })
     
-    const handleSuccess = (e => {
+    const handleSuccess = (() => {
       NotifySuccess()
       setInterval(() => {
         navigate("/userlogin")
@@ -69,18 +69,18 @@ import {
       initialValues : {   
         password: "",
         passwordConfirm:""
-
+        
       } ,
       validationSchema : Yup.object().shape({
-        password : Yup.string().required("Password must be filled").min(8, "Password length should have min 8 characters").max(16, "Password length should have max 16 characters").matches(/^[ A-Za-z0-9_@-]*$/, `only "_", "@","-" characters are allowed`),
+        password : Yup.string().required("Password must be filled").min(8, "Password length should have min 8 characters").max(16, "Password length should have max 16 characters").matches(/^[ A-Za-z0-9_@-]*$/, `Only "_", "@","-" characters are allowed`),
         passwordConfirm : Yup.string().required("Password confirm must be filled").oneOf([Yup.ref('password'), null], 'Passwords must match')
           }),
-      onSubmit:  async ()=> {
+      onSubmit: async ()=> {
           try{
-            await axiosInstance.post("/user/request-reset", formik.values)
+            await axiosInstance.post(`/user/reset-password/${token}`, formik.values)
             handleSuccess()
           }catch(err){
-            handleError(err.response.data.errors)        
+            handleError(err.response.data.message)
           }
           
       }
