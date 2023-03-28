@@ -25,27 +25,23 @@ export default function LoginAdmin() {
 
   const [status, setStatus] = useState(false);
 
-  async function Login() {
-    const isAuth = await dispatch(
-      adminLogin({
-        email,
-        password,
-      })
-    );
-    if (isAuth.status) {
-      if (isAuth.data.id) {
-        return navigate("/dashboard", {
-          state: { admin: isAuth.data },
-          replace: true,
-        });
-      }
-      return navigate("/admin_login", {
-        state: { admin: isAuth.data },
-        replace: true,
-      });
+    async function Login() {
+        const isAuth = await dispatch(
+            adminLogin({
+                email,
+                password,
+            })
+        );
+        console.log(isAuth);
+        if (isAuth.status) {
+            
+            if (isAuth.data.id) {
+                return navigate('/dashboard', { state: { admin: isAuth.data }, replace: true });
+            }
+            return navigate('/admin_login', { state: { admin: isAuth.data }, replace: true });
+        }
+        return setStatus(true);
     }
-    return setStatus(true);
-  }
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

@@ -5,19 +5,22 @@ export function adminLogin(values) {
   return async function (dispatch) {
     try {
       const res = await axiosInstance.post("/admin/adminlogin", values);
-      console.log(res)
+      console.log("this is res =",res)
 
       const adminData = JSON.stringify(res.data.result);
-      console.log(JSON.stringify(adminData))
+      const adminToken = JSON.stringify(res.data.token);
 
       if (adminData) {
         dispatch({
           type: user_types.ADMIN_LOGIN,
           payload: res.data.result,
         });
+
         localStorage.setItem("data", adminData);
-        return { status: true, data: res.data.result };
+        localStorage.setItem("admintoken", adminToken);
+        return { status: true, data: res.data.result, token: res.data.token };
       }
+
       return { status: false, data: {} };
     } catch (err) {
       console.log(err);

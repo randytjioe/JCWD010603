@@ -4,45 +4,45 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { axiosInstance } from "../config/config";
 export default function RegisterPage() {
-  const [province, setProvince] = useState([]);
-  const [provinces, setProvinces] = useState({
-    province_id: 0,
-    province: "",
-  });
+  // const [province, setProvince] = useState([]);
+  // const [provinces, setProvinces] = useState({
+  //   province_id: 0,
+  //   province: "",
+  // });
 
-  const fetchProvince = async () => {
-    await axiosInstance
-      .get("http://localhost:8000/api_rajaongkir/province")
-      .then((res) => {
-        setProvince([...province, res.data]);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+  // const fetchProvince = async () => {
+  //   await axiosInstance
+  //     .get("http://localhost:8000/api_rajaongkir/province")
+  //     .then((res) => {
+  //       setProvince([...province, res.data]);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // };
 
-  console.log(province);
-  const [data, setData] = useState();
-  const [isLoading, setIsLoading] = useState(true);
-  const userSelector = useSelector((state) => state.auth);
+  // console.log(province);
+  // const [data, setData] = useState();
+  // const [isLoading, setIsLoading] = useState(true);
+  // const userSelector = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    fetchProvince();
-  }, []);
+  // useEffect(() => {
+  //   fetchProvince();
+  // }, []);
 
-  async function fetchData() {
-    setIsLoading(true);
-    axiosInstance
-      .get("/province")
-      .then((res) => {
-        setData(res.data.result);
-      })
-      .finally(() => setIsLoading(false));
-  }
+  // async function fetchData() {
+  //   setIsLoading(true);
+  //   axiosInstance
+  //     .get("/province")
+  //     .then((res) => {
+  //       setData(res.data.result);
+  //     })
+  //     .finally(() => setIsLoading(false));
+  // }
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   return (
     <Stack
@@ -50,7 +50,8 @@ export default function RegisterPage() {
       direction={{ base: "column", md: "row" }}
       marginY={"0"}
     >
-      <Register data={data} />
+    {/* data={data} */}
+      <Register  />
     </Stack>
   );
 }

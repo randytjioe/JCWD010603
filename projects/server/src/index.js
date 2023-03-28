@@ -26,7 +26,7 @@ const db_project = mysql.createConnection({
   port: 3306,
   user: "root",
 
-  password: "password",
+  password: "B#r1#l#1@N",
   database: "db_kopio",
 });
 
@@ -392,7 +392,7 @@ app.get("/editdetailaddress/:id", (req, res) => {
       message: "data fetched",
       result: result,
     });
-  });
+  }); 
 });
 app.use("/user", route.userRoute);
 app.use("/admin", route.adminRoute);
