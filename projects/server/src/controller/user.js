@@ -71,10 +71,11 @@ const userController = {
       });
       const href = `http://localhost:3000/verify_email?token=${token}`;
       // verify via email
-      const mail = await mailer({
-        to: data.email,
-        subject: "Verify Your Account!",
-        html: `<!DOCTYPE html>
+      const mail = await mailer(
+        {
+          to: data.email,
+          subject: "Verify Your Account!",
+          html: `<!DOCTYPE html>
         <html>
         <head>
         
@@ -286,7 +287,9 @@ const userController = {
         
         </body>
         </html>`,
-      },{ transaction: t });
+        },
+        { transaction: t }
+      );
       console.log(mail);
 
       await t.commit();
@@ -305,10 +308,11 @@ const userController = {
         throw new Error("Token is undefined");
       }
 
-      const verifyUser = await jwt.verify(token, secret_key, {ignoreExpiration: true});
-      
-      console.log(verifyUser);
+      const verifyUser = await jwt.verify(token, secret_key, {
+        ignoreExpiration: true,
+      });
 
+      console.log(verifyUser);
 
       if (Date.now() >= verifyUser.exp * 1000) {
         throw new Error("Token has Been expired");
@@ -334,12 +338,12 @@ const userController = {
         },
         { transaction: t }
       );
-      
-      res.status(201).json({message :"Verify User Success!"});
+
+      res.status(201).json({ message: "Verify User Success!" });
       await t.commit();
     } catch (err) {
       await t.rollback();
-      return res.status(401).json({message : err.message});
+      return res.status(401).json({ message: err.message });
     }
   },
   keeplogin: async (req, res) => {
@@ -407,7 +411,7 @@ const userController = {
         province,
         district,
         postalCode,
-        isUtama,
+        isPrimary,
         UserId,
         Ket,
       } = req.body;
@@ -418,7 +422,7 @@ const userController = {
         district,
         postalCode,
         UserId,
-        isUtama,
+        isPrimary,
         Ket,
       };
       console.log(data);
@@ -545,25 +549,31 @@ const userController = {
   },
 
   resetRequest: async (req, res) => {
+    const email = req.body.email;
 
-      const email = req.body.email
-    
-      const t = await sequelize.transaction();
-      try {
-        const check= await User.findOne({where: {email : email} },{ transaction: t })
+    const t = await sequelize.transaction();
+    try {
+      const check = await User.findOne(
+        { where: { email: email } },
+        { transaction: t }
+      );
 
-        if(!check){
-          throw new Error('Your email is not registered')
-        }
-        console.log(check.dataValues.isVerify);
+      if (!check) {
+        throw new Error("Your email is not registered");
+      }
+      console.log(check.dataValues.isVerify);
 
-        if(check.dataValues.isVerify == 0 || false){
-          throw new Error(`Can't request reset password because your email still not verified`)          
-        }
+      if (check.dataValues.isVerify == 0 || false) {
+        throw new Error(
+          `Can't request reset password because your email still not verified`
+        );
+      }
 
-        const token = jwt.sign({id : check.dataValues.id}, secret_key, {expiresIn: '1h'});
+      const token = jwt.sign({ id: check.dataValues.id }, secret_key, {
+        expiresIn: "1h",
+      });
 
-        const href = `http://localhost:3000/setup-password?token=${token}`;
+      const href = `http://localhost:3000/setup-password?token=${token}`;
       // verify via email
       const mail = await mailer({
         to: email,
@@ -780,55 +790,117 @@ const userController = {
         
         </body>
         </html>`,
-      })
+      });
 
-      await t.commit()
-      res.status(201).send("Success send request for reset password")
-    } catch(err) {
-        await t.rollback()
-        res.status(401).json({errors : err.message})
-      }
+      await t.commit();
+      res.status(201).send("Success send request for reset password");
+    } catch (err) {
+      await t.rollback();
+      res.status(401).json({ errors: err.message });
+    }
   },
 
-  resetPassword: async (req,res) => {
-
+  resetPassword: async (req, res) => {
     // console.log(req.params.token)
-    const token = req.params.token
-    const {password, passwordConfirm} = req.body
+    const token = req.params.token;
+    const { password, passwordConfirm } = req.body;
     try {
       if (!token) {
         throw new Error("Token is undefined");
       }
 
-      if(!password.match(/^[ A-Za-z0-9_@-]*$/)){
-        throw new Error(`Only "_", "@","-" characters are allowed`)
+      if (!password.match(/^[ A-Za-z0-9_@-]*$/)) {
+        throw new Error(`Only "_", "@","-" characters are allowed`);
       }
 
       const passwordHash = bcrypt.hashSync(password, 10);
-      const verifyUser = await jwt.verify(token, secret_key, {ignoreExpiration: true});
-      
+      const verifyUser = await jwt.verify(token, secret_key, {
+        ignoreExpiration: true,
+      });
+
       if (Date.now() >= verifyUser.exp * 1000) {
         throw new Error("Token has been expired");
       }
 
       const reset = await User.update(
-        {password : passwordHash },
-        {where: {
-         id : verifyUser.id 
+        { password: passwordHash },
+        {
+          where: {
+            id: verifyUser.id,
+          },
         }
-      })
-      console.log(reset)
-      if(!reset){
-        throw new Error("Reset password failed");        
+      );
+      console.log(reset);
+      if (!reset) {
+        throw new Error("Reset password failed");
       }
 
-
-      res.status(200).json({message : "Reset password success"})
+      res.status(200).json({ message: "Reset password success" });
     } catch (err) {
-      console.log(err)
-      return res.status(401).json({message : err.message})
+      console.log(err);
+      return res.status(401).json({ message: err.message });
     }
-  }
+  },
+  updateAddress: async (req, res) => {
+    try {
+      const id = req.query.id;
+      console.log(id);
+      const {
+        address,
+        city,
+        province,
+        district,
+        postalCode,
+        isPrimary,
+        UserId,
+        Ket,
+      } = req.body;
+      const data = {
+        address,
+        city,
+        province,
+        district,
+        postalCode,
+        isPrimary,
+        Ket,
+      };
+      const checkPrimaryAddress = await Address.findOne({
+        where: { [Op.and]: [{ isPrimary: true }, { UserId: UserId }] },
+      });
+      console.log(isPrimary);
+      console.log(checkPrimaryAddress.dataValues);
+      if (isPrimary) {
+        if (checkPrimaryAddress) {
+          await Address.update(
+            {
+              isPrimary: false,
+            },
+            {
+              where: {
+                id: checkPrimaryAddress.dataValues.id,
+              },
+            }
+          );
+        }
+      }
+      const result = await Address.update(
+        {
+          ...data,
+        },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      res.send(result);
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        message: error,
+      });
+    }
+  },
 };
 
 module.exports = userController;

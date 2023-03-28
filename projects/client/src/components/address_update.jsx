@@ -31,8 +31,9 @@ export default function UpdateAdress(props) {
 
   const [isPrimary, setIsPrimary] = useState(0);
   const [id, setId] = useState(0);
-  const [ket, setKet] = useState("");
+  const [Ket, setKet] = useState("");
   const [idAddress, setidAddress] = useState(0);
+  const [UserId, setUserId] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -61,6 +62,7 @@ export default function UpdateAdress(props) {
         setCity(response.data.result[0].city);
         setIsPrimary(response.data.result[0].isPrimary);
         setKet(response.data.result[0].Ket);
+        setUserId(response.data.result[0].UserId);
       })
       .catch((error) => {
         console.log({ error });
@@ -137,12 +139,13 @@ export default function UpdateAdress(props) {
       address,
       city,
       isPrimary,
-      ket,
+      Ket,
+      UserId,
     };
 
     try {
       console.log(Data);
-      await axiosInstance.patch("/editaddress?id=" + Data.id, Data);
+      await axiosInstance.patch("/user/editaddress?id=" + Data.id, Data);
       navigate("/list-address");
       console.log("user edited");
     } catch (error) {
@@ -259,7 +262,7 @@ export default function UpdateAdress(props) {
               <FormLabel>Ket</FormLabel>
               <Input
                 type="text"
-                value={ket}
+                value={Ket}
                 onChange={(e) => {
                   setKet(e.target.value);
                 }}

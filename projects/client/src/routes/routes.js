@@ -9,15 +9,15 @@ import AdminSetting from "../pages/adminSetting";
 import ProtectedPage from "./protected";
 import Page404 from "../pages/page404";
 import AdminCategory from "../pages/adminCategory";
+import ListProdukUser from "../pages/listproduct_pageuser";
 import RegisterPage from "../pages/register_user";
-
 import AdressPage from "../pages/updateadress_page";
 import ListAddressPage from "../pages/listaddress_page";
 import ListProduk from "../pages/listproduct_page";
 import AddAddressPage from "../pages/addadress_page";
-import VerifyEmail from "../pages/verify_email.jsx"
-import ResetPassReqPage from "../pages/reset_password_request"
-import ResetPassSetPage from "../pages/reset_password_set"
+import VerifyEmail from "../pages/verify_email.jsx";
+import ResetPassReqPage from "../pages/reset_password_request";
+import ResetPassSetPage from "../pages/reset_password_set";
 import RegisterPage from "../pages/register_user";
 import AddProductPage from "../pages/addproduct";
 const routes = [
@@ -98,6 +98,10 @@ const routes = [
     element: <ListProduk />,
   },
   {
+    path: "/product-list-user",
+    element: <ListProdukUser />,
+  },
+  {
     path: "/update-profile",
     element: (
       <ProtectedPage needLogin={true}>
@@ -130,15 +134,16 @@ const routes = [
     ),
   },
   {
-    path: '/admin_category',
-    element:
+    path: "/admin_category",
+    element: (
       <ProtectedPage adminLogin={true} adminGuest={false}>
         <AdminCategory />
       </ProtectedPage>
+    ),
   },
   {
-    path: '*',
-    element: <Page404 />
+    path: "*",
+    element: <Page404 />,
   },
 ];
 
