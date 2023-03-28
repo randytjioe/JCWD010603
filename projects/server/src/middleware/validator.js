@@ -27,7 +27,7 @@ const userValidateRules = () => {
         body('lastName').notEmpty().withMessage("Last name must be filled").matches(/[a-zA-Z]/).withMessage("Last name must be a characters"),
         body('address').notEmpty().withMessage("Address must be filled"),
         body('birthDate').notEmpty().withMessage("Birth date must be filled"),
-        body('password').notEmpty().withMessage("Password must be filled").isLength({min: 8, max: 16}).withMessage("Password length must between 8 - 16 characters"),
+        body('password').notEmpty().withMessage("Password must be filled").matches(/^[ A-Za-z0-9_@-]*$/).isLength({min: 8, max: 16}).withMessage("Password length must between 8 - 16 characters"),
         body('passwordConfirm').notEmpty().withMessage("Password Confirm must be filled").custom((value, { req }) => {
             if (value != req.body.password) {
                 throw new Error('Password confirmation does not match password');
