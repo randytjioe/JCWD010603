@@ -66,10 +66,10 @@ const userController = {
         throw new Error("Create user detail failed");
       }
 
-      const token = jwt.sign({ ...user.dataValues }, secret_key, {
-        expiresIn: "1h",
+      const token = await jwt.sign({ ...user.dataValues }, secret_key, {
+        expiresIn: "1d",
       });
-      const href = `http://localhost:8000/user/verify/${token}`;
+      const href = `http://localhost:3000/verify_email?token=${token}`;
       // verify via email
       const mail = await mailer(
         {
@@ -312,20 +312,19 @@ const userController = {
         ignoreExpiration: true,
       });
 
+      console.log(verifyUser);
+
       if (Date.now() >= verifyUser.exp * 1000) {
-        return res.status(400).redirect("http://localhost:3000/token_expired");
-        // throw new Error("Token has been expired");
+        throw new Error("Token has Been expired");
       }
 
       const user = await User.findByPk(verifyUser.id, { transaction: t });
       if (!user) {
-        return res.redirect("http://localhost:3000/user_notfound");
-        // throw new Error("Verify email failed, user not found");
+        throw new Error("Verify email failed, user not found");
       }
 
       if (user.dataValues.isVerify === true) {
-        return res.redirect("http://localhost:3000/email_verified");
-        // throw new Error("Email has been verified");
+        throw new Error("Email has been verified");
       }
 
       await User.update(
@@ -340,19 +339,18 @@ const userController = {
         { transaction: t }
       );
 
-      // res.status(201).send("Verify user success");
-      res.redirect("http://localhost:3000/verify_email");
+      res.status(201).json({ message: "Verify User Success!" });
       await t.commit();
     } catch (err) {
       await t.rollback();
-      return res.status(401).send(err.message);
+      return res.status(401).json({ message: err.message });
     }
   },
   keeplogin: async (req, res) => {
     try {
       const token = req.headers.authorization;
 
-      const oldUser = jwt.verify(token, process.env.secret_key);
+      const oldUser = await jwt.verify(token, process.env.secret_key);
       const newUSer = await User.findByPk(oldUser.id);
 
       delete newUSer.dataValues.password;
@@ -383,7 +381,7 @@ const userController = {
       const checkPass = await bcrypt.compareSync(password, user.password);
 
       if (checkPass) {
-        const token = jwt.sign({ id: user.dataValues.id }, secret_key, {
+        const token = await jwt.sign({ id: user.dataValues.id }, secret_key, {
           expiresIn: "1d",
         });
         delete user.dataValues.password;
@@ -571,17 +569,16 @@ const userController = {
         );
       }
 
-      const token = jwt.sign({ ...check.dataValues }, secret_key, {
+      const token = jwt.sign({ id: check.dataValues.id }, secret_key, {
         expiresIn: "1h",
       });
 
-      const href = `http://localhost:8000/user/reset_password/${token}`;
+      const href = `http://localhost:3000/setup-password?token=${token}`;
       // verify via email
-      const mail = await mailer(
-        {
-          to: email,
-          subject: "Reset Password!",
-          html: `<!DOCTYPE html>
+      const mail = await mailer({
+        to: email,
+        subject: "Reset Password!",
+        html: `<!DOCTYPE html>
         <html>
         <head>
         
@@ -793,40 +790,55 @@ const userController = {
         
         </body>
         </html>`,
-        },
-        { transaction: t }
-      );
+      });
 
       await t.commit();
       res.status(201).send("Success send request for reset password");
     } catch (err) {
       await t.rollback();
-      res.status(400).json({ errors: err.message });
+      res.status(401).json({ errors: err.message });
     }
   },
 
   resetPassword: async (req, res) => {
+    // console.log(req.params.token)
     const token = req.params.token;
-
-    token = req.params.token;
-
+    const { password, passwordConfirm } = req.body;
     try {
       if (!token) {
         throw new Error("Token is undefined");
       }
 
+      if (!password.match(/^[ A-Za-z0-9_@-]*$/)) {
+        throw new Error(`Only "_", "@","-" characters are allowed`);
+      }
+
+      const passwordHash = bcrypt.hashSync(password, 10);
       const verifyUser = await jwt.verify(token, secret_key, {
         ignoreExpiration: true,
       });
 
       if (Date.now() >= verifyUser.exp * 1000) {
-        return res.redirect("http://localhost:3000/token_expired");
-        // throw new Error("Token has been expired");
+        throw new Error("Token has been expired");
       }
 
-      res.redirect("");
+      const reset = await User.update(
+        { password: passwordHash },
+        {
+          where: {
+            id: verifyUser.id,
+          },
+        }
+      );
+      console.log(reset);
+      if (!reset) {
+        throw new Error("Reset password failed");
+      }
+
+      res.status(200).json({ message: "Reset password success" });
     } catch (err) {
       console.log(err);
+      return res.status(401).json({ message: err.message });
     }
   },
   updateAddress: async (req, res) => {

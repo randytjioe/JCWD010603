@@ -126,10 +126,10 @@ import {
             <Center w="282px" flexDir="column" gap={3} color="#DCD7C9">
             
             <Flex fontSize={"xl"} fontWeight={"medium"} flexDir="column" color="#DCD7C9">
-                Setup New Password
+                Forget your password?
             </Flex>
               <FormControl id="email">
-                <FormLabel fontSize={"14px"} w={"inherit"}>You'll get an email with a reset link</FormLabel>
+                <FormLabel fontSize={"13px"} w={"inherit"}>You'll get an email with a reset link</FormLabel>
                 <Input type="text" name="email" placeholder="your-email@example.com" onChange={(e)=> formik.setFieldValue("email", e.target.value )} />
                  <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
             {formik.errors.email}

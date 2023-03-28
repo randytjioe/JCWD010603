@@ -29,6 +29,6 @@ router.get("/keeplogin", userController.keeplogin);
 router.post("/userlogin", userController.login);
 router.post("/addaddress", userController.addAddress);
 router.post("/request-reset", userController.resetRequest);
-router.post("/reset-password", userController.resetPassword);
+router.post("/reset-password/:token", userController.resetPassword);
 router.patch("/editaddress", userController.updateAddress);
 module.exports = router;

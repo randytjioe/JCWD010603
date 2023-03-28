@@ -15,16 +15,15 @@ import {
 } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-// import { userLogin } from "../redux/middleware/userauth";
-// import user_types from "../redux/auth/types";
 import { useDispatch } from "react-redux";
 import { axiosInstance } from "../config/config";
 import { useNavigate } from "react-router-dom";
 import { Link as ReachLink } from "react-router-dom";
 import * as Yup from "yup";
-import { IoIosArrowBack } from "react-icons/io";
-// import YupPassword from 'yup-password';
 import { useFormik } from "formik";
+// import user_types from "../redux/auth/types";
+// import { userLogin } from "../redux/middleware/userauth";
+// import YupPassword from 'yup-password';
 import axios from "axios";
 // import AsyncSelect from "react-select/async"
 import Logo from "../assets/logo.png";
@@ -341,8 +340,9 @@ export default function Register() {
                 <FormLabel>Gender</FormLabel>
                 <Select
                   name="gender"
+                  textAlign={"center"}
                   bgColor="white"
-                  placeholder="--- ---"
+                  placeholder="Select"
                   onChange={(e) =>
                     formik.setFieldValue("gender", e.target.value)
                   }
@@ -385,7 +385,7 @@ export default function Register() {
               <FormLabel>Province</FormLabel>
               <Select
                 name="province"
-                bgColor="white"
+                textAlign={"center"}
                 onChange={(e) => {
                   formik.setFieldValue("province", e.target.value);
                   handleId(e.target.value);
@@ -415,7 +415,7 @@ export default function Register() {
                 <FormLabel>City</FormLabel>
                 <Select
                   name="city"
-                  bgColor="white"
+                  textAlign={"center"}
                   onChange={(e) => formik.setFieldValue("city", e.target.value)}
                 >
                   <option>--Select--</option>
@@ -441,7 +441,6 @@ export default function Register() {
                 <Input
                   type="text"
                   name="postalCode"
-                  bgColor="white"
                   onChange={(e) =>
                     formik.setFieldValue("postalCode", e.target.value)
                   }

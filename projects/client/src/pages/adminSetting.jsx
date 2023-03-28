@@ -2,7 +2,7 @@ import {
     Flex, Box, Tabs, TabList, TabPanels, Tab, TabPanel, Alert, AlertIcon,
     FormControl, Select, FormLabel, Input, InputGroup, FormHelperText, Stack,
     Button, Heading, Text, Icon, IconButton, AlertDialog, AlertDialogBody,
-    AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay,
+    AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, getToken,
 } from "@chakra-ui/react";
 import React from "react";
 import { FaUserFriends, FaWarehouse, FaHouseUser, FaCodeBranch, FaUserSlash, FaTimesCircle } from "react-icons/fa";
@@ -29,7 +29,7 @@ export default function AdminSetting() {
     const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
     const [branchToDeleteId, setBranchToDeleteId] = useState(null);
     const [branchAlertDialogOpen, setBranchAlertDialogOpen] = useState(false);
-    const cancelRef = React.useRef()
+    const cancelRef = React.useRef();
 
     function deleteAdmin(id) {
         setAdminToDeleteId(id);
@@ -104,7 +104,11 @@ export default function AdminSetting() {
         }),
         onSubmit: async () => {
             const res = await axiosInstance
-                .post('/admin/register_branch_admin', formik.values)
+                .post('/admin/register_branch_admin', formik.values, {
+                    headers: {
+                        Authorization: "Bearer" + " " + JSON.parse(localStorage.getItem("admintoken"))
+                    }
+                })
                 .then((res) => {
                     setStatus('success');
                     setMsg('New Admin Created');
@@ -144,7 +148,11 @@ export default function AdminSetting() {
         }),
         onSubmit: async () => {
             const res = await axiosInstance
-                .post('/admin/create_branch', branchformik.values)
+                .post('/admin/create_branch', branchformik.values, {
+                    headers: {
+                        Authorization: "Bearer" + " " + JSON.parse(localStorage.getItem("admintoken"))
+                    }
+                })
                 .then((res) => {
                     setBranchStatus('success');
                     setBranchMsg('Branch Created Succesfully');

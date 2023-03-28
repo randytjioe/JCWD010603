@@ -15,12 +15,11 @@ import AdressPage from "../pages/updateadress_page";
 import ListAddressPage from "../pages/listaddress_page";
 import ListProduk from "../pages/listproduct_page";
 import AddAddressPage from "../pages/addadress_page";
-import VerifiedEmail from "../pages/email_verifications/verified_email.jsx";
-import EmailVerified from "../pages/email_verifications/email_hasbeen_verified.jsx";
-import VerifyUser from "../pages/email_verifications/user_not_found.jsx";
+import VerifyEmail from "../pages/verify_email.jsx";
 import ResetPassReqPage from "../pages/reset_password_request";
 import ResetPassSetPage from "../pages/reset_password_set";
-
+import RegisterPage from "../pages/register_user";
+import AddProductPage from "../pages/addproduct";
 const routes = [
   {
     path: "/userlogin",
@@ -35,12 +34,20 @@ const routes = [
   //   element: <HomePage />,
   // },
   {
+    path: "/add-product",
+    element: <AddProductPage />,
+  },
+  {
     path: "/",
     element: <HomePage />,
   },
   {
     path: "/register",
     element: <RegisterPage />,
+  },
+  {
+    path: "/verify-email",
+    element: <VerifyEmail />,
   },
   {
     path: "/reset-password",
@@ -105,7 +112,7 @@ const routes = [
   {
     path: "/admin_login",
     element: (
-      <ProtectedPage guestOnly={true}>
+      <ProtectedPage adminGuest={true}>
         <LoginAdmin />
       </ProtectedPage>
     ),
@@ -113,7 +120,7 @@ const routes = [
   {
     path: "/dashboard",
     element: (
-      <ProtectedPage needLogin={true}>
+      <ProtectedPage adminLogin={true} adminGuest={false}>
         <Dashboard />
       </ProtectedPage>
     ),
@@ -121,31 +128,18 @@ const routes = [
   {
     path: "/admin_setting",
     element: (
-      <ProtectedPage>
+      <ProtectedPage adminLogin={true} adminGuest={false} superAdmin={true}>
         <AdminSetting />
       </ProtectedPage>
     ),
   },
   {
-    path: "/verify_email",
-    element: <VerifiedEmail />,
-  },
-  {
-    path: "/email_verified",
-    element: <EmailVerified />,
-  },
-  {
-    path: "/email_verified",
-    element: <EmailVerified />,
-  },
-  {
-    path: "/user_notfound",
-    element: <VerifyUser />,
-  },
-
-  {
     path: "/admin_category",
-    element: <AdminCategory />,
+    element: (
+      <ProtectedPage adminLogin={true} adminGuest={false}>
+        <AdminCategory />
+      </ProtectedPage>
+    ),
   },
   {
     path: "*",
