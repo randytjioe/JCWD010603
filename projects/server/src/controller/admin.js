@@ -2,6 +2,8 @@ const db = require('../models');
 const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
 const { sequelize } = require('../models');
+const jwt = require('jsonwebtoken');
+const secret_key = process.env.secret_key;
 
 const Admins = db.admin;
 const Branch = db.branch;
@@ -12,12 +14,13 @@ const Stock = db.stock;
 const adminController = {
     login: async (req, res) => {
         const { email, password } = req.body;
-        const result = await Admin.findOne({
+        const result = await Admins.findOne({
             where: {
                 email: {
                     [Op.eq]: sequelize.literal(`BINARY '${email}'`)
                 }
-            }
+            },
+            raw: true
         })
 
         if (!result) {
@@ -25,23 +28,40 @@ const adminController = {
                 message: "User not found"
             })
         }
-
-        else {
-            const check = bcrypt.compare(password, result.password)
-
-            if (!check) {
-                return res.status(400).json({
-                    message: "Wrong password"
-                })
-            }
-
-            else {
-                return res.status(200).json({
-                    message: "Logged in",
-                    result: result
-                })
-            }
+        const isValid = await bcrypt.compare(password, result.password);
+        if(!isValid) {
+            return res.status(401).json({
+                message : 'email / password incorrect'
+            })
         }
+
+        let payload = {id: result.id, isSuperAdmin: result.isSuperAdmin};
+        const token = jwt.sign(
+            payload,
+            secret_key
+        )
+        return res.status(200).json({
+            token,
+            result: result,
+            message: 'logged in'
+        })
+
+        // else {
+        //     const check = bcrypt.compare(password, result.password)
+
+        //     if (!check) {
+        //         return res.status(400).json({
+        //             message: "Wrong password"
+        //         })
+        //     }
+
+        //     else {
+        //         return res.status(200).json({
+        //             message: "Logged in",
+        //             result: result
+        //         })
+        //     }
+        // }
     },
 
     createAdmin: async (req, res) => {
@@ -133,7 +153,7 @@ const adminController = {
                 province: data.province,
                 postalCode: data.postalCode
             }
-            console.log({...dataBranch})
+            console.log({ ...dataBranch })
             const branch = await Branch.create({ ...dataBranch }, { transaction: t })
             if (!branch) {
                 throw new Error('Failed to create')
@@ -275,21 +295,21 @@ const adminController = {
 
     updateStock: async (req, res) => {
         const data = req.body;
-        const {id} = req.params;
+        const { id } = req.params;
 
         const t = await sequelize.transaction();
-        try{
-            const stock = await Stock.findOne({where: {id: id} });
-            if(!stock) {
+        try {
+            const stock = await Stock.findOne({ where: { id: id } });
+            if (!stock) {
                 throw new Error('Stock not found');
             }
-            const updatedStock = await stock.update({qty: data.qty}, {transaction: t});
-            if(!updatedStock) {
+            const updatedStock = await stock.update({ qty: data.qty }, { transaction: t });
+            if (!updatedStock) {
                 throw new Error('update stock failed');
             }
             await t.commit();
             res.status(200).send('Update stock success');
-        }catch(err) {
+        } catch (err) {
             await t.rollback();
             return res.status(400).send(err.message);
         }
