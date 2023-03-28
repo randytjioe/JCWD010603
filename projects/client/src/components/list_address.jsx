@@ -233,14 +233,14 @@ function Address(props) {
                 ) : null}
               </Flex>
             </Flex>
-            <Flex fontSize="14px" color="#2C3639">
+            <Flex fontSize="12px" color="#2C3639">
               {props.address?.address}
             </Flex>
-            <Flex fontSize="14px" color="#2C3639">
+            <Flex fontSize="12px" color="#2C3639">
               {props.address?.district}, {props.address?.city},{" "}
               {props.address?.province}
             </Flex>
-            <Flex fontSize="14px" color="#2C3639">
+            <Flex fontSize="12px" color="#2C3639">
               {props.address?.postalCode}
             </Flex>
           </Flex>

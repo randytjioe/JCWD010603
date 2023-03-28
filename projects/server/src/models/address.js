@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       province: DataTypes.STRING,
       postalCode: DataTypes.STRING,
       Ket: DataTypes.STRING,
-      isUtama: DataTypes.BOOLEAN,
+      isPrimary: DataTypes.BOOLEAN,
       isActive: DataTypes.BOOLEAN,
     },
     {

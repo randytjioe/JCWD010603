@@ -9,18 +9,18 @@ import AdminSetting from "../pages/adminSetting";
 import ProtectedPage from "./protected";
 import Page404 from "../pages/page404";
 import AdminCategory from "../pages/adminCategory";
-
-import RegisterPage from "../pages/register_user"
+import ListProdukUser from "../pages/listproduct_pageuser";
+import RegisterPage from "../pages/register_user";
 import AdressPage from "../pages/updateadress_page";
 import ListAddressPage from "../pages/listaddress_page";
 import ListProduk from "../pages/listproduct_page";
 import AddAddressPage from "../pages/addadress_page";
-import VerifiedEmail from "../pages/email_verifications/verified_email.jsx"
-import EmailVerified from "../pages/email_verifications/email_hasbeen_verified.jsx"
-import VerifyUser from "../pages/email_verifications/user_not_found.jsx"
-import ResetPassReqPage from "../pages/reset_password_request"
-import ResetPassSetPage from "../pages/reset_password_set"
-import RegisterPage from "../pages/register_user";
+import VerifiedEmail from "../pages/email_verifications/verified_email.jsx";
+import EmailVerified from "../pages/email_verifications/email_hasbeen_verified.jsx";
+import VerifyUser from "../pages/email_verifications/user_not_found.jsx";
+import ResetPassReqPage from "../pages/reset_password_request";
+import ResetPassSetPage from "../pages/reset_password_set";
+
 const routes = [
   {
     path: "/userlogin",
@@ -91,6 +91,10 @@ const routes = [
     element: <ListProduk />,
   },
   {
+    path: "/product-list-user",
+    element: <ListProdukUser />,
+  },
+  {
     path: "/update-profile",
     element: (
       <ProtectedPage needLogin={true}>
@@ -124,28 +128,28 @@ const routes = [
   },
   {
     path: "/verify_email",
-    element: <VerifiedEmail/>
+    element: <VerifiedEmail />,
   },
   {
     path: "/email_verified",
-    element: <EmailVerified/>
+    element: <EmailVerified />,
   },
   {
     path: "/email_verified",
-    element: <EmailVerified/>
+    element: <EmailVerified />,
   },
   {
     path: "/user_notfound",
-    element: <VerifyUser/>
+    element: <VerifyUser />,
   },
 
   {
-    path: '/admin_category',
-    element: <AdminCategory />
+    path: "/admin_category",
+    element: <AdminCategory />,
   },
   {
-    path: '*',
-    element: <Page404 />
+    path: "*",
+    element: <Page404 />,
   },
 ];
 

@@ -107,7 +107,7 @@ export default function Navbar(props) {
                 ></Icon>
               </Flex>
 
-              <Popover trigger={"hover"} placement={"bottom-start"} gap={10}>
+              <Popover trigger={"hover"} placement="left-end" gap={10}>
                 <PopoverTrigger>
                   <Flex flexDir={"rows"} px={2} alignContent={"center"}>
                     <Icon
@@ -122,7 +122,7 @@ export default function Navbar(props) {
                     ></Icon>
                   </Flex>
                 </PopoverTrigger>
-                <PopoverContent>
+                <PopoverContent minW={{ base: "100%", lg: "max-content" }}>
                   <PopoverArrow backgroundColor={"#A27B5C"} />
 
                   <PopoverHeader bgColor={"#A27B5C"} color="white">

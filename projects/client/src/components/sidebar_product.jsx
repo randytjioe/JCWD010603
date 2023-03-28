@@ -36,7 +36,17 @@ import {
 } from "@chakra-ui/react";
 
 import { AiOutlineSearch, AiOutlinePlus } from "react-icons/ai";
-import { RiAccountCircleFill } from "react-icons/ri";
+import { BsPlusCircleFill } from "react-icons/bs";
+import {
+  FaSignOutAlt,
+  FaChalkboardTeacher,
+  FaBoxes,
+  FaRegCreditCard,
+  FaChartLine,
+  FaCashRegister,
+  FaCog,
+  FaFolder,
+} from "react-icons/fa";
 import { MdOutlineFavoriteBorder } from "react-icons/md";
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import { Link as ReachLink } from "react-router-dom";
@@ -96,8 +106,23 @@ export default function Sidebar(props) {
           overflowX={"hidden"}
           py="165px"
         >
-          <Flex fontSize="20px" fontWeight="bold" px={5} color="#2C3639">
-            CATEGORY
+          <Flex
+            w="200px"
+            h="56px"
+            alignItems={"center"}
+            borderRadius={"2%"}
+            _hover={{
+              bg: "#DCD7C9",
+              color: "white",
+              cursor: "pointer",
+            }}
+            py={2}
+          >
+            <Icon as={FaFolder} color="black" mx={2} />
+            <Box as="b" mx={3} fontSize={18} color="black" textAlign={"center"}>
+              {" "}
+              CATEGORIES
+            </Box>
           </Flex>
 
           <Accordion defaultIndex={[0]} allowMultiple>
@@ -112,7 +137,7 @@ export default function Sidebar(props) {
                       fontWeight="bold"
                       maxH={"500px"}
                     >
-                      JENIS KOPI
+                      TYPES OF COFFEE
                     </Flex>
                   </Box>
 
@@ -186,25 +211,56 @@ export default function Sidebar(props) {
               </AccordionPanel>
             </AccordionItem>
           </Accordion>
-
-          <Flex
-            w="200px"
-            h="56px"
-            alignItems={"center"}
-            borderRadius={"2%"}
-            onClick={props?.filter}
-            _hover={{
-              bg: "#DCD7C9",
-              color: "white",
-              cursor: "pointer",
-            }}
-            py={2}
-          >
-            <Icon as={AiOutlineSearch} color="black" mx={2} />
-            <Box as="b" mx={3} fontSize={18} color="black" textAlign={"center"}>
-              {" "}
-              FILTER
-            </Box>
+          <Flex gap={5} flexDir="column">
+            <Flex
+              w="200px"
+              h="56px"
+              alignItems={"center"}
+              borderRadius={"2%"}
+              onClick={props?.filter}
+              _hover={{
+                bg: "#DCD7C9",
+                color: "white",
+                cursor: "pointer",
+              }}
+              py={2}
+            >
+              <Icon as={AiOutlineSearch} color="black" mx={2} />
+              <Box
+                as="b"
+                mx={3}
+                fontSize={18}
+                color="black"
+                textAlign={"center"}
+              >
+                {" "}
+                FILTER
+              </Box>
+            </Flex>
+            <Flex
+              w="200px"
+              h="56px"
+              alignItems={"center"}
+              borderRadius={"2%"}
+              _hover={{
+                bg: "#DCD7C9",
+                color: "white",
+                cursor: "pointer",
+              }}
+              py={2}
+            >
+              <Icon as={BsPlusCircleFill} color="black" mx={2} />
+              <Box
+                as="b"
+                mx={3}
+                fontSize={18}
+                color="black"
+                textAlign={"center"}
+              >
+                {" "}
+                ADD PRODUCT
+              </Box>
+            </Flex>
           </Flex>
         </Flex>
       </Flex>

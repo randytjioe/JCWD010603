@@ -262,23 +262,23 @@ app.patch("/editprofile", (req, res) => {
   });
 });
 
-app.patch("/editaddress", (req, res) => {
-  // console.log(req.query.id);
-  console.log(req.body);
-  const qString = `update addresses set district ="${req.body.district}",province ="${req.body.province}",city="${req.body.city}",postalCode=${req.body.postalCode},address="${req.body.address}" ,isPrimary=${req.body.isPrimary},Ket="${req.body.ket}" where id=${req.body.id}`;
-  db_project.query(qString, (err, result) => {
-    if (err) {
-      console.log(err);
-      return res.status(400).json({
-        message: "query error",
-      });
-    }
-    res.status(200).json({
-      message: "data fetched",
-      result: result,
-    });
-  });
-});
+// app.patch("/editaddress", (req, res) => {
+//   // console.log(req.query.id);
+//   console.log(req.body);
+//   const qString = `update addresses set district ="${req.body.district}",province ="${req.body.province}",city="${req.body.city}",postalCode=${req.body.postalCode},address="${req.body.address}" ,isPrimary=${req.body.isPrimary},Ket="${req.body.ket}" where id=${req.body.id}`;
+//   db_project.query(qString, (err, result) => {
+//     if (err) {
+//       console.log(err);
+//       return res.status(400).json({
+//         message: "query error",
+//       });
+//     }
+//     res.status(200).json({
+//       message: "data fetched",
+//       result: result,
+//     });
+//   });
+// });
 
 app.patch("/editprimary", (req, res) => {
   // console.log(req.query.id);
@@ -396,7 +396,7 @@ app.get("/editdetailaddress/:id", (req, res) => {
 });
 app.use("/user", route.userRoute);
 app.use("/admin", route.adminRoute);
-app.use("/api_rajaongkir", route.rajaOngkirRoute)
+app.use("/api_rajaongkir", route.rajaOngkirRoute);
 app.use("/post_image", express.static(`${__dirname}/public/POST`));
 app.use("/user/avatar", express.static(`${__dirname}/public/IMAGE_PRODUCT`));
 
