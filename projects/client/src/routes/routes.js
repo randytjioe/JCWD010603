@@ -19,8 +19,8 @@ import AddAddressPage from "../pages/addadress_page";
 import VerifyEmail from "../pages/verify_email.jsx";
 import ResetPassReqPage from "../pages/reset_password_request";
 import ResetPassSetPage from "../pages/reset_password_set";
-
-// import AddProductPage from "../pages/addproduct";
+import RegisterPage from "../pages/register_user";
+import AddProductPage from "../pages/addproduct";
 const routes = [
   {
     path: "/userlogin",
