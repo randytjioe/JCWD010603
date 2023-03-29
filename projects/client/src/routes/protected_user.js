@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-function ProtectedPage({
+function ProtectedPageUser({
   children,
   userLogin = false,
   guestOnly = false,
@@ -20,18 +20,16 @@ function ProtectedPage({
     if (userLogin && !userSelector.id) {
       return navigate("/userlogin", { replace: true });
     }
-    if (adminLogin && !adminSelector.id) {
-      return navigate("/admin_login", { replace: true });
+
+    if (userSelector.id && userSelector.isVerivy) {
+      return navigate("/userpage");
     }
-    if (!adminLogin && adminSelector.id) {
-      return navigate("/admin_category", { replace: true });
-    }
-    console.log("superadmin =", superAdmin);
-    if (!adminSelector.isSuperAdmin && superAdmin) {
-      return navigate("/dashboard", { replace: true });
+
+    if (userSelector.id && !userSelector.isVerify) {
+      return navigate("/");
     }
   }, []);
   return children;
 }
 
-export default ProtectedPage;
+export default ProtectedPageUser;
