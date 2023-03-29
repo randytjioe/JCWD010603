@@ -48,6 +48,11 @@ db.address = require("./address")(sequelize,Sequelize)
 db.product = require("./product")(sequelize,Sequelize)
 db.category = require("./category")(sequelize,Sequelize)
 db.stock = require("./stock")(sequelize,Sequelize)
+db.cart = require("./cart")(sequelize,Sequelize)
+db.voucher = require("./voucher")(sequelize,Sequelize)
+db.voucher_type = require("./voucher_type")(sequelize,Sequelize)
+db.transaction_header = require("./transaction_header")(sequelize,Sequelize)
+db.transaction_item = require("./transaction_item")(sequelize,Sequelize)
 
 // associate
 db.admin.belongsTo(db.branch)
@@ -66,5 +71,26 @@ db.user.hasMany(db.address)
 db.stock.belongsTo(db.product)
 db.product.hasMany(db.stock)
 db.branch.hasMany(db.product)
+
+db.cart.belongsTo(db.product)
+db.cart.belongsTo(db.user)
+db.user.hasMany(db.cart)
+db.product.hasMany(db.cart)
+
+db.voucher.belongsTo(db.product)
+db.voucher.belongsTo(db.voucher_type)
+db.voucher_type.hasMany(db.voucher)
+db.product.hasMany(db.voucher)
+
+db.transaction_header.belongsTo(db.branch)
+db.transaction_header.belongsTo(db.user)
+db.branch.hasMany(db.transaction_header)
+db.user.hasMany(db.transaction_header)
+
+db.transaction_item.belongsTo(db.product)
+db.transaction_item.belongsTo(db.transaction_header)
+db.product.hasMany(db.transaction_item)
+db.transaction_header.hasMany(db.transaction_item)
+
 
 module.exports = db;

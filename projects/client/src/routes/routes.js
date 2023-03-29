@@ -15,9 +15,9 @@ import AdressPage from "../pages/updateadress_page";
 import ListAddressPage from "../pages/listaddress_page";
 import ListProduk from "../pages/listproduct_page";
 import AddAddressPage from "../pages/addadress_page";
-import VerifyEmail from "../pages/verify_email.jsx";
-import ResetPassReqPage from "../pages/reset_password_request";
-import ResetPassSetPage from "../pages/reset_password_set";
+import VerifyEmail from "../pages/verify_email.jsx"
+import ResetPassReqPage from "../pages/reset_password_request"
+import ResetPassSetPage from "../pages/reset_password_set"
 import RegisterPage from "../pages/register_user";
 import AddProductPage from "../pages/addproduct";
 const routes = [
