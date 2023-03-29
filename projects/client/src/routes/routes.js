@@ -7,6 +7,7 @@ import Dashboard from "../pages/dashboard";
 import LoginAdmin from "../pages/login_admin";
 import AdminSetting from "../pages/adminSetting";
 import ProtectedPage from "./protected";
+import ProtectedPageUser from "./protected_user";
 import Page404 from "../pages/page404";
 import AdminCategory from "../pages/adminCategory";
 import ListProdukUser from "../pages/listproduct_pageuser";
@@ -18,25 +19,25 @@ import AddAddressPage from "../pages/addadress_page";
 import VerifyEmail from "../pages/verify_email.jsx";
 import ResetPassReqPage from "../pages/reset_password_request";
 import ResetPassSetPage from "../pages/reset_password_set";
-import RegisterPage from "../pages/register_user";
-import AddProductPage from "../pages/addproduct";
+
+// import AddProductPage from "../pages/addproduct";
 const routes = [
   {
     path: "/userlogin",
     element: (
-      <ProtectedPage guestOnly={true}>
+      <ProtectedPageUser userGuest={true}>
         <PageLogin />
-      </ProtectedPage>
+      </ProtectedPageUser>
     ),
   },
   // {
   //   path: "/",
   //   element: <HomePage />,
   // },
-  {
-    path: "/add-product",
-    element: <AddProductPage />,
-  },
+  // {
+  //   path: "/add-product",
+  //   element: <AddProductPage />,
+  // },
   {
     path: "/",
     element: <HomePage />,
@@ -60,33 +61,33 @@ const routes = [
   {
     path: "/userpage",
     element: (
-      <ProtectedPage needLogin={true}>
+      <ProtectedPageUser userLogin={true}>
         <UserPage />
-      </ProtectedPage>
+      </ProtectedPageUser>
     ),
   },
   {
     path: "/update-address/:id",
     element: (
-      <ProtectedPage needLogin={true}>
+      <ProtectedPageUser userLogin={true}>
         <AdressPage />
-      </ProtectedPage>
+      </ProtectedPageUser>
     ),
   },
   {
     path: "/add-address/:UserId",
     element: (
-      <ProtectedPage needLogin={true}>
+      <ProtectedPageUser userLogin={true}>
         <AddAddressPage />
-      </ProtectedPage>
+      </ProtectedPageUser>
     ),
   },
   {
     path: "/list-address",
     element: (
-      <ProtectedPage needLogin={true}>
+      <ProtectedPageUser userLogin={true}>
         <ListAddressPage />
-      </ProtectedPage>
+      </ProtectedPageUser>
     ),
   },
   {
@@ -104,9 +105,9 @@ const routes = [
   {
     path: "/update-profile",
     element: (
-      <ProtectedPage needLogin={true}>
+      <ProtectedPageUser userLogin={true}>
         <UpdateProfile />
-      </ProtectedPage>
+      </ProtectedPageUser>
     ),
   },
   {

@@ -22,12 +22,12 @@ const options = {
 };
 app.use(cors(options));
 const db_project = mysql.createConnection({
-  host: "localhost",
+  host: process.env.host,
   port: 3306,
-  user: "root",
+  user: process.env.user,
 
-  password: "B#r1#l#1@N",
-  database: "db_kopio",
+  password: process.env.pass,
+  database: process.env.database,
 });
 
 db_project.connect((err) => {
@@ -392,7 +392,7 @@ app.get("/editdetailaddress/:id", (req, res) => {
       message: "data fetched",
       result: result,
     });
-  }); 
+  });
 });
 app.use("/user", route.userRoute);
 app.use("/admin", route.adminRoute);

@@ -7,6 +7,7 @@ import {
   FormLabel,
   Checkbox,
   Input,
+  Select,
   Link,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -23,8 +24,8 @@ export default function UpdateAdress(props) {
   const [address, setAddress] = useState("");
   const [district, setDistrict] = useState("");
   const [addressList, setAddressList] = useState("");
+  const [idProv, setIdProv] = useState(0);
   const [city, setCity] = useState("");
-  const [province, setProvince] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const data = props.data;
   const location = useLocation();
@@ -36,13 +37,63 @@ export default function UpdateAdress(props) {
   const [UserId, setUserId] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const handleId = (e) => {
+    setIdProv(e);
+  };
   const [user, setUser] = useState({
     username: "",
     password: "",
   });
   const [addressdetail, setAddressDetail] = useState([]);
+  const [provinceAPI, setProvinceAPI] = useState([
+    {
+      province_id: 0,
+      province: "",
+    },
+  ]);
+  const [province, setProvince] = useState("");
+  const [cityAPI, setCityAPI] = useState([
+    {
+      city_id: 0,
+      city_name: "",
+      type: "",
+      postal_code: "",
+      province_id: 0,
+      province: "",
+    },
+  ]);
 
+  const fetchProvince = async () => {
+    try {
+      const response = await axiosInstance.get(
+        "http://localhost:8000/api_rajaongkir/province"
+      );
+      const result = response.data;
+
+      setProvinceAPI(result);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+  useEffect(() => {
+    fetchProvince();
+  }, []);
+
+  const fetchCity = async () => {
+    try {
+      console.log(idProv);
+      const response = await axiosInstance.get(
+        `http://localhost:8000/api_rajaongkir/city/${idProv}`
+      );
+      const result = response.data;
+      setCityAPI(result);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+  useEffect(() => {
+    fetchCity();
+  }, [idProv]);
   useEffect(() => {
     setidAddress(location.pathname?.split("/")[2]);
     fetchaddressdetail(location.pathname?.split("/")[2]);
@@ -223,30 +274,48 @@ export default function UpdateAdress(props) {
                 bgColor="white"
               />
             </FormControl>
-            <FormControl id="email">
-              <FormLabel>City</FormLabel>
-              <Input
-                type="text"
-                value={city}
-                onChange={(e) => {
-                  setCity(e.target.value);
-                }}
-                bgColor="white"
-              />
-            </FormControl>
 
             <FormControl id="email">
               <FormLabel>Province</FormLabel>
-              <Input
-                type="text"
-                value={province}
+
+              <Select
+                name="province"
+                bgColor="white"
                 onChange={(e) => {
                   setProvince(e.target.value);
+                  handleId(e.target.value);
                 }}
-                bgColor="white"
-              />
+              >
+                <option>{province}</option>
+                {provinceAPI.map((p) => {
+                  return (
+                    <option key={p.province_id} value={p.province_id}>
+                      {p.province}
+                    </option>
+                  );
+                })}
+              </Select>
             </FormControl>
+            <FormControl id="email">
+              <FormLabel>City</FormLabel>
 
+              <Select
+                name="city"
+                bgColor="white"
+                onChange={(e) => {
+                  setCity(e.target.value);
+                }}
+              >
+                <option>{city}</option>
+                {cityAPI.map((c) => {
+                  return (
+                    <option key={c.city_id} value={c.city_id}>
+                      {c.city_name}
+                    </option>
+                  );
+                })}
+              </Select>
+            </FormControl>
             <FormControl id="email">
               <FormLabel>Postal Code</FormLabel>
               <Input

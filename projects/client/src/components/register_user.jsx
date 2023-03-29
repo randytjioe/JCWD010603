@@ -20,6 +20,7 @@ import { axiosInstance } from "../config/config";
 import { useNavigate } from "react-router-dom";
 import { Link as ReachLink } from "react-router-dom";
 import * as Yup from "yup";
+import { IoIosArrowBack } from "react-icons/io";
 import { useFormik } from "formik";
 // import user_types from "../redux/auth/types";
 // import { userLogin } from "../redux/middleware/userauth";
@@ -386,6 +387,7 @@ export default function Register() {
               <Select
                 name="province"
                 textAlign={"center"}
+                bgColor="white"
                 onChange={(e) => {
                   formik.setFieldValue("province", e.target.value);
                   handleId(e.target.value);
@@ -416,6 +418,7 @@ export default function Register() {
                 <Select
                   name="city"
                   textAlign={"center"}
+                  bgColor="white"
                   onChange={(e) => formik.setFieldValue("city", e.target.value)}
                 >
                   <option>--Select--</option>
@@ -441,6 +444,7 @@ export default function Register() {
                 <Input
                   type="text"
                   name="postalCode"
+                  bgColor="white"
                   onChange={(e) =>
                     formik.setFieldValue("postalCode", e.target.value)
                   }
