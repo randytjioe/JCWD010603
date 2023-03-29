@@ -19,12 +19,12 @@ module.exports = (sequelize, DataTypes) => {
       province: DataTypes.STRING,
       postalCode: DataTypes.STRING,
       Ket: DataTypes.STRING,
-      isUtama: DataTypes.BOOLEAN,
-      isActive: DataTypes.BOOLEAN,
+      isPrimary: DataTypes.BOOLEAN,
     },
     {
       sequelize,
       modelName: "Address",
+      paranoid: true
     }
   );
   return Address;
