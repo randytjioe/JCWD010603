@@ -20,11 +20,11 @@ module.exports = (sequelize, DataTypes) => {
       postalCode: DataTypes.STRING,
       Ket: DataTypes.STRING,
       isPrimary: DataTypes.BOOLEAN,
-      isActive: DataTypes.BOOLEAN,
     },
     {
       sequelize,
       modelName: "Address",
+      paranoid: true
     }
   );
   return Address;

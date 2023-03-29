@@ -107,7 +107,7 @@ export default function Navbar(props) {
                 ></Icon>
               </Flex>
 
-              <Popover trigger={"hover"} placement="left-end" gap={10}>
+              <Popover trigger={"hover"} placement="bottom-end" gap={10}>
                 <PopoverTrigger>
                   <Flex flexDir={"rows"} px={2} alignContent={"center"}>
                     <Icon

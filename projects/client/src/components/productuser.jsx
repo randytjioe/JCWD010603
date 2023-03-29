@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import "../css/pagination.css";
 import axios from "axios";
 import {
   Flex,
@@ -25,6 +25,7 @@ import {
   PopoverCloseButton,
   PopoverHeader,
   PopoverBody,
+  useDisclosure,
   ButtonGroup,
   PopoverFooter,
   IconButton,
@@ -58,15 +59,46 @@ import {
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import React from "react";
-import Pagination from "./pagination";
-
+import { axiosInstance } from "../config/config";
 export default function ProductUserPage(props) {
   const data = props.data;
   const datacat = props.datacat;
   console.log(data);
+  const [openFilterDialog, setOpenFilterDialog] = useState(false);
+  const [closeFilterDialog, setCloseFilterDialog] = useState(false);
   const [search, setSearch] = useState("");
   const [product, setProduct] = useState([]);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [city, setCity] = useState("");
+  const [idProv, setIdProv] = useState(1);
   const [page, setPage] = useState(1);
+  const [cityAPI, setCityAPI] = useState([
+    {
+      city_id: 0,
+      city_name: "",
+      type: "",
+      postal_code: "",
+      province_id: 0,
+      province: "",
+    },
+  ]);
+
+  const fetchCity = async () => {
+    try {
+      console.log(idProv);
+      const response = await axiosInstance.get(
+        `http://localhost:8000/api_rajaongkir/city/${idProv}`
+      );
+      const result = response.data;
+      setCityAPI(result);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+  useEffect(() => {
+    fetchCity();
+  }, [idProv]);
   const selectPageHandle = (selectPage) => {
     if (
       selectPage >= 1 &&
@@ -116,6 +148,25 @@ export default function ProductUserPage(props) {
         h="full"
       >
         PRODUCT LIST
+        <Center fontSize={"14px"} gap={3} justifyContent="left">
+          Branch
+          <Select
+            name="city"
+            bgColor="white"
+            onChange={(e) => {
+              setCity(e.target.value);
+            }}
+          >
+            <option>--Select Branch--</option>
+            {cityAPI.map((c) => {
+              return (
+                <option key={c.city_id} value={c.city_id}>
+                  {c.city_name}
+                </option>
+              );
+            })}
+          </Select>
+        </Center>
         <Divider orientation="horizontal" m={2} />
         <Flex>
           <InputGroup gap={3}>
@@ -151,7 +202,7 @@ export default function ProductUserPage(props) {
                 <Icon as={AiOutlineSearch} justifyContent="center"></Icon>
               </Center>{" "}
             </Flex>
-            <Popover placement="bottom-start">
+            <Popover placement="bottom-start" isOpen={isOpen} onClose={onClose}>
               <PopoverTrigger>
                 <Flex
                   justifyContent="center"
@@ -165,6 +216,8 @@ export default function ProductUserPage(props) {
                   }}
                   borderRadius="100%"
                   bgColor={"#DCD7C9"}
+                  onClick={onOpen}
+                  // onClick={setOpenFilterDialog(true)}
                 >
                   {" "}
                   <Center>
@@ -314,7 +367,10 @@ export default function ProductUserPage(props) {
                   <ButtonGroup size="sm">
                     <Flex
                       borderRadius={"2%"}
-                      onClick={props?.filter}
+                      onClick={
+                        props?.filter
+                        // setCloseFilterDialog(true);
+                      }
                       _hover={{
                         bg: "#DCD7C9",
                         color: "white",
@@ -322,7 +378,11 @@ export default function ProductUserPage(props) {
                       }}
                       py={2}
                     >
-                      <Button colorScheme="green" fontSize={"18px"}>
+                      <Button
+                        colorScheme="green"
+                        fontSize={"18px"}
+                        onClick={onClose}
+                      >
                         Filter
                       </Button>
                     </Flex>
@@ -332,88 +392,97 @@ export default function ProductUserPage(props) {
             </Popover>
           </InputGroup>
         </Flex>
-        <Flex
-          w="350px"
-          gap={5}
-          paddingTop="20px"
-          paddingBottom={"20px"}
-          justifyContent="start"
-          flexDir={"row"}
-          flexWrap="wrap"
-          overflowX={"auto"}
-          overflowY={"auto"}
-          h="full"
-        >
-          {data.slice(page * 6 - 6, page * 6)?.map((product, index) => {
-            return (
-              <>
-                <Box minW="150px" h="300px">
-                  <Flex justifyContent="left">
-                    <Link to={`/`}>
-                      <Image
-                        w="165px"
-                        h="165px"
-                        src={product?.imgProduct}
-                        alt={`Picture of ${product?.name}`}
-                        roundedTop="lg"
-                      />
-                    </Link>
-                  </Flex>
-                  <Flex
-                    mt="1"
-                    justifyContent="space-between"
-                    alignContent="center"
-                    flexDir={"column"}
-                    w="150px"
-                  >
-                    <Box
-                      fontSize="12px"
-                      fontWeight="semibold"
-                      as="h4"
-                      lineHeight="tight"
+        <Flex overflowX={"auto"} overflowY={"auto"}>
+          <Flex
+            w="350px"
+            gap={5}
+            paddingTop="20px"
+            paddingBottom={"20px"}
+            justifyContent="start"
+            flexDir={"row"}
+            flexWrap="wrap"
+            overflowX={"auto"}
+            overflowY={"auto"}
+            h="full"
+          >
+            {data.slice(page * 6 - 6, page * 6)?.map((product, index) => {
+              return (
+                <>
+                  <Box minW="150px" h="300px">
+                    <Flex justifyContent="left">
+                      <Link to={`/`}>
+                        <Image
+                          w="165px"
+                          h="165px"
+                          src={product?.imgProduct}
+                          alt={`Picture of ${product?.name}`}
+                          roundedTop="lg"
+                        />
+                      </Link>
+                    </Flex>
+                    <Flex
+                      mt="1"
+                      justifyContent="space-between"
+                      alignContent="center"
+                      flexDir={"column"}
+                      w="150px"
                     >
-                      {product?.category}
-                    </Box>
-                    <Box fontSize="12px" as="h4" lineHeight="tight">
-                      {product?.name}
-                    </Box>
+                      <Box
+                        fontSize="12px"
+                        fontWeight="semibold"
+                        as="h4"
+                        lineHeight="tight"
+                      >
+                        {product?.category}
+                      </Box>
+                      <Box fontSize="12px" as="h4" lineHeight="tight">
+                        {product?.name}
+                      </Box>
 
-                    <Box fontSize="12px" as="h4">
-                      <Text>
-                        {" "}
-                        Harga : Rp. {product?.price.toLocaleString()}
-                      </Text>
-                    </Box>
-                    <Box fontSize="12px" as="h4">
-                      <Text>Stock :</Text>
-                    </Box>
-                  </Flex>
-                </Box>
-              </>
-            );
-          })}
+                      <Box fontSize="12px" as="h4">
+                        <Text>
+                          {" "}
+                          Harga : Rp. {product?.price.toLocaleString()}
+                        </Text>
+                      </Box>
+                      <Box fontSize="12px" as="h4">
+                        <Text>Stock :</Text>
+                      </Box>
+                    </Flex>
+                  </Box>
+                </>
+              );
+            })}
+          </Flex>
         </Flex>
         <Center gap={10} w="350px">
           {data.length > 0 && (
-            <Flex gap={5}>
-              <Button onClick={() => selectPageHandle(page - 1)}>
+            <Flex gap={5} className="pagination">
+              <Button
+                className="arrows"
+                onClick={() => selectPageHandle(page - 1)}
+              >
                 <BiLeftArrowAlt />
               </Button>
-              <Flex gap={5}>
+              <Flex gap={5} className="pageNumbers">
                 {[...Array(Math.ceil(data.length / 6))].map((n, i) => {
                   return (
                     <>
-                      <Button
+                      <Box
+                        className={`num ${page === i + 1 ? `numActive` : ""}`}
                         onClick={() => selectPageHandle(i + 1)}
-                        bgColor="#DCD7C9"
+                        // bgColor="#2C3639"
                       >
                         {i + 1}
-                      </Button>
+                      </Box>
                     </>
                   );
                 })}
               </Flex>
-              <Button onClick={() => selectPageHandle(page + 1)}>
+              <Button
+                className="arrows"
+                onClick={() => selectPageHandle(page + 1)}
+              >
                 {" "}
                 <BiRightArrowAlt />
               </Button>

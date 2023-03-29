@@ -32,7 +32,6 @@ import { BiLeftArrowAlt, BiRightArrowAlt } from "react-icons/bi";
 import { AiOutlineSearch } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import React from "react";
-import Pagination from "./pagination";
 
 export default function ProductPage(props) {
   const data = props.data;
@@ -231,9 +230,13 @@ export default function ProductPage(props) {
                 {[...Array(Math.ceil(data.length / 6))].map((n, i) => {
                   return (
                     <>
-                      <Button onClick={() => selectPageHandle(i + 1)}>
+                      <Box
+                        className={`num ${page === i + 1 ? `numActive` : ""}`}
+                        onClick={() => selectPageHandle(i + 1)}
+                        // bgColor="#2C3639"
+                      >
                         {i + 1}
-                      </Button>
+                      </Box>
                     </>
                   );
                 })}
