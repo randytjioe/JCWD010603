@@ -29,7 +29,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import validator from "validator";
 import Logo from "../assets/logo.png";
-import ResetPassword from "../pages/reset_password_request"
+import ResetPassword from "../pages/reset_password_request";
 export default function Login() {
   const dispatch = useDispatch();
   const [show, setShow] = useState(false);
@@ -167,7 +167,14 @@ export default function Login() {
               </FormControl>
               <Flex>
                 <Flex justifyContent="right" gap={5}>
-                  <Link href={ResetPassword} color={"white"}>Forgot Password?</Link>
+                  <Link
+                    to="/setup-password"
+                    as={ReachLink}
+                    href={ResetPassword}
+                    color={"white"}
+                  >
+                    Forgot Password?
+                  </Link>
                 </Flex>
               </Flex>
 

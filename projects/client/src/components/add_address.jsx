@@ -11,6 +11,7 @@ import {
   Avatar,
   AvatarBadge,
   IconButton,
+  Checkbox,
   AccordionButton,
   AccordionItem,
   AccordionIcon,
@@ -52,7 +53,7 @@ import * as Yup from "yup";
 export default function AddAdress(props) {
   const [imgUser, setImgUser] = useState("");
   const [address, setAddress] = useState("");
-  const [isUtama, setIsUtama] = useState("");
+  const [isPrimary, setIsPrimary] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
   const [district, setDistrict] = useState("");
   const [addressList, setAddressList] = useState("");
@@ -109,7 +110,8 @@ export default function AddAdress(props) {
       postalCode: 0,
       address: "",
       city: "",
-      isUtama: 0,
+      isPrimary: 0,
+      Ket: "",
     },
     validationSchema: Yup.object().shape({
       city: Yup.string().required("City must be filled"),
@@ -170,7 +172,7 @@ export default function AddAdress(props) {
     formData.append("city", city);
     formData.append("province", province);
     formData.append("postalCode", postalCode);
-    formData.append("isUtama", isUtama);
+    formData.append("isPrimary", isPrimary);
     formData.append("Ket", ket);
     console.log(formData);
 
@@ -302,22 +304,21 @@ export default function AddAdress(props) {
               <FormLabel>Ket</FormLabel>
               <Input
                 type="text"
-                onChange={(e) =>
-                  formik.setFieldValue("address", e.target.value)
-                }
+                onChange={(e) => formik.setFieldValue("Ket", e.target.value)}
                 bgColor="white"
               />
             </FormControl>
             <FormControl id="email">
               <Center gap={3}>
-                <Flex justifyContent={"center"}>Jadikan Alamat Utama</Flex>
-                <Switch
+                <Checkbox
                   onChange={(e) => {
                     CheckUtama(e, "1");
-                    formik.setFieldValue("isUtama", e.target.value);
+                    setIsPrimary(!isPrimary);
+                    formik.setFieldValue("isPrimary", isPrimary);
                   }}
-                  colorScheme="teal"
-                />
+                >
+                  Primary Address
+                </Checkbox>
               </Center>
             </FormControl>
             <Button
