@@ -13,38 +13,45 @@ const Stock = db.stock;
 
 const adminController = {
     login: async (req, res) => {
-        const { email, password } = req.body;
-        const result = await Admins.findOne({
-            where: {
-                email: {
-                    [Op.eq]: sequelize.literal(`BINARY '${email}'`)
-                }
-            },
-            raw: true
-        })
-
-        if (!result) {
-            return res.status(400).json({
-                message: "User not found"
+        try {
+            const { email, password } = req.body;
+            const result = await Admins.findOne({
+                where: {
+                    email: {
+                        [Op.eq]: sequelize.literal(`BINARY '${email}'`)
+                    }
+                },
+                raw: true
             })
-        }
-        const isValid = await bcrypt.compare(password, result.password);
-        if(!isValid) {
-            return res.status(401).json({
-                message : 'email / password incorrect'
-            })
-        }
 
-        let payload = {id: result.id, isSuperAdmin: result.isSuperAdmin};
-        const token = jwt.sign(
-            payload,
-            secret_key
-        )
-        return res.status(200).json({
-            token,
-            result: result,
-            message: 'logged in'
-        })
+            if (!result) {
+                return res.status(400).json({
+                    message: "User not found"
+                })
+            }
+            const isValid = await bcrypt.compare(password, result.password);
+            if (!isValid) {
+                throw new Error("email/password incorrect")
+                // return res.status(401).json({
+                //     message: 'email / password incorrect'
+                // })
+            }
+            let payload = { id: result.id, isSuperAdmin: result.isSuperAdmin };
+            const token = jwt.sign(
+                payload,
+                secret_key
+            )
+            return res.status(200).json({
+                token,
+                result: result,
+                message: 'logged in'
+            })
+        } catch (error) {
+            console.log(error.message);
+            return res.status(error.statusCode || 500).send(
+                error.message
+            )
+        }
 
         // else {
         //     const check = bcrypt.compare(password, result.password)
@@ -78,6 +85,10 @@ const adminController = {
                 isSuperAdmin: false,
                 BranchId: data.branches
             }
+            const existingAdmin = await Admins.findOne({ where: { BranchId: data.branches } });
+            if (existingAdmin) {
+                throw new Error('This branch already has an administrator assigned.');
+            }
 
             const admin = await Admins.create({ ...dataAdmin }, { transaction: t })
             if (!admin) {
@@ -88,7 +99,9 @@ const adminController = {
         } catch (err) {
             console.log(err);
             await t.rollback();
-            return res.status(400).send(err)
+            return res.status(400).send({
+                error: err.message
+            })
         }
     },
 
@@ -158,16 +171,6 @@ const adminController = {
             if (!branch) {
                 throw new Error('Failed to create')
             }
-
-            // const products = await Product.findAll();
-            // console.log('my product list == >', products);
-            // const newStockData = products.map((product) => ({
-            //     BranchId: branch.id,
-            //     ProductId: product.id,
-            //     qty: 29,
-            // }));
-            // console.log('my newStockData ==>', newStockData);
-            // await Stock.bulkCreate(newStockData, { transaction: t });
 
             await t.commit();
             res.status(201).send('Create branches success')
