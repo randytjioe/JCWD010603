@@ -26,7 +26,7 @@ const db_project = mysql.createConnection({
   port: 3306,
   user: "root",
 
-  password: "B#r1#l#1@N",
+  password: "password",
   database: "db_kopio",
 });
 

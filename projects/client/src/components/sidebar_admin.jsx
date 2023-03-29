@@ -58,11 +58,6 @@ export default function SidebarAdmin() {
         boxShadow="rgba(0,0,0,0.56) 4px 0px 19px -2px"
         className="sidebar"
       >
-        <Flex direction="column" w="80%" color="white" m="0 auto" gap={5}>
-          <Center w="80%" h="150px" m="0 auto">
-            <Image src={Logo} h="auto" className="sidebar-text" />
-            <Image src={LogoSM} h="auto" className="small-logo" />
-          </Center>
 
           <Flex direction='column' w='80%' color='white' m='0 auto'>
             <Center w='80%' h='150px' m='0 auto'>
@@ -135,7 +130,6 @@ export default function SidebarAdmin() {
             </Link>
           </Flex>
         </Flex >
-      </Flex >
     </>
   );
 }

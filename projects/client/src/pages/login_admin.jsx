@@ -24,24 +24,40 @@ export default function LoginAdmin() {
   let navigate = useNavigate();
 
   const [status, setStatus] = useState(false);
+  const [errMsg, setErrMsg] = useState("");
 
-    async function Login() {
-        const isAuth = await dispatch(
-            adminLogin({
-                email,
-                password,
-            })
-        );
-        console.log(isAuth);
-        if (isAuth.status) {
-            
-            if (isAuth.data.id) {
-                return navigate('/dashboard', { state: { admin: isAuth.data }, replace: true });
-            }
-            return navigate('/admin_login', { state: { admin: isAuth.data }, replace: true });
-        }
-        return setStatus(true);
+  function pressEnter(e) {
+    if (e.key === 'Enter') {
+      Login();
+      // fetchCategory();
     }
+  };
+
+  async function Login() {
+    try {
+      const isAuth = await dispatch(
+        adminLogin({
+          email,
+          password,
+        })
+      );
+      console.log(isAuth.message);
+      if (isAuth.message) {
+        setErrMsg(isAuth.message)
+      }
+      if (isAuth.status) {
+
+        if (isAuth.data.id) {
+          return navigate('/dashboard', { state: { admin: isAuth.data }, replace: true });
+        }
+        return navigate('/admin_login', { state: { admin: isAuth.data }, replace: true });
+      }
+      return setStatus(true);
+    } catch (error) {
+      console.log(`Error = ${error}`);
+    }
+  }
+  console.log(errMsg);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -116,7 +132,7 @@ export default function LoginAdmin() {
                       type="email"
                       bg="white"
                       placeholder="Email"
-                      onChange={(e) => validateEmail(e)}
+                      onChange={(e) => validateEmail(e)} onKeyDown={(e) => pressEnter(e)}
                     />
                   </FormControl>
                   <span
@@ -134,7 +150,7 @@ export default function LoginAdmin() {
                       type="password"
                       bg="white"
                       placeholder="Password"
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => pressEnter(e)}
                     />
                   </FormControl>
                 </Stack>

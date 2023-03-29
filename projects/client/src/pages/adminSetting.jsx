@@ -6,7 +6,7 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { FaUserFriends, FaWarehouse, FaHouseUser, FaCodeBranch, FaUserSlash, FaTimesCircle } from "react-icons/fa";
-
+import axios from "axios";
 import { axiosInstance } from "../config/config";
 import * as Yup from 'yup';
 import YupPassword from 'yup-password';
@@ -30,6 +30,57 @@ export default function AdminSetting() {
     const [branchToDeleteId, setBranchToDeleteId] = useState(null);
     const [branchAlertDialogOpen, setBranchAlertDialogOpen] = useState(false);
     const cancelRef = React.useRef();
+    const [province, setProvince] = useState([
+        {
+            province_id: 0,
+            province: "",
+        },
+    ]);
+    const [city, setCity] = useState([
+        {
+            city_id: 0,
+            city_name: "",
+            type: "",
+            postal_code: "",
+            province_id: 0,
+            province: "",
+        },
+    ]);
+    const [idProv, setIdProv] = useState(0);
+    const fetchProvince = async () => {
+        try {
+            const response = await axios.get(
+                "http://localhost:8000/api_rajaongkir/province"
+            );
+            const result = response.data;
+
+            setProvince(result);
+        } catch (err) {
+            console.log(err.message);
+        }
+    };
+    useEffect(() => {
+        fetchProvince();
+    }, []);
+
+    const handleId = (e) => {
+        setIdProv(e);
+    };
+
+    const fetchCity = async () => {
+        try {
+            const response = await axios.get(
+                `http://localhost:8000/api_rajaongkir/city/${idProv}`
+            );
+            const result = response.data;
+            setCity(result);
+        } catch (err) {
+            console.log(err.message);
+        }
+    };
+    useEffect(() => {
+        fetchCity();
+    }, [idProv]);
 
     function deleteAdmin(id) {
         setAdminToDeleteId(id);
@@ -114,8 +165,9 @@ export default function AdminSetting() {
                     setMsg('New Admin Created');
                 })
                 .catch((error) => {
+                    console.log(error);
                     setStatus('error');
-                    setMsg('Password must be atleast 8 character');
+                    setMsg(error.response.data.error);
                 }).finally(() => {
                     fetchAdmin();
                 });
@@ -159,7 +211,7 @@ export default function AdminSetting() {
                 })
                 .catch((error) => {
                     setBranchStatus('error');
-                    setBranchMsg(error.response.data.message);
+                    setBranchMsg(error.response.data.err);
                 }).finally(() => {
                     fetchData();
                 });
@@ -348,27 +400,44 @@ export default function AdminSetting() {
                                                         </Alert>
                                                     ) : null}
                                                     <FormLabel>Branch Name</FormLabel>
-                                                    <Input name="branchname" type="text" onChange={(e) => branchformik.setFieldValue('name', e.target.value)} placeholder={'Branch Name'} />
+                                                    <Input name="branchname" type="text" onChange={(e) => branchformik.setFieldValue('name', e.target.value)} placeholder={'Set a Branch Name'} />
                                                 </FormControl>
                                             </Box>
 
-                                            <FormControl id="district" >
-                                                <FormLabel>District</FormLabel>
-                                                <Input name="district" onChange={(e) => branchformik.setFieldValue('district', e.target.value)} placeholder={'District'} type="text" />
+                                            <FormControl id="province" >
+                                                <FormLabel>Province</FormLabel>
+
+                                                <Select placeholder="-" name="province"
+                                                    onChange={(e) => {
+                                                        const selectedProvince = province.find((val) => val.province === e.target.value);
+                                                        branchformik.setFieldValue('province', selectedProvince.province);
+                                                        handleId(selectedProvince.province_id);
+                                                    }}
+                                                >
+                                                    {province?.map((val) => {
+                                                        return <option key={val.province_id} value={val.province}>{val.province}</option>;
+                                                    })}
+                                                </Select>
+
                                             </FormControl>
 
                                             <FormControl id="city" >
                                                 <FormLabel>City</FormLabel>
-                                                <InputGroup>
+                                                {/* <InputGroup>
                                                     <Input type='text' name="city" onChange={(e) => branchformik.setFieldValue('city', e.target.value)} placeholder={'City'} />
-                                                </InputGroup>
+                                                </InputGroup> */}
+                                                <Select placeholder="-" name="city" onChange={(e) => branchformik.setFieldValue('city', e.target.value)}>
+                                                    {
+                                                        city?.map((val) => {
+                                                            return <option value={val.city_name}>{val.city_name}</option>
+                                                        })
+                                                    }
+                                                </Select>
                                             </FormControl>
 
-                                            <FormControl id="province" >
-                                                <FormLabel>Province</FormLabel>
-                                                <InputGroup>
-                                                    <Input type='text' name="province" onChange={(e) => branchformik.setFieldValue('province', e.target.value)} placeholder="Province" />
-                                                </InputGroup>
+                                            <FormControl id="district" >
+                                                <FormLabel>District</FormLabel>
+                                                <Input name="district" onChange={(e) => branchformik.setFieldValue('district', e.target.value)} placeholder={'District'} type="text" />
                                             </FormControl>
 
                                             <FormControl id="postalCode">
@@ -401,7 +470,7 @@ export default function AdminSetting() {
                                 </Stack>
                             </Flex>
                         </TabPanel>
-
+                        {/* Admin List */}
                         <TabPanel>
                             <Flex h='85vh' overflow='auto' justify='flex-start' direction='column'
                                 sx={{
@@ -488,7 +557,7 @@ export default function AdminSetting() {
 
                             </Flex>
                         </TabPanel>
-
+                        {/* Branch List */}
                         <TabPanel>
                             <Flex h='85vh' overflow='auto' justify='flex-start' direction='column'
                                 sx={{
