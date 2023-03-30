@@ -150,7 +150,7 @@ app.get("/product-all", (req, res) => {
 
 app.get("/productall", (req, res) => {
   const qString =
-    "Select p.name,p.price,p.imgProduct,c.name as category FROM products p JOIN categories c on p.CategoryId=c.id";
+    "Select p.name,p.price,p.imgProduct,c.name as category,c.id  FROM products p JOIN categories c on p.CategoryId=c.id";
   db_project.query(qString, (err, result) => {
     if (err) {
       res.status(400).json({

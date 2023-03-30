@@ -86,7 +86,7 @@ export default function PageProducts() {
         <>
           <Flex flexDir={"row"} pos="fixed" left={"0"}>
             <Sidebar />
-            <SidebarProduct
+            {/* <SidebarProduct
               data={datacat}
               cat={[...categories1]}
               setCat={setCategories1}
@@ -95,13 +95,20 @@ export default function PageProducts() {
               setSort={setSort}
               setSortBy={setSortBy}
               filter={fetchFilPro}
-            />
+            /> */}
           </Flex>
-          <Center marginLeft={"450px"}>
+          <Center marginLeft={["85px", "100px", "200px"]}>
             <Products
               data={data}
-              filter={fetchFinPro}
+              fin={fetchFinPro}
               cat={[...categories1]}
+              datacat={datacat}
+              setCat={setCategories1}
+              sort={[...sort]}
+              sortby={[...sortby]}
+              setSort={setSort}
+              setSortBy={setSortBy}
+              filter={fetchFilPro}
               // page={page}
               // setPage={setPage}
               // fetchData={fetchData}

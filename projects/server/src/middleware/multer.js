@@ -18,48 +18,48 @@ const fileUploader = ({
       cb(null, filename);
     },
   });
-  // const uploader = multer({
-  //   storage: storageConfig,
-  //   limits: {
-  //     fileSize: 1000000, //Byte
-  //   },
-  //   fileFilter: (req, file, cb) => {
-  //     console.log(file.mimetype);
-  //     if (file.mimetype.split("/")[0] != fileType) {
-  //       return cb(null, false);
-  //     }
-  //     if (file.mimetype.split("/")[1] != "jpeg") {
-  //       return cb(null, false);}
-
-  //     cb(null, true);
-  //   },
-  // });
-  const allowedFileTypes = [
-    "image/jpeg",
-    "image/jpg",
-    "image/png",
-    "image/gif",
-  ];
-
   const uploader = multer({
     storage: storageConfig,
     limits: {
-      fileSize: 1000000, // Byte
+      fileSize: 1000000, //Byte
     },
     fileFilter: (req, file, cb) => {
       console.log(file.mimetype);
-
-      if (!allowedFileTypes.includes(file.mimetype)) {
-        return cb(
-          new Error(
-            "Tipe file yang diunggah harus berupa gambar JPEG, PNG, atau GIF"
-          )
-        );
+      if (file.mimetype.split("/")[0] != fileType) {
+        return cb(null, false);
       }
+      // if (file.mimetype.split("/")[1] != "jpeg") {
+      //   return cb(null, false);}
 
       cb(null, true);
     },
   });
+  //   const allowedFileTypes = [
+  //     "image/jpeg",
+  //     "image/jpg",
+  //     "image/png",
+  //     "image/gif",
+  //   ];
+
+  //   const uploader = multer({
+  //     storage: storageConfig,
+  //     limits: {
+  //       fileSize: 1000000, // Byte
+  //     },
+  //     fileFilter: (req, file, cb) => {
+  //       console.log(file.mimetype);
+
+  //       if (!allowedFileTypes.includes(file.mimetype)) {
+  //         return cb(
+  //           new Error(
+  //             "Tipe file yang diunggah harus berupa gambar JPEG, PNG, atau GIF"
+  //           )
+  //         );
+  //       }
+
+  //       cb(null, true);
+  //     },
+  //   });
   return uploader;
 };
 
