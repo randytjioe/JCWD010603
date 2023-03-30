@@ -9,6 +9,8 @@ import {
   Stack,
   Button,
   Text,
+  Alert,
+  AlertIcon
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import validator from "validator";
@@ -25,6 +27,7 @@ export default function LoginAdmin() {
 
   const [status, setStatus] = useState(false);
   const [errMsg, setErrMsg] = useState("");
+  const [loginStat, setLoginStat] = useState("");
 
   function pressEnter(e) {
     if (e.key === 'Enter') {
@@ -43,11 +46,13 @@ export default function LoginAdmin() {
       );
       console.log(isAuth.message);
       if (isAuth.message) {
+        setLoginStat("Failed")
         setErrMsg(isAuth.message)
       }
       if (isAuth.status) {
 
         if (isAuth.data.id) {
+          setLoginStat("Success")
           return navigate('/dashboard', { state: { admin: isAuth.data }, replace: true });
         }
         return navigate('/admin_login', { state: { admin: isAuth.data }, replace: true });
@@ -96,6 +101,7 @@ export default function LoginAdmin() {
           },
         }}
       >
+
         <Flex
           className="login-container"
           m="0 auto"
@@ -107,6 +113,7 @@ export default function LoginAdmin() {
             <Image src="https://images.unsplash.com/photo-1606791405792-1004f1718d0c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80" />
           </Box>
 
+
           <Flex align={"center"} justify={"center"} bg="#2c3639">
             <Stack
               className="login-form"
@@ -116,6 +123,7 @@ export default function LoginAdmin() {
               py={12}
               px={12}
             >
+
               <Center w="200px" m="0 auto">
                 <Image src={Logo} h="auto" objectFit="fill" />
               </Center>
@@ -127,6 +135,7 @@ export default function LoginAdmin() {
               <Box rounded={"lg"}>
                 <Stack spacing={2}>
                   <FormControl id="email">
+
                     <FormLabel color="white">Email</FormLabel>
                     <Input
                       type="email"
@@ -156,6 +165,18 @@ export default function LoginAdmin() {
                 </Stack>
               </Box>
 
+              {loginStat === 'Success' ? (
+                <Alert status="success" zIndex={2} variant="top-accent">
+                  <AlertIcon />
+                  {errMsg}
+                </Alert>
+              ) : loginStat === 'Failed' ? (
+                <Alert status="error" zIndex={2} variant="top-accent">
+                  <AlertIcon />
+                  {errMsg}
+                </Alert>
+              ) : null}
+
               <Button
                 bg="#DCD7C9"
                 color="#2C3639"
@@ -171,6 +192,7 @@ export default function LoginAdmin() {
               >
                 Sign in
               </Button>
+
             </Stack>
           </Flex>
         </Flex>

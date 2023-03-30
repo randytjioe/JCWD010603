@@ -19,6 +19,7 @@ import AddAddressPage from "../pages/addadress_page";
 import VerifyEmail from "../pages/verify_email.jsx";
 import ResetPassReqPage from "../pages/reset_password_request";
 import ResetPassSetPage from "../pages/reset_password_set";
+import Cart from "../pages/cart";
 // import AddProductPage from "../pages/addproduct";
 
 
@@ -102,6 +103,10 @@ const routes = [
   {
     path: "/product-list-user",
     element: <ListProdukUser />,
+  },
+  {
+    path: "/cart",
+    element: <Cart/>,
   },
   {
     path: "/update-profile",

@@ -9,6 +9,8 @@ const db = require("../models");
 const User = db.user;
 const User_detail = db.user_detail;
 const Address = db.address;
+const Cart = db.cart;
+const Product = db.product;
 
 const userController = {
   register: async (req, res) => {
@@ -898,6 +900,38 @@ const userController = {
       console.error(error);
       res.status(400).json({
         message: error,
+      });
+    }
+  },
+  getCartData: async (req, res) => {
+    const page = parseInt(req.query.page) || 1; // default to page 1 if not provided
+    const pageSize = 5;
+
+    try {
+      const totalCount = await Cart.count();
+      const result = await Cart.findAll({
+        attributes: ['id', 'qty', 'ProductId', 'UserId'],
+        include: [{
+          model: Product,
+          attributes: ['name', 'price', 'imgProduct'],
+        }],
+        limit: pageSize,
+        offset: (page - 1) * pageSize,
+      });
+
+      const totalPages = Math.ceil(totalCount / pageSize);
+
+      return res.status(200).json({
+        message: 'Cart data successfully fetched',
+        result: result,
+        page: page,
+        pageSize: pageSize,
+        totalCount: totalCount,
+        totalPages: totalPages,
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err,
       });
     }
   },

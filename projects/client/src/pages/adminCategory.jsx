@@ -1,5 +1,5 @@
 import {
-    Flex, Button, Stack,
+    Flex, Button, Stack, Center,
     Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter,
     ModalBody, ModalCloseButton, useDisclosure,
     FormControl, FormLabel, Input, useToast, Heading, IconButton,
@@ -142,9 +142,11 @@ export default function AdminCategory() {
                                             backgroundColor: 'gray.200'
                                         }}
                                     >
-                                        <Heading fontSize={['md', 'lg', 'xl', '2xl']}>
-                                            {val.name}
-                                        </Heading>
+                                        <Center>
+                                            <Heading fontSize={['md', 'lg', 'xl', '2xl']}>
+                                                {val.name}
+                                            </Heading>
+                                        </Center>
 
                                         <Flex w="100px" justify='space-around'>
                                             <Tooltip label='Edit' placement='top-start'>

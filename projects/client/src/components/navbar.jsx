@@ -95,16 +95,18 @@ export default function Navbar(props) {
                 ></Icon>
               </Flex>
               <Flex px={3}>
-                <Icon
-                  boxSize={"7"}
-                  as={SlBasket}
-                  color="#DCD7C9"
-                  sx={{
-                    _hover: {
-                      cursor: "pointer",
-                    },
-                  }}
-                ></Icon>
+                <Link href='/cart'>
+                  <Icon
+                    boxSize={"7"}
+                    as={SlBasket}
+                    color="#DCD7C9"
+                    sx={{
+                      _hover: {
+                        cursor: "pointer",
+                      },
+                    }}
+                  ></Icon>
+                </Link>
               </Flex>
 
               <Popover trigger={"hover"} placement="bottom-end" gap={10}>

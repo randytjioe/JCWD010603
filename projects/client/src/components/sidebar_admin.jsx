@@ -59,77 +59,77 @@ export default function SidebarAdmin() {
         className="sidebar"
       >
 
-          <Flex direction='column' w='80%' color='white' m='0 auto'>
-            <Center w='80%' h='150px' m='0 auto'>
-              <Image src={Logo} h='auto' className="sidebar-text" />
-              <Image src={LogoSM} h='auto' className="small-logo" />
-            </Center>
+        <Flex direction='column' w='80%' color='white' m='0 auto'>
+          <Center w='80%' h='150px' m='0 auto'>
+            <Image src={Logo} h='auto' className="sidebar-text" />
+            <Image src={LogoSM} h='auto' className="small-logo" />
+          </Center>
 
-            <Link sx={linkStyles} href="/dashboard" display='flex' alignItems='center' className="sidebar-link">
-              <FaChalkboardTeacher />
-              <Text sx={spacing} className="sidebar-text">
-                Dashboard
-              </Text>
-            </Link>
-            <Link sx={linkStyles} display='flex' alignItems='center' className="sidebar-link">
-              <FaBoxes />
-              <Text sx={spacing} className="sidebar-text">
-                Products
-              </Text>
-            </Link>
-            <Link sx={linkStyles} href='/admin_category' display='flex' alignItems='center' className="sidebar-link">
-              <FaFolder />
-              <Text sx={spacing} className="sidebar-text">
-                Categories
-              </Text>
-            </Link>
-            <Link sx={linkStyles} display='flex' alignItems='center' className="sidebar-link">
-              <FaRegCreditCard />
-              <Text sx={spacing} className="sidebar-text">
-                Transaction
-              </Text>
-            </Link>
-            <Link sx={linkStyles} display='flex' alignItems='center' className="sidebar-link">
-              <FaChartLine />
-              <Text sx={spacing} className="sidebar-text">
-                Report
-              </Text>
-            </Link>
-            <Link sx={linkStyles} display='flex' alignItems='center' className="sidebar-link">
-              <FaCashRegister />
-              <Text sx={spacing} className="sidebar-text">
-                Discount
-              </Text>
-            </Link>
-            <Link sx={linkStyles} href="/admin_setting" display='flex' alignItems='center' className="sidebar-link"
-              onClick={() => {
-                if (!userData || !userData.isSuperAdmin) {
-                  toast({
-                    title: "Unauthorized",
-                    description: "You are not authorized to access this page.",
-                    status: "warning",
-                    duration: 3000,
-                    isClosable: true,
-                  });
-                }
-              }}
-            >
-              <FaCog />
-              <Text sx={spacing} className="sidebar-text">
-                Setting
-              </Text>
-            </Link>
-          </Flex>
+          <Link sx={linkStyles} href="/dashboard" display='flex' alignItems='center' className="sidebar-link">
+            <FaChalkboardTeacher />
+            <Text sx={spacing} className="sidebar-text">
+              Dashboard
+            </Text>
+          </Link>
+          <Link sx={linkStyles} display='flex' alignItems='center' className="sidebar-link">
+            <FaBoxes />
+            <Text sx={spacing} className="sidebar-text">
+              Products
+            </Text>
+          </Link>
+          <Link sx={linkStyles} href='/admin_category' display='flex' alignItems='center' className="sidebar-link">
+            <FaFolder />
+            <Text sx={spacing} className="sidebar-text">
+              Categories
+            </Text>
+          </Link>
+          <Link sx={linkStyles} display='flex' alignItems='center' className="sidebar-link">
+            <FaRegCreditCard />
+            <Text sx={spacing} className="sidebar-text">
+              Transaction
+            </Text>
+          </Link>
+          <Link sx={linkStyles} display='flex' alignItems='center' className="sidebar-link">
+            <FaChartLine />
+            <Text sx={spacing} className="sidebar-text">
+              Report
+            </Text>
+          </Link>
+          <Link sx={linkStyles} display='flex' alignItems='center' className="sidebar-link">
+            <FaCashRegister />
+            <Text sx={spacing} className="sidebar-text">
+              Discount
+            </Text>
+          </Link>
+          <Link sx={linkStyles} href="/admin_setting" display='flex' alignItems='center' className="sidebar-link"
+            onClick={() => {
+              if (!userData || !userData.isSuperAdmin) {
+                toast({
+                  title: "Unauthorized",
+                  description: "You are not authorized to access this page.",
+                  status: "warning",
+                  duration: 3000,
+                  isClosable: true,
+                });
+              }
+            }}
+          >
+            <FaCog />
+            <Text sx={spacing} className="sidebar-text">
+              Setting
+            </Text>
+          </Link>
+        </Flex>
 
-          <Flex color='white' justify='flex-end' pr="6" mb={6} align='center'>
-            <Link fontSize="xl" mr={2} display='flex' alignItems='center' onClick={logOut} className="sidebar-link">
-              <Text mr={2} className="sidebar-text">
-                Logout
-              </Text>
-              <FaSignOutAlt />
-            </Link>
-          </Flex>
-        </Flex >
+        <Flex color='white' justify='flex-end' pr="6" mb={6} align='center'>
+          <Link fontSize="xl" mr={2} display='flex' alignItems='center' onClick={logOut} className="sidebar-link">
+            <Text mr={2} className="sidebar-text">
+              Logout
+            </Text>
+            <FaSignOutAlt />
+          </Link>
+        </Flex>
+      </Flex >
     </>
   );
 }

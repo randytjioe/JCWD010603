@@ -31,7 +31,7 @@ const adminController = {
             }
             const isValid = await bcrypt.compare(password, result.password);
             if (!isValid) {
-                throw new Error("email/password incorrect")
+                throw new Error("Incorrect Email / Password")
                 // return res.status(401).json({
                 //     message: 'email / password incorrect'
                 // })

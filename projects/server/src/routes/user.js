@@ -31,4 +31,5 @@ router.post("/addaddress", userController.addAddress);
 router.post("/request-reset", userController.resetRequest);
 router.post("/reset-password/:token", userController.resetPassword);
 router.patch("/editaddress", userController.updateAddress);
+router.get("/cart", userController.getCartData);
 module.exports = router;
