@@ -8,4 +8,4 @@ const uploadSingle = fileUploader({
 
 router.post("/create", uploadSingle, productController.create);
 
-// router.post("/create", uploadSingle, productController.create)
+//router.post("/create", uploadSingle, productController.create)

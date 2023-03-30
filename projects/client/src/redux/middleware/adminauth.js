@@ -23,8 +23,8 @@ export function adminLogin(values) {
 
       return { status: false, data: {} };
     } catch (err) {
-      console.log(err);
-      return { status: false, data: {} };
+      console.log(err.response.data);
+      return { status: false, data: {}, message: err.response.data };
     }
   };
 }
