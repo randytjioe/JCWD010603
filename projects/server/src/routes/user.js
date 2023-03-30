@@ -12,15 +12,15 @@ router.post(
   validate,
   userController.register
 );
-// router.patch(
-//   "/updatefoto/:UserId",
-//   fileUploader({
-//     destinationFolder: "IMAGE_PRODUCT",
-//     fileType: "image",
-//     prefix: "POST",
-//   }).single("image"),
-//   userController.updateFoto
-// );
+router.patch(
+  "/updatefoto/:UserId",
+  fileUploader({
+    destinationFolder: "IMAGE_PRODUCT",
+    fileType: "image",
+    prefix: "POST",
+  }).single("image"),
+  userController.updateFoto
+);
 // router.patch("/updatefoto", upload.single("image"), userController.updateFoto);
 // router.get("/avatar/:id", userController.renderAvatar);
 // router.patch("/editpassword", verifyToken, userController.editPassword);
@@ -31,4 +31,5 @@ router.post("/addaddress", userController.addAddress);
 router.post("/request-reset", userController.resetRequest);
 router.post("/reset-password/:token", userController.resetPassword);
 router.patch("/editaddress", userController.updateAddress);
+router.get("/detail-product/:id", userController.getProductById);
 module.exports = router;

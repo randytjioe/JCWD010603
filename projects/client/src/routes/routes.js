@@ -19,8 +19,9 @@ import AddAddressPage from "../pages/addadress_page";
 import VerifyEmail from "../pages/verify_email.jsx";
 import ResetPassReqPage from "../pages/reset_password_request";
 import ResetPassSetPage from "../pages/reset_password_set";
-import RegisterPage from "../pages/register_user";
+import DetailProduct from "../pages/detail_product";
 import AddProductPage from "../pages/addproduct";
+import DetailProductPage from "../pages/detail_product";
 const routes = [
   {
     path: "/userlogin",
@@ -94,6 +95,11 @@ const routes = [
     path: "/reset",
     element: <Reset />,
   },
+  {
+    path: "/detail-product/:id",
+    element: <DetailProduct />,
+  },
+
   {
     path: "/list-product",
     element: <ListProduk />,

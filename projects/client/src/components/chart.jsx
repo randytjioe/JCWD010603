@@ -361,6 +361,8 @@ export default function ChartComponent(props) {
             REPORT TRANSACTION DAY BY DAY
           </Center>
           <LineChart
+            w="500px"
+            h="300px"
             chartData={chartData}
             chartOptions={lineChartOptionsTotalSpent}
           />

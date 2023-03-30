@@ -6,10 +6,12 @@ const secret_key = process.env.secret_key;
 const mailer = require("../library/mailer");
 const { nanoid } = require("nanoid");
 const db = require("../models");
+const category = require("../models/category");
 const User = db.user;
 const User_detail = db.user_detail;
 const Address = db.address;
-
+const Category = db.category;
+const Product = db.product;
 const userController = {
   register: async (req, res) => {
     const data = req.body;
@@ -898,6 +900,31 @@ const userController = {
       console.error(error);
       res.status(400).json({
         message: error,
+      });
+    }
+  },
+  getProductById: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const filterId = await Product.findOne({
+        include: [
+          {
+            model: Category,
+            attributes: ["name"],
+          },
+        ],
+        where: {
+          id: id,
+        },
+      });
+      res.status(200).json({
+        message: "filter product berdasarkan id",
+        result: filterId,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
       });
     }
   },
