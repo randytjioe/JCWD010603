@@ -1,13 +1,13 @@
-import {Button, Modal, ModalOverlay, ModalHeader, ModalCloseButton, ModalBody, FormControl, FormLabel, Input, ModalFooter, ModalContent, Select} from '@chakra-ui/react';
+import {Button, Modal, ModalOverlay, ModalHeader, ModalCloseButton, ModalBody, FormControl, FormLabel, Input, ModalFooter, FormHelperText, ModalContent, Select} from '@chakra-ui/react';
+import { useEffect, useState } from "react";
+import { axiosInstance } from "../config/config";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 import { useDisclosure } from '@chakra-ui/react';
 import React from 'react';
-import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { axiosInstance } from "../config/config";
 import { useNavigate } from "react-router-dom";
-import * as Yup from "yup";
-import { useFormik } from "formik";
 
 export default function InitialFocus() {
    
@@ -32,6 +32,13 @@ export default function InitialFocus() {
       fetchCategory()
     },[])
 
+    const SUPPORTED_FORMATS = [
+      "image/jpg",
+      "image/png",
+      "image/jpeg",
+      "image/gif",
+    ];
+
     const formik = useFormik({
         initialValues : {   
             name : "",
@@ -40,6 +47,22 @@ export default function InitialFocus() {
         } ,
         validationSchema : Yup.object().shape({
             name: Yup.string().required("Name must be filled"),
+            imgProduct: Yup.mixed()
+            .nullable()
+            .required("Image product must be a filled")
+            .test(
+              "type",
+              "Invalid file format selection",
+              (value) =>
+                // console.log(value);
+                !value || (value && SUPPORTED_FORMATS.includes(value?.type))
+            ).test(
+              "size",
+              "File size is too big",
+              (value) => value && value.size <= 1000 * 1000 // 1MB
+            )
+           ,
+      
         }),
         onSubmit:  async ()=> {
             try{
@@ -49,7 +72,6 @@ export default function InitialFocus() {
             }catch(err){
             //   setMsg(err.response.data.errors[0].msg);
             //   handleError()        
-    
             }
             
         }
@@ -103,7 +125,7 @@ export default function InitialFocus() {
               
               <FormControl id="imgProduct">
                 <FormLabel>Product Image</FormLabel>
-                <Input type="file" name="imgProduct" onChange={(e)=> formik.setFieldValue("imgProduct", e.target.value )} />
+                <Input paddingTop="4px" type="file" name="imgProduct" onChange={(e)=> formik.setFieldValue("imgProduct", e.target.value )} />
                 <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
                     {formik.errors.imgProduct}
                 </FormHelperText>
@@ -124,21 +146,6 @@ export default function InitialFocus() {
 
 //   validationSchema: Yup.object().shape({
 //     price: Yup.number("Price should be a number"),
-//     imgProduct: Yup.mixed()
-//       .nullable()
-//       .required("Image product must be a filled")
-//       .test(
-//         "size",
-//         "File size is too big",
-//         (value) => value && value.size <= 1000 * 1000 // 1MB
-//       )
-//       .test(
-//         "type",
-//         "Invalid file format selection",
-//         (value) =>
-//           // console.log(value);
-//           !value || (value && SUPPORTED_FORMATS.includes(value?.type))
-//       ),
 
 
 

@@ -296,7 +296,7 @@ const userController = {
       res.status(201).send("Create user success");
     } catch (err) {
       await t.rollback();
-      return res.status(400).send(err.message);
+      return res.status(400).json({message : err.message});
     }
   },
   verify: async (req, res) => {
@@ -359,7 +359,7 @@ const userController = {
         result: newUSer,
       });
     } catch (err) {
-      res.status(400).send(err);
+      return res.status(400).send(err);
     }
   },
 

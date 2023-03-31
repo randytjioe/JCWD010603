@@ -13,6 +13,7 @@ import {
   Link,
   Icon,
 } from "@chakra-ui/react";
+import { IoIosArrowBack } from "react-icons/io";
 import { useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -384,6 +385,8 @@ export default function Register() {
             <FormControl id="province">
               <FormLabel>Province</FormLabel>
               <Select
+                bgColor={"white"}
+                placeholder="Select"
                 name="province"
                 textAlign={"center"}
                 onChange={(e) => {
@@ -391,7 +394,6 @@ export default function Register() {
                   handleId(e.target.value);
                 }}
               >
-                <option>--Select Province--</option>
                 {province.map((p) => {
                   return (
                     <option key={p.province_id} value={p.province_id}>
@@ -414,11 +416,12 @@ export default function Register() {
               <FormControl id="city">
                 <FormLabel>City</FormLabel>
                 <Select
+                  bgColor={"white"}
+                  placeholder="Select "
                   name="city"
                   textAlign={"center"}
                   onChange={(e) => formik.setFieldValue("city", e.target.value)}
                 >
-                  <option>--Select--</option>
                   {city.map((c) => {
                     return (
                       <option key={c.city_id} value={c.city_id}>
@@ -439,6 +442,7 @@ export default function Register() {
               <FormControl id="postalCode">
                 <FormLabel>Postal Code</FormLabel>
                 <Input
+                  bgColor={"white"}                
                   type="text"
                   name="postalCode"
                   onChange={(e) =>
@@ -553,6 +557,7 @@ export default function Register() {
             </FormControl>
 
             <Button
+              marginBottom={"50px"}
               onClick={formik.handleSubmit}
               disabled={enable ? null : "disabled"}
               marginTop={"25px"}
@@ -561,14 +566,13 @@ export default function Register() {
               color="#2C3639"
               w={"inherit"}
               _hover={{
-                bg: "white",
+                bg: "#E1E1E1",
                 color: "#2C3639",
               }}
-              type
-              borderRadius="3%"
-              bgColor={"#DCD7C9"}
+              borderRadius="7px"
+              bgColor={"white"}
             >
-              <Center>Submit</Center>
+            Submit
             </Button>
           </Center>
         </Center>
