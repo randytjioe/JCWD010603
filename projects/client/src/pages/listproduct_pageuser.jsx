@@ -15,28 +15,13 @@ export default function PageProducts() {
   const [categories1, setCategories1] = useState([]);
   const [page, setPage] = useState(0);
 
-  // async function fetchData(limit) {
-  //   if (limit < 0) {
-  //     limit = 0;
-  //   }
-
-  //   await axiosInstance
-  //     .get("/product-all", {
-  //       params: {
-  //         page: limit,
-  //       },
-  //     })
-  //     .then((res) => {
-  //       setData(res.data.result);
-  //     });
-  // }
   async function fetchData() {
-    await axiosInstance.get("/productall").then((res) => {
+    await axiosInstance.get("/user/productall").then((res) => {
       setData(res.data.result);
     });
   }
   async function fetchDataCat() {
-    await axiosInstance.get("/category").then((res) => {
+    await axiosInstance.get("/user/category").then((res) => {
       setDataCat(res.data.result);
     });
   }
@@ -47,15 +32,11 @@ export default function PageProducts() {
 
     console.log(url);
 
-    await axiosInstance.get("/find?" + url).then((res) => {
+    await axiosInstance.get("/user/find?" + url).then((res) => {
       setData(res.data.result);
     });
   };
-  async function fetchDataCat() {
-    await axiosInstance.get("/category").then((res) => {
-      setDataCat(res.data.result);
-    });
-  }
+
   const fetchFilPro = async () => {
     let url = "";
     categories1.map((val, idx) => {

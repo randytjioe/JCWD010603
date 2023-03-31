@@ -16,10 +16,12 @@ export default function UpdateAdressPage() {
     setidAddress(location.pathname?.split("/")[2]);
   }, []);
   async function fetchData() {
-    await axiosInstance.get("/editdetailaddress/" + idAddress).then((res) => {
-      setData(res.data.result[0]);
-      console.log(res.data.result[0]);
-    });
+    await axiosInstance
+      .get("user/editdetailaddress/" + idAddress)
+      .then((res) => {
+        setData(res.data.result[0]);
+        console.log(res.data.result[0]);
+      });
   }
 
   useEffect(() => {
