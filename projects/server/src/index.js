@@ -24,10 +24,10 @@ app.use(cors(options));
 const db_project = mysql.createConnection({
   host: process.env.host,
   port: 3306,
-  user: process.env.user,
+  user: "root",
 
-  password: process.env.pass,
-  database: process.env.database,
+  password: "B#r1#l#1@N",
+  database: "db_kopio",
 });
 
 db_project.connect((err) => {
@@ -145,9 +145,14 @@ app.patch("/users/:id/password", (req, res) => {
 
 app.use("/user", route.userRoute);
 app.use("/admin", route.adminRoute);
+app.use("/address", route.addressRoute);
+app.use("/cart", route.cartRoute);
+app.use("/product", route.productRoute);
+app.use("/voucher_discount", route.voucherDiscountRoute);
+app.use("/transaction", route.transactionRoute);
 app.use("/api_rajaongkir", route.rajaOngkirRoute);
-app.use("/post_image", express.static(`${__dirname}/public/POST`));
-app.use("/user/avatar", express.static(`${__dirname}/public/IMAGE_PRODUCT`));
+app.use("/image_product", express.static(`${__dirname}/public/IMAGE_PRODUCT`));
+app.use("/user/avatar", express.static(`${__dirname}/public/IMAGE_USER`));
 
 // ===========================
 

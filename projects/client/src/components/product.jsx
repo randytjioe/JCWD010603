@@ -331,6 +331,7 @@ export default function ProductPage(props) {
           h="full"
         >
           {data.slice(page * 6 - 6, page * 6)?.map((product, index) => {
+            console.log(product.imgProduct)
             return (
               <>
                 <Box minW="246px" h="300px">
