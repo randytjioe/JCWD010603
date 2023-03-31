@@ -7,6 +7,7 @@ import Dashboard from "../pages/dashboard";
 import LoginAdmin from "../pages/login_admin";
 import AdminSetting from "../pages/adminSetting";
 import ProtectedPage from "./protected";
+import ProtectedPageUser from "./protected_user";
 import Page404 from "../pages/page404";
 import AdminCategory from "../pages/adminCategory";
 import ListProdukUser from "../pages/listproduct_pageuser";
@@ -15,27 +16,29 @@ import AdressPage from "../pages/updateadress_page";
 import ListAddressPage from "../pages/listaddress_page";
 import ListProduk from "../pages/listproduct_page";
 import AddAddressPage from "../pages/addadress_page";
-import VerifyEmail from "../pages/verify_email.jsx"
-import ResetPassReqPage from "../pages/reset_password_request"
-import ResetPassSetPage from "../pages/reset_password_set"
-import AddProductPage from "../pages/add_product";
+import VerifyEmail from "../pages/verify_email.jsx";
+import ResetPassReqPage from "../pages/reset_password_request";
+import ResetPassSetPage from "../pages/reset_password_set";
+import DetailProduct from "../pages/detail_product";
+import AddProductPage from "../pages/addproduct";
+
 const routes = [
   {
     path: "/userlogin",
     element: (
-      <ProtectedPage guestOnly={true}>
+      <ProtectedPageUser userGuest={true}>
         <PageLogin />
-      </ProtectedPage>
+      </ProtectedPageUser>
     ),
   },
   // {
   //   path: "/",
   //   element: <HomePage />,
   // },
-  {
-    path: "/add-product",
-    element: <AddProductPage />,
-  },
+  // {
+  //   path: "/add-product",
+  //   element: <AddProductPage />,
+  // },
   {
     path: "/",
     element: <HomePage />,
@@ -59,39 +62,44 @@ const routes = [
   {
     path: "/userpage",
     element: (
-      <ProtectedPage needLogin={true}>
+      <ProtectedPageUser userLogin={true}>
         <UserPage />
-      </ProtectedPage>
+      </ProtectedPageUser>
     ),
   },
   {
     path: "/update-address/:id",
     element: (
-      <ProtectedPage needLogin={true}>
+      <ProtectedPageUser userLogin={true}>
         <AdressPage />
-      </ProtectedPage>
+      </ProtectedPageUser>
     ),
   },
   {
     path: "/add-address/:UserId",
     element: (
-      <ProtectedPage needLogin={true}>
+      <ProtectedPageUser userLogin={true}>
         <AddAddressPage />
-      </ProtectedPage>
+      </ProtectedPageUser>
     ),
   },
   {
     path: "/list-address",
     element: (
-      <ProtectedPage needLogin={true}>
+      <ProtectedPageUser userLogin={true}>
         <ListAddressPage />
-      </ProtectedPage>
+      </ProtectedPageUser>
     ),
   },
   {
     path: "/reset",
     element: <Reset />,
   },
+  {
+    path: "/detail-product/:id",
+    element: <DetailProduct />,
+  },
+
   {
     path: "/list-product",
     element: <ListProduk />,
@@ -103,9 +111,9 @@ const routes = [
   {
     path: "/update-profile",
     element: (
-      <ProtectedPage needLogin={true}>
+      <ProtectedPageUser userLogin={true}>
         <UpdateProfile />
-      </ProtectedPage>
+      </ProtectedPageUser>
     ),
   },
   {

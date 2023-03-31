@@ -21,6 +21,7 @@ import { axiosInstance } from "../config/config";
 import { useNavigate } from "react-router-dom";
 import { Link as ReachLink } from "react-router-dom";
 import * as Yup from "yup";
+import { IoIosArrowBack } from "react-icons/io";
 import { useFormik } from "formik";
 // import user_types from "../redux/auth/types";
 // import { userLogin } from "../redux/middleware/userauth";
@@ -240,7 +241,7 @@ export default function Register() {
               <Flex textAlign={"left"} color="white" py={3} px={3}>
                 <Icon
                   boxSize={"7"}
-                  as={IoIosArrowBack}
+                  // as={IoIosArrowBack}
                   color="white"
                   sx={{
                     _hover: {
@@ -389,6 +390,7 @@ export default function Register() {
                 placeholder="Select"
                 name="province"
                 textAlign={"center"}
+                bgColor="white"
                 onChange={(e) => {
                   formik.setFieldValue("province", e.target.value);
                   handleId(e.target.value);
@@ -420,6 +422,7 @@ export default function Register() {
                   placeholder="Select "
                   name="city"
                   textAlign={"center"}
+                  bgColor="white"
                   onChange={(e) => formik.setFieldValue("city", e.target.value)}
                 >
                   {city.map((c) => {
@@ -445,6 +448,7 @@ export default function Register() {
                   bgColor={"white"}                
                   type="text"
                   name="postalCode"
+                  bgColor="white"
                   onChange={(e) =>
                     formik.setFieldValue("postalCode", e.target.value)
                   }

@@ -6,10 +6,12 @@ const secret_key = process.env.secret_key;
 const mailer = require("../library/mailer");
 const { nanoid } = require("nanoid");
 const db = require("../models");
+const category = require("../models/category");
 const User = db.user;
 const User_detail = db.user_detail;
 const Address = db.address;
-
+const Category = db.category;
+const Product = db.product;
 const userController = {
   register: async (req, res) => {
     const data = req.body;
@@ -501,33 +503,55 @@ const userController = {
     }
   },
   editProfile: async (req, res) => {
+    const t = await sequelize.transaction();
+    id = req.params.id;
     try {
-      const { id, firstName, lastName, birthDate, email, gender } = req.body;
-      const data = { firstName, lastName, birthDate, email, gender };
+      const { User_id, firstName, lastName, birthDate, email, gender } =
+        req.body;
+      const data = { User_id, firstName, lastName, birthDate, email, gender };
 
-      await User.update(
+      const dataUser = {
+        email: data.email,
+      };
+      const user = await User.update(
         {
-          ...data,
+          ...dataUser,
         },
         {
           where: {
-            UserId,
+            id: id,
           },
-        }
+        },
+        { transaction: t }
       );
+      if (!user) {
+        throw new Error("Update user failed");
+      }
 
-      const result = await User.findByPk(id);
-      delete result.dataValues.password;
-      delete result.dataValues.avatar_buffer;
+      const dataUserDetail = {
+        birthDate: data.birthDate,
+        gender: data.gender,
+        firstName: data.firstName,
+        lastName: data.lastName,
+      };
+      const userDetail = await User_detail.update(
+        { ...dataUserDetail },
+        {
+          where: {
+            UserId: id,
+          },
+        },
+        { transaction: t }
+      );
+      if (!userDetail) {
+        throw new Error("Update user detail failed");
+      }
 
-      return res.status(200).json({
-        message: "user edited",
-        result,
-      });
+      await t.commit();
+      res.status(201).send("update user success");
     } catch (err) {
-      return res.status(400).json({
-        message: err.toString(),
-      });
+      await t.rollback();
+      return res.status(400).send(err.message);
     }
   },
 
@@ -841,6 +865,40 @@ const userController = {
       return res.status(401).json({ message: err.message });
     }
   },
+  changePassword: async (req, res) => {
+    // console.log(req.params.token)
+    const token = req.params.token;
+    const { password, newPassword } = req.body;
+    try {
+      if (!token) {
+        throw new Error("Token is undefined");
+      }
+
+      const passwordHash = bcrypt.hashSync(password, 10);
+      const verifyUser = await jwt.verify(token, secret_key, {
+        ignoreExpiration: true,
+      });
+
+      const change = await User.update(
+        { password: passwordHash },
+        {
+          where: {
+            id: verifyUser.id,
+          },
+        }
+      );
+      console.log(change);
+      if (!change) {
+        throw new Error("Change password failed");
+      }
+
+      res.status(200).json({ message: "Change password success" });
+    } catch (err) {
+      console.log(err);
+      return res.status(401).json({ message: err.message });
+    }
+  },
+
   updateAddress: async (req, res) => {
     try {
       const id = req.query.id;
@@ -898,6 +956,203 @@ const userController = {
       console.error(error);
       res.status(400).json({
         message: error,
+      });
+    }
+  },
+  getProductById: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const filterId = await Product.findOne({
+        include: [
+          {
+            model: Category,
+            attributes: ["name"],
+          },
+        ],
+        where: {
+          id: id,
+        },
+      });
+      res.status(200).json({
+        message: "filter product berdasarkan id",
+        result: filterId,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+  getAddressById: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const filterAddressId = await Address.findOne({
+        where: {
+          id: id,
+        },
+      });
+      res.status(200).json({
+        message: "filter address berdasarkan id",
+        result: filterAddressId,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+  getAddress: async (req, res) => {
+    try {
+      const getAddress = await Address.findAll();
+      res.status(200).json({
+        message: "get alamat",
+        result: getAddress,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+  getCategory: async (req, res) => {
+    try {
+      const getCategory = await Category.findAll();
+      res.status(200).json({
+        message: "get category",
+        result: getCategory,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+  getProduct: async (req, res) => {
+    try {
+      const getProduct = await Product.findAll({
+        include: [
+          {
+            model: Category,
+            attributes: ["name"],
+          },
+        ],
+      });
+      res.status(200).json({
+        message: "get product",
+        result: getProduct,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+  getUserDetail: async (req, res) => {
+    try {
+      const getUserDetail = await User_detail.findAll();
+      res.status(200).json({
+        message: "get user detail",
+        result: getUserDetail,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+  getListAddressByUserId: async (req, res) => {
+    try {
+      const UserId = req.params.UserId;
+      const filterListAddress = await Address.findAll({
+        where: {
+          UserId: UserId,
+        },
+      });
+      res.status(200).json({
+        message: "filter address berdasarkan user id",
+        result: filterListAddress,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+  getProductByName: async (req, res) => {
+    try {
+      const name = req.query.name;
+      const filterName = await Product.findAll({
+        where: {
+          name: {
+            [Op.like]: `%${name}%`,
+          },
+        },
+      });
+      res.status(200).json({
+        message: "find product berdasarkan nama",
+        result: filterName,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+  deleteAddress: async (req, res) => {
+    try {
+      const { id } = req.query;
+
+      const address = await Address.findByPk(id);
+      if (!address) {
+        return res.status(404).json({
+          message: "Address not found",
+        });
+      }
+
+      await address.destroy();
+      return res.status(200).json({
+        message: "Address deleted successfully",
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err.message,
+      });
+    }
+  },
+  getUserbyUserId: async (req, res) => {
+    try {
+      const UserId = req.params.UserId;
+      const result = await User.findOne({
+        attributes: ["id", "username", "email", "isVerify"],
+        include: {
+          model: User_detail,
+          attributes: [
+            "birthDate",
+            "lastname",
+            "firstname",
+            "imgUser",
+            "gender",
+          ],
+        },
+        where: {
+          id: UserId,
+        },
+      });
+      return res.status(200).json({
+        message: "admin data fetched",
+        result: result,
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err,
       });
     }
   },

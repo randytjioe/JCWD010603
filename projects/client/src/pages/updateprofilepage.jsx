@@ -11,7 +11,7 @@ export default function UpdateProfilePage() {
   async function fetchData() {
     setIsLoading(true);
     axiosInstance
-      .get("/users/" + userSelector?.id)
+      .get("/user/" + userSelector?.id)
       .then((res) => {
         setData(res.data.result);
       })

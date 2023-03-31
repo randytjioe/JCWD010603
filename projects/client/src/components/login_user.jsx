@@ -168,7 +168,7 @@ export default function Login() {
               <Flex>
                 <Flex justifyContent="right" gap={5}>
                   <Link
-                    to="/setup-password"
+                    to="/reset-password"
                     as={ReachLink}
                     href={ResetPassword}
                     color={"white"}
