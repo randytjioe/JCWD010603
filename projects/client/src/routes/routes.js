@@ -21,7 +21,7 @@ import ResetPassReqPage from "../pages/reset_password_request";
 import ResetPassSetPage from "../pages/reset_password_set";
 import DetailProduct from "../pages/detail_product";
 import AddProductPage from "../pages/addproduct";
-import DetailProductPage from "../pages/detail_product";
+
 const routes = [
   {
     path: "/userlogin",

@@ -299,11 +299,10 @@ export default function ProductPage(props) {
                   <Button variant="outline" mr={3} onClick={onClose}>
                     Cancel
                   </Button>
-                  <Flex onClick={props?.filter}>
-                    <Button colorScheme="blue" onClick={onClose}>
-                      Filter
-                    </Button>
-                  </Flex>
+
+                  <Button colorScheme="blue" onClick={props?.filter}>
+                    Filter
+                  </Button>
                 </DrawerFooter>
               </DrawerContent>
             </Drawer>
@@ -336,7 +335,7 @@ export default function ProductPage(props) {
               <>
                 <Box minW="246px" h="300px">
                   <Flex justifyContent="left">
-                    <Link to={"/detail-product/" + product?.id}>
+                    <Link to={`/`}>
                       <Image
                         w="190px"
                         h="190px"
@@ -371,9 +370,7 @@ export default function ProductPage(props) {
                         Harga : Rp. {product?.price.toLocaleString()}
                       </Text>
                     </Box>
-                    <Box fontSize="14px" as="h4">
-                      <Text>Stock :</Text>
-                    </Box>
+                    <Box fontSize="14px" as="h4"></Box>
                   </Flex>
                 </Box>
               </>

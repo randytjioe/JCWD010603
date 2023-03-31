@@ -136,9 +136,9 @@ export default function DetailProduct(props) {
           w="430px"
           h="100vh"
           flexDir="column"
-          gap={8}
+          gap={5}
         >
-          <Link to="/list-product" as={ReachLink}>
+          <Link to="/product-list-user" as={ReachLink}>
             <Flex textAlign={"left"}>
               <Icon
                 boxSize={"7"}
@@ -153,18 +153,18 @@ export default function DetailProduct(props) {
             </Flex>
           </Link>
 
-          <Flex flexDir={"column"} gap={5} overflow="auto">
-            <Flex px={30} flexDir={"column"}>
+          <Flex flexDir={"column"} overflow="auto">
+            <Center px={30} flexDir={"column"}>
               <FormControl id="productName">
                 <FormLabel>
                   <Center fontSize={"30px"}> DETAIL PRODUCT</Center>
                 </FormLabel>
               </FormControl>
-              <Flex py={10}>
+              <Flex py={3}>
                 <Breadcrumb>
                   <BreadcrumbItem>
-                    <BreadcrumbLink as={Link} to="#">
-                      Home
+                    <BreadcrumbLink as={ReachLink} to="/product-list-user">
+                      Product
                     </BreadcrumbLink>
                   </BreadcrumbItem>
 
@@ -173,66 +173,69 @@ export default function DetailProduct(props) {
                   </BreadcrumbItem>
                 </Breadcrumb>
               </Flex>
-            </Flex>
-            <Flex>
-              <Flex px={4} flexDir="column" w="200px" h="400px" gap={3}>
-                <Flex h="250px" flexDir="column">
-                  <Image
-                    w={["50px", "100px", "185px"]}
-                    h={["50px", "100px", "185px"]}
-                    src={imgProduct}
-                    alt={`Picture of ${name}`}
-                    roundedTop="lg"
-                  />
-                </Flex>
-                <Center flexDir={"column"}>
-                  Quantity
-                  <NumberInput
-                    maxW={"100px"}
-                    onChange={(valueString) => {
-                      if (valueString > props.product?.stock) {
-                        // alert("melebihi stock");
+            </Center>
 
-                        setQty(props.product?.stock);
-                      } else {
-                        setQty(valueString);
-                      }
-                    }}
-                    value={qty}
-                    min={1}
-                    bgColor="white"
-                    borderRadius={10}
-                    max={props.product?.stock}
-                  >
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                </Center>
+            <Center flexDir="column" gap={3}>
+              <Image
+                w={["50px", "100px", "185px"]}
+                h={["50px", "100px", "185px"]}
+                src={imgProduct}
+                alt={`Picture of ${name}`}
+                roundedTop="lg"
+              />
+
+              <Center
+                fontWeight={"bold"}
+                px={5}
+                fontSize="18px"
+                justifyContent={"center"}
+                textAlign={"center"}
+              >
+                {name}
+              </Center>
+              <Flex>Price : Rp. {price.toLocaleString()}</Flex>
+
+              <Flex fontWeight={"bold"}>Description</Flex>
+              <Flex px={5} fontSize={"12px"}>
+                {description}
               </Flex>
-              <Flex w="200px" h="400px" gap={3} flexDir="column">
-                <Flex h="250px" flexDir="column">
-                  <Flex fontWeight={"bold"} fontSize="18px">
-                    {name}
-                  </Flex>
-                  <Flex>Price : Rp. {price.toLocaleString()}</Flex>
-                  <Flex>Stock : </Flex>
-                  <Flex fontWeight={"bold"}>Description</Flex>
-                  <Flex fontSize={"12px"}>{description}</Flex>
-                </Flex>
-                <Flex>
-                  <Button
-                    onClick={() => props.handleAddToCart(props.product, qty)}
-                    colorScheme="green"
-                    w={"full"}
-                  >
-                    Add to Cart
-                  </Button>
-                </Flex>
+              <Flex>Stock : </Flex>
+              <Center gap={2}>
+                Quantity :
+                <NumberInput
+                  maxW={"100px"}
+                  onChange={(valueString) => {
+                    if (valueString > props.product?.stock) {
+                      // alert("melebihi stock");
+
+                      setQty(props.product?.stock);
+                    } else {
+                      setQty(valueString);
+                    }
+                  }}
+                  value={qty}
+                  min={1}
+                  bgColor="white"
+                  borderRadius={10}
+                  max={props.product?.stock}
+                >
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </Center>
+              <Flex py={3}>
+                <Button
+                  onClick={() => props.handleAddToCart(props.product, qty)}
+                  colorScheme="green"
+                  w={"full"}
+                >
+                  Add to Cart
+                </Button>
               </Flex>
-            </Flex>
+            </Center>
           </Flex>
         </Flex>
       </Flex>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "../css/pagination.css";
 import axios from "axios";
+import { Link as ReachLink } from "react-router-dom";
 import {
   Flex,
   Image,
@@ -226,28 +227,15 @@ export default function ProductUserPage(props) {
                 </Flex>
               </PopoverTrigger>
               <PopoverContent color="white" bg="#DCD7C9">
-                <PopoverHeader pt={4} fontWeight="bold" border="0">
-                  <Flex
-                    w="200px"
-                    h="56px"
-                    alignItems={"center"}
-                    borderRadius={"2%"}
-                    _hover={{
-                      bg: "#DCD7C9",
-                      color: "white",
-                      cursor: "pointer",
-                    }}
-                    py={2}
-                  >
-                    <Icon as={FaFolder} color="black" mx={2} />
+                <PopoverHeader fontWeight="bold" border="0">
+                  <Flex alignItems={"center"} borderRadius={"2%"}>
+                    <Icon as={FaFolder} color="black" mx={5} />
                     <Box
                       as="b"
-                      mx={3}
                       fontSize={18}
                       color="black"
                       textAlign={"center"}
                     >
-                      {" "}
                       CATEGORIES
                     </Box>
                   </Flex>
@@ -409,9 +397,12 @@ export default function ProductUserPage(props) {
             {data.slice(page * 6 - 6, page * 6)?.map((product, index) => {
               return (
                 <>
-                  <Box minW="150px" h="250px">
-                    <Flex justifyContent="center">
-                      <Link to={`/`}>
+                  <Box minW="135px" h="250px">
+                    <Flex>
+                      <Link
+                        to={"/detail-product/" + product?.id}
+                        as={ReachLink}
+                      >
                         <Image
                           w={["50px", "100px", "135px"]}
                           h={["50px", "100px", "135px"]}
@@ -436,19 +427,22 @@ export default function ProductUserPage(props) {
                       >
                         {product?.category}
                       </Box>
-                      <Box fontSize="12px" as="h4" lineHeight="tight">
+                      <Box
+                        fontSize="12px"
+                        as="h4"
+                        lineHeight="tight"
+                        fontWeight={"bold"}
+                      >
                         {product?.name}
                       </Box>
 
                       <Box fontSize="12px" as="h4">
                         <Text>
                           {" "}
-                          Harga : Rp. {product?.price.toLocaleString()}
+                          Price : Rp. {product?.price.toLocaleString()}
                         </Text>
                       </Box>
-                      <Box fontSize="12px" as="h4">
-                        <Text>Stock :</Text>
-                      </Box>
+                      <Box fontSize="12px" as="h4"></Box>
                     </Flex>
                   </Box>
                 </>

@@ -85,16 +85,16 @@ export default function UpdateProfile(props) {
   }, []);
   const fetchuserdetail = async (User_id) => {
     await axiosInstance
-      .get("/users/" + User_id)
+      .get("/user/" + User_id)
       .then((response) => {
         setUserDetail(response.data.result);
         console.log(response.data.result);
-        setFirstName(response.data.result.firstName);
-        setLastName(response.data.result.lastName);
+        setFirstName(response.data.result.User_detail.firstname);
+        setLastName(response.data.result.User_detail.lastname);
         setEmail(response.data.result.email);
-        setbirthDate(response.data.result.birthDate);
-        setImgUser(response.data.result.imgUser);
-        setGender(response.data.result.gender);
+        setbirthDate(response.data.result.User_detail.birthDate);
+        setImgUser(response.data.result.User_detail.imgUser);
+        setGender(response.data.result.User_detail.gender);
       })
       .catch((error) => {
         console.log({ error });
@@ -200,7 +200,7 @@ export default function UpdateProfile(props) {
     };
 
     try {
-      await axiosInstance.patch("/editprofile?id=" + User_id, Data);
+      await axiosInstance.patch("/user/editprofile/" + User_id, Data);
       navigate("/userpage");
     } catch (error) {
       console.error(error);
@@ -382,14 +382,16 @@ export default function UpdateProfile(props) {
                 variant="outline"
                 bgColor="white"
                 value={gender}
+                placeholder={gender ? "MEN" : "WOMEN"}
                 onChange={(e) => {
                   setGender(e.target.value);
                 }}
               >
-                <option value="1" selected>
-                  PRIA
-                </option>
-                <option value="0">PEREMPUAN</option>
+                {gender ? (
+                  <option value="0">WOMEN</option>
+                ) : (
+                  <option value="1">MEN</option>
+                )}
               </Select>
             </FormControl>
             <FormControl id="birthday">
