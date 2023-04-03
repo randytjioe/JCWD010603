@@ -24,10 +24,10 @@ app.use(cors(options));
 const db_project = mysql.createConnection({
   host: process.env.host,
   port: 3306,
-  user: process.env.user,
+  user: "root",
 
-  password: process.env.pass,
-  database: process.env.database,
+  password: "B#r1#l#1@N",
+  database: "db_kopio",
 });
 
 db_project.connect((err) => {
@@ -45,29 +45,12 @@ app.use(express.json());
 // ===========================
 // NOTE : Add your routes here
 
-app.get("/update-user", (req, res) => {
-  const qString = "Select * FROM user_details";
-  db_project.query(qString, (err, result) => {
-    if (err) {
-      res.status(400).json({
-        message: "query error",
-      });
-    }
-    res.status(200).json({
-      message: "data fetched",
-      result: result,
-    });
-  });
-});
 app.get("/filter", (req, res) => {
-  // console.log(req.query);
   const { order } = req.query;
   const { orderby } = req.query;
   delete req.query.order;
   delete req.query.orderby;
   const arrQuery = Object.entries(req.query);
-
-  // console.log(categories);
   let categories = arrQuery.filter((val) => {
     return val[0];
   });
@@ -108,90 +91,6 @@ app.get("/filter", (req, res) => {
       });
     }
 
-    res.status(200).json({
-      message: "data fetched",
-      result: result,
-    });
-  });
-});
-app.get("/user/addresses", (req, res) => {
-  const qString = "Select * FROM addresses";
-  db_project.query(qString, (err, result) => {
-    if (err) {
-      res.status(400).json({
-        message: "query error",
-      });
-    }
-    res.status(200).json({
-      message: "data fetched",
-      result: result,
-    });
-  });
-});
-
-app.get("/product-all", (req, res) => {
-  const offset = req.query.page ? req.query.page : 0;
-  console.log(offset);
-  const qString =
-    "Select p.name,p.price,p.imgProduct,c.name as category FROM products p JOIN categories c on p.CategoryId=c.id limit 6 offset " +
-    offset;
-  db_project.query(qString, (err, result) => {
-    if (err) {
-      res.status(400).json({
-        message: "query error",
-      });
-    }
-    res.status(200).json({
-      message: "data fetched",
-      result: result,
-    });
-  });
-});
-
-app.get("/productall", (req, res) => {
-  const qString =
-    "Select p.name,p.price,p.imgProduct,c.name as category FROM products p JOIN categories c on p.CategoryId=c.id";
-  db_project.query(qString, (err, result) => {
-    if (err) {
-      res.status(400).json({
-        message: "query error",
-      });
-    }
-    res.status(200).json({
-      message: "data fetched",
-      result: result,
-    });
-  });
-});
-app.get("/find", (req, res) => {
-  console.log(req.query);
-  let qString = "Select * from products ";
-
-  qString = qString + " where name LIKE '%" + req.query.name + "%' ";
-
-  console.log(qString);
-  db_project.query(qString, (err, result) => {
-    if (err) {
-      return res.status(400).json({
-        message: "query error",
-      });
-    }
-
-    console.log(res.data);
-    res.status(200).json({
-      message: "data fetched",
-      result: result,
-    });
-  });
-});
-app.get("/category", (req, res) => {
-  const qString = "Select * from categories";
-  db_project.query(qString, (err, result) => {
-    if (err) {
-      res.status(400).json({
-        message: "query error",
-      });
-    }
     res.status(200).json({
       message: "data fetched",
       result: result,
@@ -244,161 +143,16 @@ app.patch("/users/:id/password", (req, res) => {
   );
 });
 
-app.patch("/editprofile", (req, res) => {
-  // console.log(req.query.id);
-  console.log(req.body);
-  const qString = `update user_details ud JOIN users u on ud.UserId=u.id set ud.firstName ="${req.body.firstName}",ud.lastName ="${req.body.lastName}",ud.birthDate="${req.body.birthDate}",ud.gender=${req.body.gender},u.email="${req.body.email}" where ud.UserId=${req.body.User_id}`;
-  db_project.query(qString, (err, result) => {
-    if (err) {
-      console.log(err);
-      return res.status(400).json({
-        message: "query error",
-      });
-    }
-    res.status(200).json({
-      message: "data fetched",
-      result: result,
-    });
-  });
-});
-
-// app.patch("/editaddress", (req, res) => {
-//   // console.log(req.query.id);
-//   console.log(req.body);
-//   const qString = `update addresses set district ="${req.body.district}",province ="${req.body.province}",city="${req.body.city}",postalCode=${req.body.postalCode},address="${req.body.address}" ,isPrimary=${req.body.isPrimary},Ket="${req.body.ket}" where id=${req.body.id}`;
-//   db_project.query(qString, (err, result) => {
-//     if (err) {
-//       console.log(err);
-//       return res.status(400).json({
-//         message: "query error",
-//       });
-//     }
-//     res.status(200).json({
-//       message: "data fetched",
-//       result: result,
-//     });
-//   });
-// });
-
-app.patch("/editprimary", (req, res) => {
-  // console.log(req.query.id);
-  console.log(req.body);
-  const qString = `update addresses set isPrimary=${req.body.isPrimary} where id=${req.body.id}`;
-  db_project.query(qString, (err, result) => {
-    if (err) {
-      console.log(err);
-      return res.status(400).json({
-        message: "query error",
-      });
-    }
-    res.status(200).json({
-      message: "data fetched",
-      result: result,
-    });
-  });
-});
-
-app.patch("/edit-password", (req, res) => {
-  const qString = `update users set password ="${req.body.password}" `;
-  db_project.query(qString, (err, result) => {
-    if (err) {
-      console.log(err);
-      res.status(400).json({
-        message: "query error",
-      });
-    }
-    res.status(200).json({
-      message: "data fetched",
-      result: result,
-    });
-  });
-});
-
-app.delete("/delete-address", (req, res) => {
-  // console.log(req.query.id);
-  // console.log(req.body);
-  const qString = `delete from addresses where id=${req.query.id}`;
-  db_project.query(qString, (err, result) => {
-    if (err) {
-      return res.status(400).json({
-        message: "query error",
-      });
-    }
-    res.status(200).json({
-      message: "data fetched",
-      result: result,
-    });
-  });
-});
-
-app.get("/users/:UserId", (req, res) => {
-  console.log(req.params);
-  const qString =
-    "SELECT  * FROM (SELECT DATE_FORMAT(ud.birthDate, '%Y-%m-%d') as birthDate,ud.lastName,ud.firstName,ud.imgUser,ud.UserId,ud.gender,u.username,u.isVerify,u.email FROM user_details ud JOIN users u on ud.UserId=u.id) as n where n.UserId =" +
-    req.params.UserId;
-  db_project.query(qString, (err, result) => {
-    if (err) {
-      return res.status(400).json({
-        message: "query error",
-      });
-    }
-    res.status(200).json({
-      message: "data fetched",
-      result: result[0],
-    });
-  });
-});
-
-app.get("/update-address/:id", (req, res) => {
-  console.log(req.params);
-  const qString = "SELECT  * FROM addresses where id =" + req.params.id;
-  db_project.query(qString, (err, result) => {
-    if (err) {
-      return res.status(400).json({
-        message: "query error",
-      });
-    }
-    res.status(200).json({
-      message: "data fetched",
-      result: result,
-    });
-  });
-});
-app.get("/listaddress/:Userid", (req, res) => {
-  console.log(req.params);
-  const qString = "SELECT  * FROM addresses where Userid =" + req.params.Userid;
-  db_project.query(qString, (err, result) => {
-    if (err) {
-      return res.status(400).json({
-        message: "query error",
-      });
-    }
-    res.status(200).json({
-      message: "data fetched",
-      result: result,
-    });
-  });
-});
-app.get("/editdetailaddress/:id", (req, res) => {
-  console.log(req.params);
-  const qString = "SELECT  * FROM addresses where id =" + req.params.id;
-  db_project.query(qString, (err, result) => {
-    if (err) {
-      return res.status(400).json({
-        message: "query error",
-      });
-    }
-    res.status(200).json({
-      message: "data fetched",
-      result: result,
-    });
-  });
-});
 app.use("/user", route.userRoute);
 app.use("/admin", route.adminRoute);
+app.use("/address", route.addressRoute);
+app.use("/cart", route.cartRoute);
+app.use("/product", route.productRoute);
+app.use("/voucher_discount", route.voucherDiscountRoute);
+app.use("/transaction", route.transactionRoute);
 app.use("/api_rajaongkir", route.rajaOngkirRoute);
-app.use("/post_image", express.static(`${__dirname}/public/POST`));
-app.use("/user/avatar", express.static(`${__dirname}/public/IMAGE_PRODUCT`));
+app.use("/image_product", express.static(`${__dirname}/public/IMAGE_PRODUCT`));
+app.use("/user/avatar", express.static(`${__dirname}/public/IMAGE_USER`));
 
 // ===========================
 

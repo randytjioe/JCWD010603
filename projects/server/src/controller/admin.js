@@ -1,8 +1,8 @@
-const db = require('../models');
-const { Op } = require('sequelize');
-const bcrypt = require('bcrypt');
-const { sequelize } = require('../models');
-const jwt = require('jsonwebtoken');
+const db = require("../models");
+const { Op } = require("sequelize");
+const bcrypt = require("bcrypt");
+const { sequelize } = require("../models");
+const jwt = require("jsonwebtoken");
 const secret_key = process.env.secret_key;
 
 const Admins = db.admin;
@@ -14,17 +14,16 @@ const Voucher_type = db.voucher_type;
 const Voucher = db.voucher;
 
 const adminController = {
-    login: async (req, res) => {
-        try {
-            const { email, password } = req.body;
-            const result = await Admins.findOne({
-                where: {
-                    email: {
-                        [Op.eq]: sequelize.literal(`BINARY '${email}'`)
-                    }
-                },
-                raw: true
-            })
+  login: async (req, res) => {
+    const { email, password } = req.body;
+    const result = await Admins.findOne({
+      where: {
+        email: {
+          [Op.eq]: sequelize.literal(`BINARY '${email}'`),
+        },
+      },
+      raw: true,
+    });
 
             if (!result) {
                 return res.status(400).json({
@@ -55,252 +54,266 @@ const adminController = {
             )
         }
 
-        // else {
-        //     const check = bcrypt.compare(password, result.password)
+    // else {
+    //     const check = bcrypt.compare(password, result.password)
 
-        //     if (!check) {
-        //         return res.status(400).json({
-        //             message: "Wrong password"
-        //         })
-        //     }
+    //     if (!check) {
+    //         return res.status(400).json({
+    //             message: "Wrong password"
+    //         })
+    //     }
 
-        //     else {
-        //         return res.status(200).json({
-        //             message: "Logged in",
-        //             result: result
-        //         })
-        //     }
-        // }
-    },
+    //     else {
+    //         return res.status(200).json({
+    //             message: "Logged in",
+    //             result: result
+    //         })
+    //     }
+    // }
+  },
 
-    createAdmin: async (req, res) => {
-        const data = req.body
+  createAdmin: async (req, res) => {
+    const data = req.body;
 
-        const t = await sequelize.transaction();
-        try {
-            const password = bcrypt.hashSync(data.password, 10)
+    const t = await sequelize.transaction();
+    try {
+      const password = bcrypt.hashSync(data.password, 10);
 
-            const dataAdmin = {
-                username: data.username,
-                email: data.email,
-                password: password,
-                isSuperAdmin: false,
-                BranchId: data.branches
-            }
-            const existingAdmin = await Admins.findOne({ where: { BranchId: data.branches } });
-            if (existingAdmin) {
-                throw new Error('This branch already has an administrator assigned.');
-            }
+      const dataAdmin = {
+        username: data.username,
+        email: data.email,
+        password: password,
+        isSuperAdmin: false,
+        BranchId: data.branches,
+      };
 
-            const admin = await Admins.create({ ...dataAdmin }, { transaction: t })
-            if (!admin) {
-                throw new Error('Failed to create')
-            }
-            await t.commit();
-            res.status(201).send('Create user success')
-        } catch (err) {
-            console.log(err);
-            await t.rollback();
-            return res.status(400).send({
-                error: err.message
-            })
-        }
-    },
+      const admin = await Admins.create({ ...dataAdmin }, { transaction: t });
+      if (!admin) {
+        throw new Error("Failed to create");
+      }
+      await t.commit();
+      res.status(201).send("Create user success");
+    } catch (err) {
+      console.log(err);
+      await t.rollback();
+      return res.status(400).send(err);
+    }
+  },
 
-    getAdmin: async (req, res) => {
-        try {
-            const result = await Admins.findAll({
-                attributes: ['id', 'username', 'email', 'isSuperAdmin', 'BranchId'],
-                include: {
-                    model: Branch,
-                    attributes: ['city']
-                }
-            });
-            return res.status(200).json({
-                message: 'admin data fetched',
-                result: result,
-            });
+  getAdmin: async (req, res) => {
+    try {
+      const result = await Admins.findAll({
+        attributes: ["id", "username", "email", "isSuperAdmin", "BranchId"],
+        include: {
+          model: Branch,
+          attributes: ["city"],
+        },
+      });
+      return res.status(200).json({
+        message: "admin data fetched",
+        result: result,
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err,
+      });
+    }
+  },
 
-        } catch (err) {
-            return res.status(400).json({
-                message: err,
-            });
-        }
-    },
+  deleteAdmin: async (req, res) => {
+    try {
+      const { id } = req.params;
 
-    deleteAdmin: async (req, res) => {
-        try {
-            const { id } = req.params;
+      const admin = await Admins.findByPk(id);
+      if (!admin) {
+        return res.status(404).json({
+          message: "Admin not found",
+        });
+      }
 
-            const admin = await Admins.findByPk(id);
-            if (!admin) {
-                return res.status(404).json({
-                    message: "Admin not found",
-                });
-            }
+      if (admin.isSuperAdmin) {
+        return res.status(400).json({
+          message: "Cannot delete super admin",
+        });
+      }
 
-            if (admin.isSuperAdmin) {
-                return res.status(400).json({
-                    message: "Cannot delete super admin",
-                });
-            }
+      await admin.destroy();
+      return res.status(200).json({
+        message: "Admin deleted successfully",
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err.message,
+      });
+    }
+  },
 
-            await admin.destroy();
-            return res.status(200).json({
-                message: "Admin deleted successfully",
-            });
-        } catch (err) {
-            return res.status(400).json({
-                message: err.message,
-            });
-        }
-    },
+  createBranches: async (req, res) => {
+    const data = req.body;
 
-    createBranches: async (req, res) => {
-        const data = req.body;
+    const t = await sequelize.transaction();
+    try {
+      const dataBranch = {
+        name: data.name,
+        district: data.district,
+        city: data.city,
+        province: data.province,
+        postalCode: data.postalCode,
+      };
+      console.log({ ...dataBranch });
+      const branch = await Branch.create({ ...dataBranch }, { transaction: t });
+      if (!branch) {
+        throw new Error("Failed to create");
+      }
 
-        const t = await sequelize.transaction();
-        try {
-            const dataBranch = {
-                name: data.name,
-                district: data.district,
-                city: data.city,
-                province: data.province,
-                postalCode: data.postalCode
-            }
-            console.log({ ...dataBranch })
-            const branch = await Branch.create({ ...dataBranch }, { transaction: t })
-            if (!branch) {
-                throw new Error('Failed to create')
-            }
+      // const products = await Product.findAll();
+      // console.log('my product list == >', products);
+      // const newStockData = products.map((product) => ({
+      //     BranchId: branch.id,
+      //     ProductId: product.id,
+      //     qty: 29,
+      // }));
+      // console.log('my newStockData ==>', newStockData);
+      // await Stock.bulkCreate(newStockData, { transaction: t });
 
-            await t.commit();
-            res.status(201).send('Create branches success')
+      await t.commit();
+      res.status(201).send("Create branches success");
+    } catch (err) {
+      console.log(err);
+      await t.rollback();
+      return res.status(400).send(err);
+    }
+  },
 
-        } catch (err) {
-            console.log(err);
-            await t.rollback();
-            return res.status(400).send(err)
-        }
-    },
+  getBranches: async (req, res) => {
+    try {
+      const result = await Branch.findAll({
+        attributes: [
+          "id",
+          "name",
+          "district",
+          "city",
+          "province",
+          "postalCode",
+        ],
+      });
+      return res.status(200).json({
+        message: "branch data fetched",
+        result: result,
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err,
+      });
+    }
+  },
 
-    getBranches: async (req, res) => {
-        try {
-            const result = await Branch.findAll({
-                attributes: ['id', 'name', 'district', 'city', 'province', 'postalCode'],
-            });
-            return res.status(200).json({
-                message: 'branch data fetched',
-                result: result,
-            });
+  deleteBranches: async (req, res) => {
+    try {
+      const { id } = req.params;
 
-        } catch (err) {
-            return res.status(400).json({
-                message: err,
-            });
-        }
-    },
+      const branch = await Branch.findByPk(id);
+      if (!branch) {
+        return res.status(404).json({
+          message: "Branches not found",
+        });
+      }
 
-    deleteBranches: async (req, res) => {
-        try {
-            const { id } = req.params;
+      await branch.destroy();
+      return res.status(200).json({
+        message: "Branch deleted successfully",
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err.message,
+      });
+    }
+  },
 
-            const branch = await Branch.findByPk(id);
-            if (!branch) {
-                return res.status(404).json({
-                    message: "Branches not found",
-                });
-            }
+  createCategory: async (req, res) => {
+    const data = req.body;
+    const t = await sequelize.transaction();
 
-            await branch.destroy();
-            return res.status(200).json({
-                message: "Branch deleted successfully",
-            });
-        } catch (err) {
-            return res.status(400).json({
-                message: err.message,
-            });
-        }
-    },
+    try {
+      const category = await Category.create(
+        { name: data.name },
+        { transaction: t }
+      );
+      if (!category) {
+        throw new Error("Failed to create");
+      }
+      await t.commit();
+      res.status(201).send("Category created successfully");
+    } catch (err) {
+      await t.rollback();
+      return res.status(400).send(err);
+    }
+  },
 
-    createCategory: async (req, res) => {
-        const data = req.body;
-        const t = await sequelize.transaction();
+  getCategory: async (req, res) => {
+    try {
+      const result = await Category.findAll({
+        attributes: ["id", "name"],
+      });
+      return res.status(200).json({
+        message: "category data fetched",
+        result: result,
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err,
+      });
+    }
+  },
 
-        try {
-            const category = await Category.create({ name: data.name }, { transaction: t });
-            if (!category) {
-                throw new Error('Failed to create');
-            }
-            await t.commit();
-            res.status(201).send('Category created successfully');
-        } catch (err) {
-            await t.rollback();
-            return res.status(400).send(err);
-        }
-    },
+  updateCategory: async (req, res) => {
+    const data = req.body;
+    const { id } = req.params;
 
-    getCategory: async (req, res) => {
-        try {
-            const result = await Category.findAll({
-                attributes: ['id', 'name']
-            });
-            return res.status(200).json({
-                message: 'category data fetched',
-                result: result,
-            });
-        } catch (err) {
-            return res.status(400).json({
-                message: err,
-            })
-        }
-    },
+    const t = await sequelize.transaction();
+    try {
+      const category = await Category.findOne({ where: { id: id } });
+      if (!category) {
+        throw new Error("Category not found");
+      }
+      const updatedCategory = await category.update(
+        { name: data.name },
+        { transaction: t }
+      );
+      if (!updatedCategory) {
+        throw new Error("Failed to update");
+      }
+      await t.commit();
+      res.status(200).send("Update category success");
+    } catch (err) {
+      console.log(err);
+      await t.rollback();
+      return res.status(400).send(err.message);
+    }
+  },
 
-    updateCategory: async (req, res) => {
-        const data = req.body;
-        const { id } = req.params;
+  deleteCategory: async (req, res) => {
+    const { id } = req.params;
 
-        const t = await sequelize.transaction();
-        try {
-            const category = await Category.findOne({ where: { id: id } });
-            if (!category) {
-                throw new Error('Category not found');
-            }
-            const updatedCategory = await category.update({ name: data.name }, { transaction: t });
-            if (!updatedCategory) {
-                throw new Error('Failed to update');
-            }
-            await t.commit();
-            res.status(200).send('Update category success');
-        } catch (err) {
-            console.log(err);
-            await t.rollback();
-            return res.status(400).send(err.message);
-        }
-    },
+    const t = await sequelize.transaction();
+    try {
+      const category = await Category.findOne({ where: { id: id } });
+      if (!category) {
+        throw new Error("Category not found");
+      }
+      await category.destroy({ transaction: t });
+      await t.commit();
+      res.status(200).send("Delete category success");
+    } catch (err) {
+      console.log(err);
+      await t.rollback();
+      return res.status(400).send(err.message);
+    }
+  },
 
-    deleteCategory: async (req, res) => {
-        const { id } = req.params;
-
-        const t = await sequelize.transaction();
-        try {
-            const category = await Category.findOne({ where: { id: id } });
-            if (!category) {
-                throw new Error('Category not found');
-            }
-            await category.destroy({ transaction: t });
-            await t.commit();
-            res.status(200).send('Delete category success');
-        } catch (err) {
-            console.log(err);
-            await t.rollback();
-            return res.status(400).send(err.message);
-        }
-    },
-
-    updateStock: async (req, res) => {
-        const data = req.body;
-        const { id } = req.params;
+  updateStock: async (req, res) => {
+    const data = req.body;
+    const { id } = req.params;
 
         const t = await sequelize.transaction();
         try {
@@ -319,92 +332,6 @@ const adminController = {
             return res.status(400).send(err.message);
         }
     },
-
-    createVoucherType: async (req, res) => {
-        const data = req.body;
-        const t = await sequelize.transaction();
-
-        try {
-            const voucherData = {
-                name: data.name
-            }
-            const voucherType = await Voucher_type.create({ ...voucherData }, { transaction: t })
-            if (!voucherType) {
-                throw new Error('Failed to create')
-            }
-
-            await t.commit();
-            res.status(201).send('Voucher type created successfully')
-        } catch (err) {
-            await t.rollback();
-            return res.status(400).send(err)
-        }
-    },
-
-    getVoucherType: async (req, res) => {
-        try {
-            const data = await Voucher_type.findAll({
-                attributes: ['id', 'name']
-            });
-            return res.status(200).json({
-                message: 'Voucher Category Data Successfully Fetched',
-                result: data
-            })
-        } catch (err) {
-            res.status(400).json({
-                message: err,
-            })
-        }
-    },
-
-    deleteVoucherType: async (req, res) => {
-        try {
-            const { id } = req.params;
-
-            const voucherType = await Voucher_type.findByPk(id);
-            if (!voucherType) {
-                return res.status(404).json({
-                    message: "Voucher type not found",
-                });
-            }
-
-            await voucherType.destroy();
-            return res.status(200).json({
-                message: "Voucher Type deleted successfully",
-            });
-        } catch (err) {
-            return res.status(400).json({
-                message: err.message,
-            });
-        }
-    },
-
-    createVoucher: async (req, res) => {
-        const data = req.body;
-        const t = await sequelize.transaction();
-
-        try {
-            const voucher = {
-                name: data.name,
-                code: data.code,
-                nominal: data.nominal,
-                expiredDate: data.expiredDate,
-                VoucherTypeId: data.VoucherTypeId
-            }
-            const vouchers = await Voucher.create({ ...voucher }, { transaction: t })
-            if (!vouchers) {
-                throw new Error('Failed to create')
-            }
-
-            await t.commit();
-            res.status(201).send('Voucher created succesfully')
-        } catch (err) {
-            await t.rollback();
-            res.status(400).send(err)
-        }
-    },
-
-
 }
 
-module.exports = adminController
+module.exports = adminController;

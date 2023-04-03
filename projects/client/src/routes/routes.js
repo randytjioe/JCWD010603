@@ -21,8 +21,8 @@ import ResetPassReqPage from "../pages/reset_password_request";
 import ResetPassSetPage from "../pages/reset_password_set";
 import Cart from "../pages/cart";
 import Discount from "../pages/discount";
-// import AddProductPage from "../pages/addproduct";
-
+import DetailProduct from "../pages/detail_product";
+import AddProductPage from "../pages/addproduct";
 
 const routes = [
   {
@@ -97,6 +97,11 @@ const routes = [
     path: "/reset",
     element: <Reset />,
   },
+  {
+    path: "/detail-product/:id",
+    element: <DetailProduct />,
+  },
+
   {
     path: "/list-product",
     element: <ListProduk />,

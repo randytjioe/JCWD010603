@@ -33,8 +33,8 @@ export default function Dashboard() {
               flexWrap="wrap"
             >
               <Center
-                w="349px"
-                h="125px"
+                w={["149px", "249px", "349px"]}
+                h={["25px", "75px", "125px"]}
                 borderRadius={"10"}
                 borderBottom="10px solid #2C3639"
                 bgColor={"#DCD7C9"}
@@ -48,8 +48,8 @@ export default function Dashboard() {
                 <Flex fontSize={"40px"}>1000</Flex>
               </Center>
               <Center
-                w="349px"
-                h="125px"
+                w={["149px", "249px", "349px"]}
+                h={["25px", "75px", "125px"]}
                 borderRadius={"10"}
                 borderBottom="10px solid #2C3639"
                 bgColor={"#DCD7C9"}
@@ -63,8 +63,8 @@ export default function Dashboard() {
                 <Flex fontSize={"40px"}>5</Flex>
               </Center>
               <Center
-                w="349px"
-                h="125px"
+                w={["149px", "249px", "349px"]}
+                h={["25px", "75px", "125px"]}
                 borderRadius={"10"}
                 borderBottom="10px solid #2C3639"
                 bgColor={"#DCD7C9"}
@@ -78,8 +78,8 @@ export default function Dashboard() {
                 <Flex fontSize={"40px"}>45800</Flex>
               </Center>
               <Center
-                w="349px"
-                h="125px"
+                w={["149px", "249px", "349px"]}
+                h={["25px", "75px", "125px"]}
                 borderRadius={"10"}
                 borderBottom="10px solid #2C3639"
                 bgColor={"#DCD7C9"}

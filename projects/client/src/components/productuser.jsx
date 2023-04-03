@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "../css/pagination.css";
 import axios from "axios";
+import { Link as ReachLink } from "react-router-dom";
 import {
   Flex,
   Image,
@@ -59,7 +60,8 @@ import {
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import React from "react";
-import { axiosInstance } from "../config/config";
+
+import { axiosInstance, beautyScroll } from "../config/config";
 export default function ProductUserPage(props) {
   const data = props.data;
   const datacat = props.datacat;
@@ -141,11 +143,10 @@ export default function ProductUserPage(props) {
         justifyContent="start"
         fontFamily={"Tw Cen MT"}
         flexWrap="wrap"
+        position={"relative"}
         flexDir={"column"}
-        overflowX={"auto"}
-        overflowY={"auto"}
         fontSize="30px"
-        h="full"
+        overflow={"hidden"}
       >
         PRODUCT LIST
         <Center fontSize={"14px"} gap={3} justifyContent="left">
@@ -226,28 +227,15 @@ export default function ProductUserPage(props) {
                 </Flex>
               </PopoverTrigger>
               <PopoverContent color="white" bg="#DCD7C9">
-                <PopoverHeader pt={4} fontWeight="bold" border="0">
-                  <Flex
-                    w="200px"
-                    h="56px"
-                    alignItems={"center"}
-                    borderRadius={"2%"}
-                    _hover={{
-                      bg: "#DCD7C9",
-                      color: "white",
-                      cursor: "pointer",
-                    }}
-                    py={2}
-                  >
-                    <Icon as={FaFolder} color="black" mx={2} />
+                <PopoverHeader fontWeight="bold" border="0">
+                  <Flex alignItems={"center"} borderRadius={"2%"}>
+                    <Icon as={FaFolder} color="black" mx={5} />
                     <Box
                       as="b"
-                      mx={3}
                       fontSize={18}
                       color="black"
                       textAlign={"center"}
                     >
-                      {" "}
                       CATEGORIES
                     </Box>
                   </Flex>
@@ -392,28 +380,32 @@ export default function ProductUserPage(props) {
             </Popover>
           </InputGroup>
         </Flex>
-        <Flex overflowX={"auto"} overflowY={"auto"}>
-          <Flex
-            w="350px"
+        <Center>
+          <Center
+            w="430px"
             gap={5}
             paddingTop="20px"
             paddingBottom={"20px"}
-            justifyContent="start"
+            justifyContent="center"
             flexDir={"row"}
             flexWrap="wrap"
             overflowX={"auto"}
             overflowY={"auto"}
-            h="full"
+            sx={beautyScroll}
+            h="465px"
           >
             {data.slice(page * 6 - 6, page * 6)?.map((product, index) => {
               return (
                 <>
-                  <Box minW="150px" h="300px">
-                    <Flex justifyContent="left">
-                      <Link to={`/`}>
+                  <Box minW="135px" h="250px">
+                    <Flex>
+                      <Link
+                        to={"/detail-product/" + product?.id}
+                        as={ReachLink}
+                      >
                         <Image
-                          w="165px"
-                          h="165px"
+                          w={["50px", "100px", "135px"]}
+                          h={["50px", "100px", "135px"]}
                           src={product?.imgProduct}
                           alt={`Picture of ${product?.name}`}
                           roundedTop="lg"
@@ -435,29 +427,39 @@ export default function ProductUserPage(props) {
                       >
                         {product?.category}
                       </Box>
-                      <Box fontSize="12px" as="h4" lineHeight="tight">
+                      <Box
+                        fontSize="12px"
+                        as="h4"
+                        lineHeight="tight"
+                        fontWeight={"bold"}
+                      >
                         {product?.name}
                       </Box>
 
                       <Box fontSize="12px" as="h4">
                         <Text>
                           {" "}
-                          Harga : Rp. {product?.price.toLocaleString()}
+                          Price : Rp. {product?.price.toLocaleString()}
                         </Text>
                       </Box>
-                      <Box fontSize="12px" as="h4">
-                        <Text>Stock :</Text>
-                      </Box>
+                      <Box fontSize="12px" as="h4"></Box>
                     </Flex>
                   </Box>
                 </>
               );
             })}
-          </Flex>
-        </Flex>
-        <Center gap={10} w="350px">
+          </Center>
+        </Center>
+        <Center
+          gap={5}
+          w="430px"
+          position={"fixed"}
+          bottom={0}
+          p={2}
+          bgColor="white"
+        >
           {data.length > 0 && (
-            <Flex gap={5} className="pagination">
+            <Flex gap={5}>
               <Button
                 className="arrows"
                 onClick={() => selectPageHandle(page - 1)}

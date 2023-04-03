@@ -6,6 +6,7 @@ const secret_key = process.env.secret_key;
 const mailer = require("../library/mailer");
 const { nanoid } = require("nanoid");
 const db = require("../models");
+const category = require("../models/category");
 const User = db.user;
 const User_detail = db.user_detail;
 const Address = db.address;
@@ -13,6 +14,7 @@ const Cart = db.cart;
 const Product = db.product;
 const Voucher_type = db.voucher_type;
 const Voucher = db.voucher;
+const Category = db.category;
 
 const userController = {
   register: async (req, res) => {
@@ -300,7 +302,7 @@ const userController = {
       res.status(201).send("Create user success");
     } catch (err) {
       await t.rollback();
-      return res.status(400).send(err.message);
+      return res.status(400).json({message : err.message});
     }
   },
 
@@ -365,7 +367,7 @@ const userController = {
         result: newUSer,
       });
     } catch (err) {
-      res.status(400).send(err);
+      return res.status(400).send(err);
     }
   },
 
@@ -511,33 +513,55 @@ const userController = {
   },
 
   editProfile: async (req, res) => {
+    const t = await sequelize.transaction();
+    id = req.params.id;
     try {
-      const { id, firstName, lastName, birthDate, email, gender } = req.body;
-      const data = { firstName, lastName, birthDate, email, gender };
+      const { User_id, firstName, lastName, birthDate, email, gender } =
+        req.body;
+      const data = { User_id, firstName, lastName, birthDate, email, gender };
 
-      await User.update(
+      const dataUser = {
+        email: data.email,
+      };
+      const user = await User.update(
         {
-          ...data,
+          ...dataUser,
         },
         {
           where: {
-            UserId,
+            id: id,
           },
-        }
+        },
+        { transaction: t }
       );
+      if (!user) {
+        throw new Error("Update user failed");
+      }
 
-      const result = await User.findByPk(id);
-      delete result.dataValues.password;
-      delete result.dataValues.avatar_buffer;
+      const dataUserDetail = {
+        birthDate: data.birthDate,
+        gender: data.gender,
+        firstName: data.firstName,
+        lastName: data.lastName,
+      };
+      const userDetail = await User_detail.update(
+        { ...dataUserDetail },
+        {
+          where: {
+            UserId: id,
+          },
+        },
+        { transaction: t }
+      );
+      if (!userDetail) {
+        throw new Error("Update user detail failed");
+      }
 
-      return res.status(200).json({
-        message: "user edited",
-        result,
-      });
+      await t.commit();
+      res.status(201).send("update user success");
     } catch (err) {
-      return res.status(400).json({
-        message: err.toString(),
-      });
+      await t.rollback();
+      return res.status(400).send(err.message);
     }
   },
 
@@ -851,7 +875,6 @@ const userController = {
       return res.status(401).json({ message: err.message });
     }
   },
-
   updateAddress: async (req, res) => {
     try {
       const id = req.query.id;
@@ -912,98 +935,6 @@ const userController = {
       });
     }
   },
-
-  getCartData: async (req, res) => {
-    const page = parseInt(req.query.page) || 1; // default to page 1 if not provided
-    const pageSize = 5;
-
-    try {
-      const totalCount = await Cart.count();
-      const totalPages = Math.ceil(totalCount / pageSize);
-
-      // Adjust the page number to the last page if it is greater than the total number of pages
-      if (page > totalPages) {
-        page = totalPages;
-      }
-
-      const result = await Cart.findAll({
-        attributes: ['id', 'qty', 'ProductId', 'UserId'],
-        include: [{
-          model: Product,
-          attributes: ['name', 'price', 'imgProduct'],
-        }],
-      });
-
-      const totalPrice = result.reduce((acc, item) => {
-        return acc + (item.Product.price * item.qty);
-      }, 0);
-
-      return res.status(200).json({
-        message: 'Cart data successfully fetched',
-        result: result.slice((page - 1) * pageSize, page * pageSize), // Only send the data for the requested page
-        page: page,
-        pageSize: pageSize,
-        totalCount: totalCount,
-        totalPages: totalPages,
-        totalPrice: totalPrice,
-      });
-    } catch (err) {
-      return res.status(400).json({
-        message: err,
-      });
-    }
-  },
-
-  deleteCartData: async (req, res) => {
-    const { id } = req.params;
-
-    try {
-      const cartItem = await Cart.findOne({ where: { id } });
-
-      if (!cartItem) {
-        return res.status(404).json({ message: 'Cart item not found' });
-      }
-
-      await cartItem.destroy();
-
-      return res.status(200).json({
-        message: 'Cart item deleted successfully',
-      });
-    } catch (err) {
-      return res.status(400).json({
-        message: err,
-      });
-    }
-  },
-
-  createCartData: async (req, res) => {
-    const { qty, ProductId, UserId } = req.body;
-
-    try {
-      const checkProducts = await Product.findByPk(ProductId);
-      if (!checkProducts) {
-        return res.status(401).json({
-          message: `Product id ${ProductId} does not exist`
-        });
-      }
-
-      const cartItem = await Cart.create({
-        qty: qty,
-        ProductId: ProductId,
-        UserId: UserId,
-      });
-
-      return res.status(200).json({
-        message: "Cart item created",
-        result: cartItem,
-      });
-    } catch (err) {
-      return res.status(400).json({
-        message: err.message,
-      })
-    }
-  },
-  
 };
 
 module.exports = userController;

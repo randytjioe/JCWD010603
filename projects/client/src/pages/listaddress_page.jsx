@@ -92,7 +92,7 @@ export default function ListAddressPage() {
   }, []);
   const fetchuserdetail = async (User_id) => {
     await axiosInstance
-      .get("/address/" + User_id)
+      .get("/user/listaddress/" + User_id)
       .then((response) => {
         setUserDetail(response.data.result);
         console.log(response.data.result);
@@ -126,12 +126,6 @@ export default function ListAddressPage() {
       [name]: value,
     });
   }
-  async function fetchData() {
-    await axiosInstance.get("/listaddress/" + userSelector?.id).then((res) => {
-      setData(res.data.result);
-      console.log(userSelector?.id);
-    });
-  }
 
   const saveUser = async (e) => {
     e.preventDefault();
@@ -146,7 +140,7 @@ export default function ListAddressPage() {
 
     try {
       console.log(Data);
-      await axiosInstance.patch("/editaddress?id=" + User_id, Data);
+      await axiosInstance.patch("/user/editaddress?id=" + User_id, Data);
       navigate("/userpage");
       console.log("user edited");
     } catch (error) {
@@ -156,7 +150,7 @@ export default function ListAddressPage() {
 
   async function categoryConfirmDelete() {
     await axiosInstance
-      .delete(`/delete-address?id=${addressId}`)
+      .delete(`/user/delete-address?id=${addressId}`)
       .then(() => {
         fetchData();
       })
@@ -165,10 +159,12 @@ export default function ListAddressPage() {
       });
   }
   async function fetchData() {
-    await axiosInstance.get("/listaddress/" + userSelector?.id).then((res) => {
-      setData(res.data.result);
-      console.log(userSelector?.id);
-    });
+    await axiosInstance
+      .get("user/listaddress/" + userSelector?.id)
+      .then((res) => {
+        setData(res.data.result);
+        console.log(userSelector?.id);
+      });
   }
   useEffect(() => {
     fetchData();

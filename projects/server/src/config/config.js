@@ -4,7 +4,8 @@ module.exports = {
     password: process.env.pass,
     database: process.env.database,
     host: process.env.host,
-    dialect: process.env.db_dialect
+    dialect: process.env.db_dialect,
+    timezone: '+07:00'
   }
 
   // test= {

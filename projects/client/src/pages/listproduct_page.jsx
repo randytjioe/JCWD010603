@@ -30,12 +30,12 @@ export default function PageProducts() {
   //     });
   // }
   async function fetchData() {
-    await axiosInstance.get("/productall").then((res) => {
+    await axiosInstance.get("/user/productall").then((res) => {
       setData(res.data.result);
     });
   }
   async function fetchDataCat() {
-    await axiosInstance.get("/category").then((res) => {
+    await axiosInstance.get("/user/category").then((res) => {
       setDataCat(res.data.result);
     });
   }
@@ -46,12 +46,12 @@ export default function PageProducts() {
 
     console.log(url);
 
-    await axiosInstance.get("/find?" + url).then((res) => {
+    await axiosInstance.get("/user/find?" + url).then((res) => {
       setData(res.data.result);
     });
   };
 
-  const fetchFilPro = async () => {
+  const fetchFilPro = async (callback) => {
     let url = "";
     categories1.map((val, idx) => {
       idx ? (url += `&${val}=${val}`) : (url += `${val}=${val}`);
@@ -64,7 +64,9 @@ export default function PageProducts() {
     await axiosInstance.get("/filter?" + url).then((res) => {
       setData(res.data.result);
     });
+    callback?.();
   };
+
   useEffect(() => {
     // fetchPosts();
     fetchData();
@@ -86,7 +88,7 @@ export default function PageProducts() {
         <>
           <Flex flexDir={"row"} pos="fixed" left={"0"}>
             <Sidebar />
-            <SidebarProduct
+            {/* <SidebarProduct
               data={datacat}
               cat={[...categories1]}
               setCat={setCategories1}
@@ -95,13 +97,20 @@ export default function PageProducts() {
               setSort={setSort}
               setSortBy={setSortBy}
               filter={fetchFilPro}
-            />
+            /> */}
           </Flex>
-          <Center marginLeft={"450px"}>
+          <Center marginLeft={["85px", "100px", "200px"]} w="100%">
             <Products
               data={data}
-              filter={fetchFinPro}
+              fin={fetchFinPro}
               cat={[...categories1]}
+              datacat={datacat}
+              setCat={setCategories1}
+              sort={[...sort]}
+              sortby={[...sortby]}
+              setSort={setSort}
+              setSortBy={setSortBy}
+              filter={fetchFilPro}
               // page={page}
               // setPage={setPage}
               // fetchData={fetchData}
