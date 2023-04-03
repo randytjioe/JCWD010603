@@ -11,6 +11,8 @@ const User_detail = db.user_detail;
 const Address = db.address;
 const Cart = db.cart;
 const Product = db.product;
+const Voucher_type = db.voucher_type;
+const Voucher = db.voucher;
 
 const userController = {
   register: async (req, res) => {
@@ -301,6 +303,7 @@ const userController = {
       return res.status(400).send(err.message);
     }
   },
+
   verify: async (req, res) => {
     token = req.params.token;
 
@@ -348,6 +351,7 @@ const userController = {
       return res.status(401).json({ message: err.message });
     }
   },
+
   keeplogin: async (req, res) => {
     try {
       const token = req.headers.authorization;
@@ -404,6 +408,7 @@ const userController = {
       console.log(err);
     }
   },
+
   addAddress: async (req, res) => {
     try {
       console.log(req.body);
@@ -452,6 +457,7 @@ const userController = {
       });
     }
   },
+
   updateFoto: async (req, res) => {
     try {
       const UserId = req.params.UserId;
@@ -486,6 +492,7 @@ const userController = {
       });
     }
   },
+
   renderAvatar: async (req, res) => {
     try {
       // const id = req.params.id; //27
@@ -502,6 +509,7 @@ const userController = {
       res.send(err);
     }
   },
+
   editProfile: async (req, res) => {
     try {
       const { id, firstName, lastName, birthDate, email, gender } = req.body;
@@ -843,6 +851,7 @@ const userController = {
       return res.status(401).json({ message: err.message });
     }
   },
+
   updateAddress: async (req, res) => {
     try {
       const id = req.query.id;
@@ -903,31 +912,40 @@ const userController = {
       });
     }
   },
+
   getCartData: async (req, res) => {
     const page = parseInt(req.query.page) || 1; // default to page 1 if not provided
     const pageSize = 5;
 
     try {
       const totalCount = await Cart.count();
+      const totalPages = Math.ceil(totalCount / pageSize);
+
+      // Adjust the page number to the last page if it is greater than the total number of pages
+      if (page > totalPages) {
+        page = totalPages;
+      }
+
       const result = await Cart.findAll({
         attributes: ['id', 'qty', 'ProductId', 'UserId'],
         include: [{
           model: Product,
           attributes: ['name', 'price', 'imgProduct'],
         }],
-        limit: pageSize,
-        offset: (page - 1) * pageSize,
       });
 
-      const totalPages = Math.ceil(totalCount / pageSize);
+      const totalPrice = result.reduce((acc, item) => {
+        return acc + (item.Product.price * item.qty);
+      }, 0);
 
       return res.status(200).json({
         message: 'Cart data successfully fetched',
-        result: result,
+        result: result.slice((page - 1) * pageSize, page * pageSize), // Only send the data for the requested page
         page: page,
         pageSize: pageSize,
         totalCount: totalCount,
         totalPages: totalPages,
+        totalPrice: totalPrice,
       });
     } catch (err) {
       return res.status(400).json({
@@ -935,6 +953,57 @@ const userController = {
       });
     }
   },
+
+  deleteCartData: async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const cartItem = await Cart.findOne({ where: { id } });
+
+      if (!cartItem) {
+        return res.status(404).json({ message: 'Cart item not found' });
+      }
+
+      await cartItem.destroy();
+
+      return res.status(200).json({
+        message: 'Cart item deleted successfully',
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err,
+      });
+    }
+  },
+
+  createCartData: async (req, res) => {
+    const { qty, ProductId, UserId } = req.body;
+
+    try {
+      const checkProducts = await Product.findByPk(ProductId);
+      if (!checkProducts) {
+        return res.status(401).json({
+          message: `Product id ${ProductId} does not exist`
+        });
+      }
+
+      const cartItem = await Cart.create({
+        qty: qty,
+        ProductId: ProductId,
+        UserId: UserId,
+      });
+
+      return res.status(200).json({
+        message: "Cart item created",
+        result: cartItem,
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err.message,
+      })
+    }
+  },
+  
 };
 
 module.exports = userController;

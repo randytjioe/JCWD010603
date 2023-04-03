@@ -32,4 +32,7 @@ router.post("/request-reset", userController.resetRequest);
 router.post("/reset-password/:token", userController.resetPassword);
 router.patch("/editaddress", userController.updateAddress);
 router.get("/cart", userController.getCartData);
+router.delete("/deleteCart/:id", userController.deleteCartData);
+router.post("/addCart", userController.createCartData);
+
 module.exports = router;

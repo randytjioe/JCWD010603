@@ -95,7 +95,7 @@ export default function SidebarAdmin() {
               Report
             </Text>
           </Link>
-          <Link sx={linkStyles} display='flex' alignItems='center' className="sidebar-link">
+          <Link sx={linkStyles} href='/discount_voucher' display='flex' alignItems='center' className="sidebar-link">
             <FaCashRegister />
             <Text sx={spacing} className="sidebar-text">
               Discount

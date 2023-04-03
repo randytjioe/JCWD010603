@@ -30,6 +30,22 @@ export default function AdminSetting() {
     const [branchToDeleteId, setBranchToDeleteId] = useState(null);
     const [branchAlertDialogOpen, setBranchAlertDialogOpen] = useState(false);
     const cancelRef = React.useRef();
+    const webkit = {
+        '::-webkit-scrollbar': {
+            height: '0.3em',
+            width: '0.3em',
+            backgroundColor: 'none',
+            borderRadius: '10px'
+        },
+        '::-webkit-scrollbar-thumb': {
+            backgroundColor: 'gray.200',
+            borderRadius: '10px'
+        },
+        '::-webkit-scrollbar-thumb:hover': {
+            backgroundColor: '#555555',
+            borderRadius: '10px'
+        },
+    }
     const [province, setProvince] = useState([
         {
             province_id: 0,
@@ -228,42 +244,26 @@ export default function AdminSetting() {
     }, [branchformik.values]);
 
     return (
-        <Flex w='100%'>
+        <Flex w='100%' bg='gray.100'>
             <SidebarAdmin />
-            <Flex className="admin-setting-container" h='100vh' m="0 auto" overflow="auto"
-                sx={{
-                    '::-webkit-scrollbar': {
-                        height: '0.3em',
-                        width: '0.3em',
-                        backgroundColor: 'none',
-                        borderRadius: '10px'
-                    },
-                    '::-webkit-scrollbar-thumb': {
-                        // backgroundColor: '#181D31',
-                        backgroundColor: 'gray.200',
-                        borderRadius: '10px'
-                    },
-                    '::-webkit-scrollbar-thumb:hover': {
-                        backgroundColor: '#555555',
-                        borderRadius: '10px'
-                    },
-                }}
+            <Flex p={3} className="admin-setting-container" h='100vh' m="0 auto" overflow="auto"
+                sx={webkit}
             >
-                <Tabs w='100%' p={5} variant='enclosed'>
+                <Tabs w='100%' p={5} variant='enclosed' bg='white' borderRadius={10} sx={webkit} overflow="auto">
                     <TabList>
-                        <Tab _selected={{ color: '#2c3639', bg: '#DCD7C9' }}>
+                        <Tab _selected={{ color: '#2c3639', bg: 'gray.100' }}>
                             <Icon as={FaHouseUser} mr={2} />
                             <Text className="sidebar-text">Create Admin</Text>
                         </Tab>
-                        <Tab _selected={{ color: '#2c3639', bg: '#DCD7C9' }}>
+                        <Tab _selected={{ color: '#2c3639', bg: 'gray.100' }}>
                             <Icon as={FaCodeBranch} mr={2} />
                             <Text className="sidebar-text"> Create Branch</Text>
                         </Tab>
-                        <Tab _selected={{ color: '#2c3639', bg: '#DCD7C9' }}>
+                        <Tab _selected={{ color: '#2c3639', bg: 'gray.100' }}>
                             <Icon as={FaUserFriends} mr={2} />
                             <Text className="sidebar-text">Admin List</Text>
                         </Tab>
-                        <Tab _selected={{ color: '#2c3639', bg: '#DCD7C9' }}>
+                        <Tab _selected={{ color: '#2c3639', bg: 'gray.100' }}>
                             <Icon as={FaWarehouse} mr={2} />
                             <Text className="sidebar-text">Branch List</Text>
                         </Tab>
@@ -473,26 +473,11 @@ export default function AdminSetting() {
                         {/* Admin List */}
                         <TabPanel>
                             <Flex h='85vh' overflow='auto' justify='flex-start' direction='column'
-                                sx={{
-                                    '::-webkit-scrollbar': {
-                                        height: '0.3em',
-                                        width: '0.3em',
-                                        backgroundColor: 'none',
-                                        borderRadius: '10px'
-                                    },
-                                    '::-webkit-scrollbar-thumb': {
-                                        backgroundColor: 'gray.200',
-                                        borderRadius: '10px'
-                                    },
-                                    '::-webkit-scrollbar-thumb:hover': {
-                                        backgroundColor: '#555555',
-                                        borderRadius: '10px'
-                                    },
-                                }}
+                                sx={webkit}
                             >
                                 {
                                     adminData?.map((val) => {
-                                        return <Flex borderBottom="1px solid black" p={3} align='center' justify='space-between' w='100%' h='100px' bg={val.isSuperAdmin ? 'rgba(220, 215, 201, 0.5)' : 'null'}>
+                                        return <Flex borderBottom="1px solid black" p={3} align='center' justify='space-between' w='100%' h='100px' bg={val.isSuperAdmin ? 'gray.100' : 'null'}>
                                             <Stack>
                                                 <Heading fontSize={['md', 'lg', 'xl', '2xl']}>
                                                     {val.username}

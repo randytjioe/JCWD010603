@@ -20,6 +20,7 @@ import VerifyEmail from "../pages/verify_email.jsx";
 import ResetPassReqPage from "../pages/reset_password_request";
 import ResetPassSetPage from "../pages/reset_password_set";
 import Cart from "../pages/cart";
+import Discount from "../pages/discount";
 // import AddProductPage from "../pages/addproduct";
 
 
@@ -147,6 +148,14 @@ const routes = [
         <AdminCategory />
       </ProtectedPage>
     ),
+  },
+  {
+    path: "/discount_voucher",
+    element: (
+      <ProtectedPage adminLogin={true} adminGuest={false}>
+        <Discount/>
+      </ProtectedPage>
+    )
   },
   {
     path: "*",
