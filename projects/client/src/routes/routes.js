@@ -19,6 +19,8 @@ import AddAddressPage from "../pages/addadress_page";
 import VerifyEmail from "../pages/verify_email.jsx";
 import ResetPassReqPage from "../pages/reset_password_request";
 import ResetPassSetPage from "../pages/reset_password_set";
+import Cart from "../pages/cart";
+import Discount from "../pages/discount";
 import DetailProduct from "../pages/detail_product";
 import AddProductPage from "../pages/addproduct";
 
@@ -109,6 +111,10 @@ const routes = [
     element: <ListProdukUser />,
   },
   {
+    path: "/cart",
+    element: <Cart/>,
+  },
+  {
     path: "/update-profile",
     element: (
       <ProtectedPageUser userLogin={true}>
@@ -147,6 +153,14 @@ const routes = [
         <AdminCategory />
       </ProtectedPage>
     ),
+  },
+  {
+    path: "/discount_voucher",
+    element: (
+      <ProtectedPage adminLogin={true} adminGuest={false}>
+        <Discount/>
+      </ProtectedPage>
+    )
   },
   {
     path: "*",

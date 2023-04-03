@@ -1,10 +1,10 @@
 import {
-    Flex, Button, Stack,
+    Flex, Button, Stack, Center,
     Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter,
     ModalBody, ModalCloseButton, useDisclosure,
     FormControl, FormLabel, Input, useToast, Heading, IconButton,
     AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody,
-    AlertDialogFooter, Tooltip, color
+    AlertDialogFooter, Tooltip,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import SidebarAdmin from '../components/sidebar_admin';
@@ -23,6 +23,24 @@ export default function AdminCategory() {
     const [editInput, setEditInput] = useState('');
     const cancelRef = React.useRef()
     const toast = useToast();
+
+    const webkit = {
+        '::-webkit-scrollbar': {
+            height: '0.3em',
+            width: '0.3em',
+            backgroundColor: 'none',
+            borderRadius: '10px'
+        },
+        '::-webkit-scrollbar-thumb': {
+            // backgroundColor: '#181D31',
+            backgroundColor: 'gray.200',
+            borderRadius: '10px'
+        },
+        '::-webkit-scrollbar-thumb:hover': {
+            backgroundColor: '#555555',
+            borderRadius: '10px'
+        },
+    }
 
     // handle delete feature
     function deleteCategory(id) {
@@ -104,169 +122,158 @@ export default function AdminCategory() {
 
     return (
         <>
-            <Flex w='100%'>
+            <Flex w='100%' bg='gray.100'>
 
                 <SidebarAdmin />
 
-                <Flex h='100vh' w='80%' >
-                    <Stack w='80%' m='0 auto' spacing={3} py={4}>
-                        <Heading mt={3} color='#2C3639' textAlign='center' fontSize={['lg', 'xl', '2xl', '3xl']}>
-                            Product Categories
-                        </Heading>
-                        <Flex h='85%' w='100%' overflow='auto'
-                            sx={{
-                                '::-webkit-scrollbar': {
-                                    height: '0.3em',
-                                    width: '0.3em',
-                                    backgroundColor: 'none',
-                                    borderRadius: '10px'
-                                },
-                                '::-webkit-scrollbar-thumb': {
-                                    // backgroundColor: '#181D31',
-                                    backgroundColor: 'gray.200',
-                                    borderRadius: '10px'
-                                },
-                                '::-webkit-scrollbar-thumb:hover': {
-                                    backgroundColor: '#555555',
-                                    borderRadius: '10px'
-                                },
-                            }}
-                            direction='column' color='#2C3639'
-                            border='1px solid #2C3639'
-                        >
-                            {
-                                dataCat?.map((val) => {
-                                    return <Flex
-                                        w='100%' p="3px 2px 2px 20px" borderBottom='1px solid #2C3639'
-                                        justify={'space-between'} _hover={{
-                                            backgroundColor: 'gray.200'
-                                        }}
+                <Flex h='100vh' w='80%' direction='column' p={[2, 4, 8, 10]}>
+                    <Center w='100%' h='100%'>
+                        <Flex w={['100%', '100%', '70%', '50%']} h='100%' overflow='auto' sx={webkit} bg='white' borderRadius={10}>
+                            <Stack w={'80%'} m='0 auto' spacing={3} py={4} >
+                                <Heading mt={3} color='#2C3639' textAlign='center' fontSize={['lg', 'xl', '2xl', '3xl']}>
+                                    Product Categories
+                                </Heading>
+                                <Flex h='85%' w='100%' overflow='auto'
+                                    sx={webkit}
+                                    direction='column' color='#2C3639'
+                                    borderBottom='4px solid #2C3639' borderTop='4px solid #2C3639'
+                                >
+                                    {
+                                        dataCat?.map((val, idx) => {
+                                            return <Flex
+                                                w='100%' p="3px 2px 2px 20px" borderBottom='1px solid #2C3639'
+                                                justify={'space-between'} _hover={{
+                                                    backgroundColor: 'gray.200'
+                                                }}
+                                            >
+                                                <Center>
+                                                    <Heading fontSize={['md', 'lg', 'xl', '2xl']}>
+                                                        {idx + 1 + ". " + val.name}
+                                                    </Heading>
+                                                </Center>
+
+                                                <Flex w="100px" justify='space-around'>
+                                                    <Tooltip label='Edit' placement='top-start'>
+                                                        <IconButton // edit button
+                                                            icon={<FiEdit3 />}
+                                                            borderRadius='full'
+                                                            _hover={{
+                                                                color: 'green',
+                                                                backgroundColor: 'none'
+                                                            }}
+                                                            bg='none' onClick={() => editCategory(val.id)}
+                                                        />
+                                                    </Tooltip>
+
+                                                    <Tooltip label='Delete' placement='top-start'>
+                                                        <IconButton //delete button
+                                                            icon={<FiX />}
+                                                            borderRadius='full'
+                                                            bg='none' onClick={() => deleteCategory(val.id)}
+                                                            _hover={{
+                                                                color: 'maroon',
+                                                                backgroundColor: 'none'
+                                                            }}
+                                                        />
+                                                    </Tooltip>
+                                                </Flex>
+                                            </Flex>
+                                        })
+                                    }
+                                    {/* DELETE DIALOG */}
+                                    <AlertDialog
+                                        motionPreset='slideInBottom'
+                                        isOpen={openCategoryDialog}
+                                        leastDestructiveRef={cancelRef}
+                                        onClose={handleCategoryCancelDelete}
                                     >
-                                        <Heading fontSize={['md', 'lg', 'xl', '2xl']}>
-                                            {val.name}
-                                        </Heading>
+                                        <AlertDialogOverlay>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader fontSize="lg" fontWeight="bold" textAlign='center'>
+                                                    Delete Category
+                                                </AlertDialogHeader>
 
-                                        <Flex w="100px" justify='space-around'>
-                                            <Tooltip label='Edit' placement='top-start'>
-                                                <IconButton // edit button
-                                                    icon={<FiEdit3 />}
-                                                    borderRadius='full'
-                                                    _hover={{
-                                                        color: 'green',
-                                                        backgroundColor: 'none'
-                                                    }}
-                                                    bg='none' onClick={() => editCategory(val.id)}
+                                                <AlertDialogBody textAlign='center'>
+                                                    Are you sure you want to delete this category?
+                                                </AlertDialogBody>
+
+                                                <AlertDialogFooter>
+                                                    <Button ref={cancelRef} onClick={handleCategoryCancelDelete}>
+                                                        Cancel
+                                                    </Button>
+                                                    <Button colorScheme="red" onClick={categoryConfirmDelete} ml={3}>
+                                                        Delete
+                                                    </Button>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialogOverlay>
+                                    </AlertDialog>
+                                    {/* EDIT DIALOG */}
+                                    <AlertDialog
+                                        motionPreset='slideInBottom'
+                                        isOpen={editDialog}
+                                        leastDestructiveRef={cancelRef}
+                                        onClose={handleCloseEditDialog}
+                                    >
+                                        <AlertDialogOverlay>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader fontSize="lg" fontWeight="bold" textAlign='center'>
+                                                    Update Category
+                                                </AlertDialogHeader>
+
+                                                <AlertDialogBody textAlign='center'>
+                                                    <FormControl id="username" >
+                                                        <Input name="edit" type="text" placeholder={'Edit category name'} onChange={handleEditInput} />
+                                                    </FormControl>
+                                                </AlertDialogBody>
+
+                                                <AlertDialogFooter>
+                                                    <Button ref={cancelRef} onClick={handleCloseEditDialog}>
+                                                        Cancel
+                                                    </Button>
+                                                    <Button colorScheme="green" onClick={confirmEditCategory} ml={3}>
+                                                        Edit
+                                                    </Button>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialogOverlay>
+                                    </AlertDialog>
+
+                                </Flex>
+                                <Button alignSelf='end' onClick={onOpen} onClose={onClose} bg='#2C3639' color='white'
+                                    sx={{
+                                        _hover: {
+                                            bg: '#3F4E4F',
+                                        }
+                                    }}
+                                >
+                                    Create Category
+                                </Button>
+                                {/* MODAL CREATE */}
+                                <Modal isOpen={isOpen} onClose={onClose}>
+                                    <ModalOverlay />
+                                    <ModalContent>
+                                        <ModalHeader>Create a new category</ModalHeader>
+                                        <ModalCloseButton />
+                                        <ModalBody>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder='Category name' value={category} onChange={(e) => setCategory(e.target.value)} onKeyDown={(e) => pressEnter(e)}
                                                 />
-                                            </Tooltip>
-
-                                            <Tooltip label='Delete' placement='top-start'>
-                                                <IconButton //delete button
-                                                    icon={<FiX />}
-                                                    borderRadius='full'
-                                                    bg='none' onClick={() => deleteCategory(val.id)}
-                                                    _hover={{
-                                                        color: 'maroon',
-                                                        backgroundColor: 'none'
-                                                    }}
-                                                />
-                                            </Tooltip>
-                                        </Flex>
-                                    </Flex>
-                                })
-                            }
-                            {/* DELETE DIALOG */}
-                            <AlertDialog
-                                motionPreset='slideInBottom'
-                                isOpen={openCategoryDialog}
-                                leastDestructiveRef={cancelRef}
-                                onClose={handleCategoryCancelDelete}
-                            >
-                                <AlertDialogOverlay>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader fontSize="lg" fontWeight="bold" textAlign='center'>
-                                            Delete Category
-                                        </AlertDialogHeader>
-
-                                        <AlertDialogBody textAlign='center'>
-                                            Are you sure you want to delete this category?
-                                        </AlertDialogBody>
-
-                                        <AlertDialogFooter>
-                                            <Button ref={cancelRef} onClick={handleCategoryCancelDelete}>
-                                                Cancel
-                                            </Button>
-                                            <Button colorScheme="red" onClick={categoryConfirmDelete} ml={3}>
-                                                Delete
-                                            </Button>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialogOverlay>
-                            </AlertDialog>
-                            {/* EDIT DIALOG */}
-                            <AlertDialog
-                                motionPreset='slideInBottom'
-                                isOpen={editDialog}
-                                leastDestructiveRef={cancelRef}
-                                onClose={handleCloseEditDialog}
-                            >
-                                <AlertDialogOverlay>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader fontSize="lg" fontWeight="bold" textAlign='center'>
-                                            Update Category
-                                        </AlertDialogHeader>
-
-                                        <AlertDialogBody textAlign='center'>
-                                            <FormControl id="username" >
-                                                {/* <FormLabel>Are you sure you want to change this category?</FormLabel> */}
-                                                <Input name="edit" type="text" placeholder={'Edit category name'} onChange={handleEditInput} />
                                             </FormControl>
-                                        </AlertDialogBody>
+                                        </ModalBody>
 
-                                        <AlertDialogFooter>
-                                            <Button ref={cancelRef} onClick={handleCloseEditDialog}>
-                                                Cancel
-                                            </Button>
-                                            <Button colorScheme="green" onClick={confirmEditCategory} ml={3}>
-                                                Edit
-                                            </Button>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialogOverlay>
-                            </AlertDialog>
+                                        <ModalFooter>
+                                            <Button variant='ghost' onClick={createCategory}>Create</Button>
+                                        </ModalFooter>
+                                    </ModalContent>
+                                </Modal>
+                                {/* MODAL UPDATE */}
 
+                                {/* MODAL ENDING*/}
+                            </Stack>
                         </Flex>
-                        <Button alignSelf='end' onClick={onOpen} onClose={onClose} bg='#2C3639' color='white'
-                            sx={{
-                                _hover: {
-                                    bg: '#3F4E4F',
-                                }
-                            }}
-                        >
-                            Create Category
-                        </Button>
-                        {/* MODAL CREATE */}
-                        <Modal isOpen={isOpen} onClose={onClose}>
-                            <ModalOverlay />
-                            <ModalContent>
-                                <ModalHeader>Create a new category</ModalHeader>
-                                <ModalCloseButton />
-                                <ModalBody>
-                                    <FormControl>
-                                        <Input
-                                            placeholder='Category name' value={category} onChange={(e) => setCategory(e.target.value)} onKeyDown={(e) => pressEnter(e)}
-                                        />
-                                    </FormControl>
-                                </ModalBody>
-
-                                <ModalFooter>
-                                    <Button variant='ghost' onClick={createCategory}>Create</Button>
-                                </ModalFooter>
-                            </ModalContent>
-                        </Modal>
-                        {/* MODAL UPDATE */}
-
-                        {/* MODAL ENDING*/}
-                    </Stack>
+                    </Center>
                 </Flex>
             </Flex >
         </>

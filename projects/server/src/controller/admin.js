@@ -10,6 +10,8 @@ const Branch = db.branch;
 const Category = db.category;
 const Product = db.product;
 const Stock = db.stock;
+const Voucher_type = db.voucher_type;
+const Voucher = db.voucher;
 
 const adminController = {
   login: async (req, res) => {
@@ -23,25 +25,34 @@ const adminController = {
       raw: true,
     });
 
-    if (!result) {
-      return res.status(400).json({
-        message: "User not found",
-      });
-    }
-    const isValid = await bcrypt.compare(password, result.password);
-    if (!isValid) {
-      return res.status(401).json({
-        message: "email / password incorrect",
-      });
-    }
-
-    let payload = { id: result.id, isSuperAdmin: result.isSuperAdmin };
-    const token = jwt.sign(payload, secret_key);
-    return res.status(200).json({
-      token,
-      result: result,
-      message: "logged in",
-    });
+            if (!result) {
+                return res.status(400).json({
+                    message: "User not found"
+                })
+            }
+            const isValid = await bcrypt.compare(password, result.password);
+            if (!isValid) {
+                throw new Error("Incorrect Email / Password")
+                // return res.status(401).json({
+                //     message: 'email / password incorrect'
+                // })
+            }
+            let payload = { id: result.id, isSuperAdmin: result.isSuperAdmin };
+            const token = jwt.sign(
+                payload,
+                secret_key
+            )
+            return res.status(200).json({
+                token,
+                result: result,
+                message: 'logged in'
+            })
+        } catch (error) {
+            console.log(error.message);
+            return res.status(error.statusCode || 500).send(
+                error.message
+            )
+        }
 
     // else {
     //     const check = bcrypt.compare(password, result.password)
@@ -304,26 +315,23 @@ const adminController = {
     const data = req.body;
     const { id } = req.params;
 
-    const t = await sequelize.transaction();
-    try {
-      const stock = await Stock.findOne({ where: { id: id } });
-      if (!stock) {
-        throw new Error("Stock not found");
-      }
-      const updatedStock = await stock.update(
-        { qty: data.qty },
-        { transaction: t }
-      );
-      if (!updatedStock) {
-        throw new Error("update stock failed");
-      }
-      await t.commit();
-      res.status(200).send("Update stock success");
-    } catch (err) {
-      await t.rollback();
-      return res.status(400).send(err.message);
-    }
-  },
-};
+        const t = await sequelize.transaction();
+        try {
+            const stock = await Stock.findOne({ where: { id: id } });
+            if (!stock) {
+                throw new Error('Stock not found');
+            }
+            const updatedStock = await stock.update({ qty: data.qty }, { transaction: t });
+            if (!updatedStock) {
+                throw new Error('update stock failed');
+            }
+            await t.commit();
+            res.status(200).send('Update stock success');
+        } catch (err) {
+            await t.rollback();
+            return res.status(400).send(err.message);
+        }
+    },
+}
 
 module.exports = adminController;
