@@ -36,6 +36,7 @@ export default function DetailProduct(props) {
   const [addressList, setAddressList] = useState("");
   const [idProv, setIdProv] = useState(0);
   const [price, setPrice] = useState(0);
+  const [stock, setStock] = useState(0);
   const [category, setCategory] = useState("");
   const data = props.data;
   const location = useLocation();
@@ -119,7 +120,8 @@ export default function DetailProduct(props) {
         setPrice(response.data.result.price);
         setImgProduct(response.data.result.imgProduct);
         setCategory(response.data.result.Category.name);
-        setDescription(response.data.result.description);
+        setDescription(response.data.result.desc);
+        setStock(response.data.result.stock);
       })
       .catch((error) => {
         console.log({ error });
@@ -199,16 +201,16 @@ export default function DetailProduct(props) {
               <Flex px={5} fontSize={"12px"}>
                 {description}
               </Flex>
-              <Flex>Stock : </Flex>
+              <Flex>Stock : {stock} </Flex>
               <Center gap={2}>
                 Quantity :
                 <NumberInput
                   maxW={"100px"}
                   onChange={(valueString) => {
-                    if (valueString > props.product?.stock) {
+                    if (valueString > stock) {
                       // alert("melebihi stock");
 
-                      setQty(props.product?.stock);
+                      setQty(stock);
                     } else {
                       setQty(valueString);
                     }

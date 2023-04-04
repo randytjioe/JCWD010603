@@ -21,7 +21,6 @@ import { axiosInstance } from "../config/config";
 import { useNavigate } from "react-router-dom";
 import { Link as ReachLink } from "react-router-dom";
 import * as Yup from "yup";
-import { IoIosArrowBack } from "react-icons/io";
 import { useFormik } from "formik";
 // import user_types from "../redux/auth/types";
 // import { userLogin } from "../redux/middleware/userauth";
@@ -445,7 +444,7 @@ export default function Register() {
               <FormControl id="postalCode">
                 <FormLabel>Postal Code</FormLabel>
                 <Input
-                  bgColor={"white"}                
+                  bgColor={"white"}
                   type="text"
                   name="postalCode"
                   bgColor="white"
@@ -576,7 +575,7 @@ export default function Register() {
               borderRadius="7px"
               bgColor={"white"}
             >
-            Submit
+              Submit
             </Button>
           </Center>
         </Center>

@@ -41,32 +41,41 @@ export default function ChartComponent(props) {
   const data = props.data;
   // const databar = props.dataBar;
 
-  //   const x = data?.map((product) => product?.tgl);
-  //   const y = data?.map((product) => product?.total);
-  const x = [
-    "01/03/2023",
-    "02/03/2023",
-    "03/03/2023",
-    "04/03/2023",
-    "05/03/2023",
-    "06/03/2023",
-    "07/03/2023",
-    "08/03/2023",
-    "09/03/2023",
-    "10/03/2023",
-  ];
-  const y = [1000, 2000, 3000, 4000, 5000, 1000, 2000, 3000, 4000, 5000];
+  const datax = data?.map((product) => product?.createdAt);
+  const datay = data?.map((product) => parseInt(product?.income));
+
+  // const x = [
+  //   "01/03/2023",
+  //   "02/03/2023",
+  //   "03/03/2023",
+  //   "04/03/2023",
+  //   "05/03/2023",
+  //   "06/03/2023",
+  //   "07/03/2023",
+  //   "08/03/2023",
+  //   "09/03/2023",
+  //   "10/03/2023",
+  // ];
+  // const datay = [25000, 13000];
+
   const [option, setOption] = useState([]);
   const [barData, setBarData] = useState([]);
+
+  // const [datax, setDataX] = useState([]);
+  // const [datay, setDataY] = useState([]);
 
   useEffect(() => {
     // console.log(databar);
     // setOption([...props.dataBar?.map((product) => product?.name)]);
     // setBarData([...props.dataBar?.map((product) => parseInt(product?.jumlah))]);
+
+    // setDataX([...props.data?.map((product) => product?.createdAt)]);
+    // setDataY([...props.data?.map((product) => parseInt(product?.income))]);
     setOption(["Arabika", "Robusta"]);
     setBarData([10, 15]);
   }, []);
-
+  console.log(datax);
+  console.log(datay);
   const [barChartDataConsumption, setBarChartDataConsumption] = useState([
     {
       name: "PRODUCT A",
@@ -265,7 +274,7 @@ export default function ChartComponent(props) {
   const chartData = [
     {
       name: "Total",
-      data: y,
+      data: datay,
     },
     // {
     //   name: "Profit",
@@ -315,7 +324,7 @@ export default function ChartComponent(props) {
     },
     xaxis: {
       type: "numeric",
-      categories: x,
+      categories: datax,
       labels: {
         style: {
           colors: "#A3AED0",
@@ -381,6 +390,8 @@ export default function ChartComponent(props) {
             REPORT TRANSACTION CATEGORY{" "}
           </Center>
           <BarChart
+            w="500px"
+            h="300px"
             chartData={barChartDataConsumption}
             chartOptions={barChartOptionsConsumption}
           />

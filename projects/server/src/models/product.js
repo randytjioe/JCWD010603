@@ -11,16 +11,19 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  Product.init({
-    name: DataTypes.STRING,
-    price: DataTypes.INTEGER,
-    stock: DataTypes.INTEGER,
-    imgProduct: DataTypes.TEXT,
-    desc: DataTypes.TEXT,
-  }, {
-    sequelize,
-    modelName: 'Product',
-    paranoid: true
-  });
+  Product.init(
+    {
+      name: DataTypes.STRING,
+      price: DataTypes.INTEGER,
+      stock: DataTypes.INTEGER,
+      imgProduct: DataTypes.TEXT,
+      desc: DataTypes.TEXT,
+    },
+    {
+      sequelize,
+      modelName: "Product",
+      paranoid: true,
+    }
+  );
   return Product;
 };

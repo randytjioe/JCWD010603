@@ -24,10 +24,10 @@ app.use(cors(options));
 const db_project = mysql.createConnection({
   host: process.env.host,
   port: 3306,
-  user: "root",
+  user: process.env.user,
 
-  password: "B#r1#l#1@N",
-  database: "db_kopio",
+  password: process.env.pass,
+  database: process.env.database,
 });
 
 db_project.connect((err) => {
@@ -45,12 +45,68 @@ app.use(express.json());
 // ===========================
 // NOTE : Add your routes here
 
+app.get("/filter-user", (req, res) => {
+  const { order } = req.query;
+  const { orderby } = req.query;
+  const { BranchId } = req.query;
+  delete req.query.order;
+  delete req.query.orderby;
+  delete req.query.BranchId;
+  const arrQuery = Object.entries(req.query);
+  let categories = arrQuery.filter((val) => {
+    return val[0];
+  });
+
+  let where = "";
+
+  /// start
+  if (categories.length) {
+    where = ` where (p.BranchId=${BranchId} and`;
+
+    if (categories.length) {
+      // console.log(categories);
+      categories.map((val, idx) => {
+        idx
+          ? (where += `or c.name = '${val[0]}' `)
+          : (where += ` c.name = '${val[0]}' `);
+      });
+    }
+
+    where += ")";
+  }
+
+  ///end
+  qString =
+    "Select p.name,p.price,p.imgProduct,c.name as category FROM products p JOIN categories c on p.CategoryId=c.id" +
+    where +
+    " order by " +
+    orderby +
+    " " +
+    order;
+
+  db_project.query(qString, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({
+        message: "query error",
+      });
+    }
+
+    res.status(200).json({
+      message: "data fetched",
+      result: result,
+    });
+  });
+});
 app.get("/filter", (req, res) => {
+  // console.log(req.query);
   const { order } = req.query;
   const { orderby } = req.query;
   delete req.query.order;
   delete req.query.orderby;
   const arrQuery = Object.entries(req.query);
+
+  // console.log(categories);
   let categories = arrQuery.filter((val) => {
     return val[0];
   });
@@ -97,7 +153,6 @@ app.get("/filter", (req, res) => {
     });
   });
 });
-
 app.patch("/users/:id/password", (req, res) => {
   const id = parseInt(req.params.id);
   const { oldPassword, newPassword } = req.body;
