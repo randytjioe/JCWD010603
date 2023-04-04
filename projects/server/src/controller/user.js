@@ -13,6 +13,10 @@ const Address = db.address;
 const Branch = db.branch;
 const Category = db.category;
 const Product = db.product;
+const Voucher_type = db.voucher_type;
+const Voucher = db.voucher;
+const Category = db.category;
+
 const userController = {
   register: async (req, res) => {
     const data = req.body;
@@ -302,6 +306,7 @@ const userController = {
       return res.status(400).json({ message: err.message });
     }
   },
+
   verify: async (req, res) => {
     token = req.params.token;
 
@@ -349,6 +354,7 @@ const userController = {
       return res.status(401).json({ message: err.message });
     }
   },
+
   keeplogin: async (req, res) => {
     try {
       const token = req.headers.authorization;
@@ -440,6 +446,7 @@ const userController = {
       });
     }
   },
+
   renderAvatar: async (req, res) => {
     try {
       // const id = req.params.id; //27
@@ -456,6 +463,7 @@ const userController = {
       res.send(err);
     }
   },
+
   editProfile: async (req, res) => {
     const t = await sequelize.transaction();
     id = req.params.id;

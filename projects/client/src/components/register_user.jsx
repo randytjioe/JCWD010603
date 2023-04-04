@@ -13,7 +13,6 @@ import {
   Link,
   Icon,
 } from "@chakra-ui/react";
-import { IoIosArrowBack } from "react-icons/io";
 import { useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -385,7 +384,6 @@ export default function Register() {
             <FormControl id="province">
               <FormLabel>Province</FormLabel>
               <Select
-                bgColor={"white"}
                 placeholder="Select"
                 name="province"
                 textAlign={"center"}
@@ -417,7 +415,6 @@ export default function Register() {
               <FormControl id="city">
                 <FormLabel>City</FormLabel>
                 <Select
-                  bgColor={"white"}
                   placeholder="Select "
                   name="city"
                   textAlign={"center"}

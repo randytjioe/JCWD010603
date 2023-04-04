@@ -19,6 +19,7 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   Link,
+  useToast, 
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
@@ -47,6 +48,7 @@ export default function DetailProduct(props) {
   const [qty, setQty] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const toast = useToast();
   const handleId = (e) => {
     setIdProv(e);
   };
@@ -127,6 +129,31 @@ export default function DetailProduct(props) {
         console.log({ error });
       });
   };
+
+  async function addToCart() {
+    const userId = localStorage.getItem('userID')
+    const cartData = {
+      qty: qty,
+      ProductId: idProduct,
+      UserId: userId
+    }
+    try {
+      await axiosInstance.post("/cart/addCart", cartData);
+      toast({
+        title: "Item added to cart",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Error adding item to cart",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  }
 
   return (
     <>
@@ -230,7 +257,8 @@ export default function DetailProduct(props) {
               </Center>
               <Flex py={3}>
                 <Button
-                  onClick={() => props.handleAddToCart(props.product, qty)}
+                  // onClick={() => props.handleAddToCart(props.product, qty)}
+                  onClick={addToCart}
                   colorScheme="green"
                   w={"full"}
                 >
