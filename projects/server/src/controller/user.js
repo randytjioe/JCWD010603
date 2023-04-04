@@ -302,7 +302,7 @@ const userController = {
       res.status(201).send("Create user success");
     } catch (err) {
       await t.rollback();
-      return res.status(400).json({message : err.message});
+      return res.status(400).json({ message: err.message });
     }
   },
 
@@ -932,6 +932,231 @@ const userController = {
       console.error(error);
       res.status(400).json({
         message: error,
+      });
+    }
+  },
+
+  getProductById: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const filterId = await Product.findOne({
+        include: [
+          {
+            model: Category,
+            attributes: ["name"],
+          },
+        ],
+        where: {
+          id: id,
+        },
+      });
+      res.status(200).json({
+        message: "filter product berdasarkan id",
+        result: filterId,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+  getAddressById: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const filterAddressId = await Address.findOne({
+        where: {
+          id: id,
+        },
+      });
+      res.status(200).json({
+        message: "filter address berdasarkan id",
+        result: filterAddressId,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+  getAddress: async (req, res) => {
+    try {
+      const getAddress = await Address.findAll();
+      res.status(200).json({
+        message: "get alamat",
+        result: getAddress,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+  getCategory: async (req, res) => {
+    try {
+      const getCategory = await Category.findAll();
+      res.status(200).json({
+        message: "get category",
+        result: getCategory,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+  getProduct: async (req, res) => {
+    try {
+      const getProduct = await Product.findAll({
+        include: [
+          {
+            model: Category,
+            attributes: ["name"],
+          },
+        ],
+      });
+      res.status(200).json({
+        message: "get product",
+        result: getProduct,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+  getProductbyBranch: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const getProduct = await Product.findAll({
+        include: [
+          {
+            model: Category,
+            attributes: ["name"],
+          },
+        ],
+        where: {
+          BranchId: id,
+        },
+      });
+      res.status(200).json({
+        message: "get product",
+        result: getProduct,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+
+  getUserDetail: async (req, res) => {
+    try {
+      const getUserDetail = await User_detail.findAll();
+      res.status(200).json({
+        message: "get user detail",
+        result: getUserDetail,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+
+  getListAddressByUserId: async (req, res) => {
+    try {
+      const UserId = req.params.UserId;
+      const filterListAddress = await Address.findAll({
+        where: {
+          UserId: UserId,
+        },
+      });
+      res.status(200).json({
+        message: "filter address berdasarkan user id",
+        result: filterListAddress,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+  getProductByName: async (req, res) => {
+    try {
+      const name = req.query.name;
+      const filterName = await Product.findAll({
+        where: {
+          name: {
+            [Op.like]: `%${name}%`,
+          },
+        },
+      });
+      res.status(200).json({
+        message: "find product berdasarkan nama",
+        result: filterName,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+  deleteAddress: async (req, res) => {
+    try {
+      const { id } = req.query;
+
+      const address = await Address.findByPk(id);
+      if (!address) {
+        return res.status(404).json({
+          message: "Address not found",
+        });
+      }
+
+      await address.destroy();
+      return res.status(200).json({
+        message: "Address deleted successfully",
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err.message,
+      });
+    }
+  },
+  getUserbyUserId: async (req, res) => {
+    try {
+      const UserId = req.params.UserId;
+      const result = await User.findOne({
+        attributes: ["id", "username", "email", "isVerify"],
+        include: {
+          model: User_detail,
+          attributes: [
+            "birthDate",
+            "lastname",
+            "firstname",
+            "imgUser",
+            "gender",
+          ],
+        },
+        where: {
+          id: UserId,
+        },
+      });
+      return res.status(200).json({
+        message: "admin data fetched",
+        result: result,
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err,
       });
     }
   },

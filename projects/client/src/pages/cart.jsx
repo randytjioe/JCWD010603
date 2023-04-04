@@ -79,7 +79,7 @@ export default function Cart() {
     }, 0);
 
     async function fetchCartData() {
-        await axiosInstance.get(`/user/cart?page=${pages}`).then((res) => {
+        await axiosInstance.get(`/cart/getcart?page=${pages}`).then((res) => {
             setCartData(res.data.result)
             setNumOfPage(res.data.totalPages)
             setCartTotal(res.data.totalPrice)

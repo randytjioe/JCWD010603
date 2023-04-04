@@ -27,9 +27,5 @@ router.get("/categories", adminController.getCategory);
 router.patch("/update_category/:id", adminController.updateCategory);
 router.delete("/delete_category/:id", adminController.deleteCategory);
 router.patch("/update_stock/:id", adminController.updateStock);
-router.post("/addvouchertype", adminController.createVoucherType);
-router.get("/vouchertype", adminController.getVoucherType);
-router.delete("/deletevouchertype/:id", adminController.deleteVoucherType);
-router.post("/addvoucher", adminController.createVoucher);
 
 module.exports = router;

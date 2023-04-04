@@ -49,7 +49,7 @@ export default function Discount() {
         const data = {
             name: typeInput,
         }
-        await axiosInstance.post("/admin/addvouchertype", data).then(() => {
+        await axiosInstance.post("/voucher_discount/addvouchertype", data).then(() => {
             fetchVoucherType();
         }).finally(() => {
             onClose()
@@ -62,7 +62,7 @@ export default function Discount() {
     }
 
     async function fetchVoucherType() {
-        await axiosInstance.get("/admin/voucherType").then((res) => {
+        await axiosInstance.get("/voucher_discount/voucherType").then((res) => {
             setVoucherType([...res.data.result])
         })
     };
@@ -81,7 +81,7 @@ export default function Discount() {
 
     async function deleteType() {
         try {
-            await axiosInstance.delete(`/admin/deletevouchertype/${deleteTypeId}`);
+            await axiosInstance.delete(`/voucher_discount/deletevouchertype/${deleteTypeId}`);
             fetchVoucherType();
             setTypeAlert(false)
         } catch (error) {
