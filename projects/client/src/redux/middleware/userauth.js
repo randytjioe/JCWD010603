@@ -6,7 +6,7 @@ export function userLogin(values) {
     try {
       const res = await axiosInstance.post("/user/userlogin", values);
       const userData = res.data.result;
-      console.log(userData.user);
+      // console.log("user data = " + userData.user.id);
 
       if (userData) {
         dispatch({
@@ -14,6 +14,7 @@ export function userLogin(values) {
           payload: userData.user,
         });
         localStorage.setItem("token", userData.token);
+        localStorage.setItem("userID", userData.user.id)
         return { status: true, data: userData.user };
       }
 
