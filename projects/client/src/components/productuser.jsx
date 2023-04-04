@@ -65,6 +65,8 @@ import { axiosInstance, beautyScroll } from "../config/config";
 export default function ProductUserPage(props) {
   const data = props.data;
   const datacat = props.datacat;
+  const databranch = props.databranch;
+  const branchProduct = props.branchProduct;
   console.log(data);
   const [openFilterDialog, setOpenFilterDialog] = useState(false);
   const [closeFilterDialog, setCloseFilterDialog] = useState(false);
@@ -72,35 +74,14 @@ export default function ProductUserPage(props) {
   const [product, setProduct] = useState([]);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [city, setCity] = useState("");
-  const [idProv, setIdProv] = useState(1);
+  const [branch, setBranch] = useState("");
+  const [idBranch, setIdBranch] = useState(1);
   const [page, setPage] = useState(1);
-  const [cityAPI, setCityAPI] = useState([
-    {
-      city_id: 0,
-      city_name: "",
-      type: "",
-      postal_code: "",
-      province_id: 0,
-      province: "",
-    },
-  ]);
 
-  const fetchCity = async () => {
-    try {
-      console.log(idProv);
-      const response = await axiosInstance.get(
-        `http://localhost:8000/api_rajaongkir/city/${idProv}`
-      );
-      const result = response.data;
-      setCityAPI(result);
-    } catch (err) {
-      console.log(err.message);
-    }
+  const handleId = (e) => {
+    setIdBranch(e);
   };
-  useEffect(() => {
-    fetchCity();
-  }, [idProv]);
+
   const selectPageHandle = (selectPage) => {
     if (
       selectPage >= 1 &&
@@ -155,14 +136,15 @@ export default function ProductUserPage(props) {
             name="city"
             bgColor="white"
             onChange={(e) => {
-              setCity(e.target.value);
+              setBranch(e.target.value);
+              handleId(e.target.value);
+              props.setIdBranch(e.target.value);
             }}
           >
-            <option>--Select Branch--</option>
-            {cityAPI.map((c) => {
+            {databranch.map((branch) => {
               return (
-                <option key={c.city_id} value={c.city_id}>
-                  {c.city_name}
+                <option key={branch.id} value={branch.id}>
+                  {branch.name}
                 </option>
               );
             })}
@@ -394,60 +376,62 @@ export default function ProductUserPage(props) {
             sx={beautyScroll}
             h="465px"
           >
-            {data.slice(page * 6 - 6, page * 6)?.map((product, index) => {
-              return (
-                <>
-                  <Box minW="135px" h="250px">
-                    <Flex>
-                      <Link
-                        to={"/detail-product/" + product?.id}
-                        as={ReachLink}
+            {branchProduct
+              .slice(page * 6 - 6, page * 6)
+              ?.map((product, index) => {
+                return (
+                  <>
+                    <Box minW="135px" h="250px">
+                      <Flex>
+                        <Link
+                          to={"/detail-product/" + product?.id}
+                          as={ReachLink}
+                        >
+                          <Image
+                            w={["50px", "100px", "135px"]}
+                            h={["50px", "100px", "135px"]}
+                            src={product?.imgProduct}
+                            alt={`Picture of ${product?.name}`}
+                            roundedTop="lg"
+                          />
+                        </Link>
+                      </Flex>
+                      <Flex
+                        mt="1"
+                        justifyContent="space-between"
+                        alignContent="center"
+                        flexDir={"column"}
+                        w="150px"
                       >
-                        <Image
-                          w={["50px", "100px", "135px"]}
-                          h={["50px", "100px", "135px"]}
-                          src={product?.imgProduct}
-                          alt={`Picture of ${product?.name}`}
-                          roundedTop="lg"
-                        />
-                      </Link>
-                    </Flex>
-                    <Flex
-                      mt="1"
-                      justifyContent="space-between"
-                      alignContent="center"
-                      flexDir={"column"}
-                      w="150px"
-                    >
-                      <Box
-                        fontSize="12px"
-                        fontWeight="semibold"
-                        as="h4"
-                        lineHeight="tight"
-                      >
-                        {product?.category}
-                      </Box>
-                      <Box
-                        fontSize="12px"
-                        as="h4"
-                        lineHeight="tight"
-                        fontWeight={"bold"}
-                      >
-                        {product?.name}
-                      </Box>
+                        <Box
+                          fontSize="12px"
+                          fontWeight="semibold"
+                          as="h4"
+                          lineHeight="tight"
+                        >
+                          {product?.category}
+                        </Box>
+                        <Box
+                          fontSize="12px"
+                          as="h4"
+                          lineHeight="tight"
+                          fontWeight={"bold"}
+                        >
+                          {product?.name}
+                        </Box>
 
-                      <Box fontSize="12px" as="h4">
-                        <Text>
-                          {" "}
-                          Price : Rp. {product?.price.toLocaleString()}
-                        </Text>
-                      </Box>
-                      <Box fontSize="12px" as="h4"></Box>
-                    </Flex>
-                  </Box>
-                </>
-              );
-            })}
+                        <Box fontSize="12px" as="h4">
+                          <Text>
+                            {" "}
+                            Price : Rp. {product?.price.toLocaleString()}
+                          </Text>
+                        </Box>
+                        <Box fontSize="12px" as="h4"></Box>
+                      </Flex>
+                    </Box>
+                  </>
+                );
+              })}
           </Center>
         </Center>
         <Center
@@ -458,7 +442,7 @@ export default function ProductUserPage(props) {
           p={2}
           bgColor="white"
         >
-          {data.length > 0 && (
+          {branchProduct.length > 0 && (
             <Flex gap={5}>
               <Button
                 className="arrows"
@@ -467,7 +451,7 @@ export default function ProductUserPage(props) {
                 <BiLeftArrowAlt />
               </Button>
               <Flex gap={5} className="pageNumbers">
-                {[...Array(Math.ceil(data.length / 6))].map((n, i) => {
+                {[...Array(Math.ceil(branchProduct.length / 6))].map((n, i) => {
                   return (
                     <>
                       <Box

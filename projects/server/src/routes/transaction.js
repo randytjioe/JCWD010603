@@ -2,4 +2,17 @@ const express = require("express");
 const router = express.Router();
 const { transactionController } = require("../controller");
 
-module.exports = router
+router.get(
+  "/counttransactionbybranch/:id",
+  transactionController.getCountTransactionByBranch
+);
+router.get(
+  "/getIncomeTransactionByBranch/:id",
+  transactionController.getIncomeTransactionByBranch
+);
+router.get("/transaction-header", transactionController.getData);
+router.get(
+  "/transaction-detail/:id",
+  transactionController.getTransactionDetail
+);
+module.exports = router;

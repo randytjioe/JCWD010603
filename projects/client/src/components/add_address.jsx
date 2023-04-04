@@ -123,7 +123,7 @@ export default function AddAdress(props) {
     onSubmit: async () => {
       console.log(formik.values);
       const res = await axiosInstance
-        .post("/user/addaddress", formik.values)
+        .post("/address/addaddress", formik.values)
         .then(async (res) => {
           toast({
             title: "Address created.",

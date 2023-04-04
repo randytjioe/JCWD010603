@@ -121,6 +121,25 @@ const adminController = {
     }
   },
 
+  getCountAdmin: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const result = await Admins.count({
+        where: {
+          BranchId: id,
+        },
+      });
+      return res.status(200).json({
+        message: "admin data fetched",
+        result: result,
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err,
+      });
+    }
+  },
+
   deleteAdmin: async (req, res) => {
     try {
       const { id } = req.params;

@@ -10,7 +10,8 @@ const category = require("../models/category");
 const User = db.user;
 const User_detail = db.user_detail;
 const Address = db.address;
-const Cart = db.cart;
+const Branch = db.branch;
+const Category = db.category;
 const Product = db.product;
 const Voucher_type = db.voucher_type;
 const Voucher = db.voucher;
@@ -408,55 +409,6 @@ const userController = {
         message: err,
       });
       console.log(err);
-    }
-  },
-
-  addAddress: async (req, res) => {
-    try {
-      console.log(req.body);
-      const {
-        address,
-        city,
-        province,
-        district,
-        postalCode,
-        isPrimary,
-        UserId,
-        Ket,
-      } = req.body;
-      const data = {
-        address,
-        city,
-        province,
-        district,
-        postalCode,
-        UserId,
-        isPrimary,
-        Ket,
-      };
-      console.log(data);
-      const checkAddress = await Address.findOne({
-        where: {
-          address: address,
-        },
-      });
-
-      if (checkAddress) {
-        return res.status(400).json({
-          message: "address sudah tersedia",
-        });
-      }
-
-      const addAddress = await Address.create({ ...data });
-      return res.status(200).json({
-        message: "address berhasil ditambahkan",
-        result: addAddress,
-      });
-    } catch (err) {
-      console.log(err);
-      return res.status(400).json({
-        message: err,
-      });
     }
   },
 
@@ -875,177 +827,53 @@ const userController = {
       return res.status(401).json({ message: err.message });
     }
   },
-  updateAddress: async (req, res) => {
+  changePassword: async (req, res) => {
+    // console.log(req.params.token)
+    const token = req.params.token;
+    const { password, newPassword } = req.body;
     try {
-      const id = req.query.id;
-      console.log(id);
-      const {
-        address,
-        city,
-        province,
-        district,
-        postalCode,
-        isPrimary,
-        UserId,
-        Ket,
-      } = req.body;
-      const data = {
-        address,
-        city,
-        province,
-        district,
-        postalCode,
-        isPrimary,
-        Ket,
-      };
-      const checkPrimaryAddress = await Address.findOne({
-        where: { [Op.and]: [{ isPrimary: true }, { UserId: UserId }] },
-      });
-      console.log(isPrimary);
-      console.log(checkPrimaryAddress.dataValues);
-      if (isPrimary) {
-        if (checkPrimaryAddress) {
-          await Address.update(
-            {
-              isPrimary: false,
-            },
-            {
-              where: {
-                id: checkPrimaryAddress.dataValues.id,
-              },
-            }
-          );
-        }
+      if (!token) {
+        throw new Error("Token is undefined");
       }
-      const result = await Address.update(
-        {
-          ...data,
-        },
+
+      const passwordHash = bcrypt.hashSync(password, 10);
+      const verifyUser = await jwt.verify(token, secret_key, {
+        ignoreExpiration: true,
+      });
+
+      const change = await User.update(
+        { password: passwordHash },
         {
           where: {
-            id: id,
+            id: verifyUser.id,
           },
         }
       );
-      res.send(result);
-    } catch (error) {
-      console.error(error);
-      res.status(400).json({
-        message: error,
-      });
+      console.log(change);
+      if (!change) {
+        throw new Error("Change password failed");
+      }
+
+      res.status(200).json({ message: "Change password success" });
+    } catch (err) {
+      console.log(err);
+      return res.status(401).json({ message: err.message });
     }
   },
 
-  getProductById: async (req, res) => {
+  getCountUserByBranch: async (req, res) => {
     try {
       const id = req.params.id;
-      const filterId = await Product.findOne({
-        include: [
-          {
-            model: Category,
-            attributes: ["name"],
-          },
-        ],
-        where: {
-          id: id,
-        },
-      });
-      res.status(200).json({
-        message: "filter product berdasarkan id",
-        result: filterId,
-      });
-    } catch (err) {
-      console.log(err);
-      res.status(400).json({
-        message: err,
-      });
-    }
-  },
-  getAddressById: async (req, res) => {
-    try {
-      const id = req.params.id;
-      const filterAddressId = await Address.findOne({
-        where: {
-          id: id,
-        },
-      });
-      res.status(200).json({
-        message: "filter address berdasarkan id",
-        result: filterAddressId,
-      });
-    } catch (err) {
-      console.log(err);
-      res.status(400).json({
-        message: err,
-      });
-    }
-  },
-  getAddress: async (req, res) => {
-    try {
-      const getAddress = await Address.findAll();
-      res.status(200).json({
-        message: "get alamat",
-        result: getAddress,
-      });
-    } catch (err) {
-      console.log(err);
-      res.status(400).json({
-        message: err,
-      });
-    }
-  },
-  getCategory: async (req, res) => {
-    try {
-      const getCategory = await Category.findAll();
-      res.status(200).json({
-        message: "get category",
-        result: getCategory,
-      });
-    } catch (err) {
-      console.log(err);
-      res.status(400).json({
-        message: err,
-      });
-    }
-  },
-  getProduct: async (req, res) => {
-    try {
-      const getProduct = await Product.findAll({
-        include: [
-          {
-            model: Category,
-            attributes: ["name"],
-          },
-        ],
-      });
-      res.status(200).json({
-        message: "get product",
-        result: getProduct,
-      });
-    } catch (err) {
-      console.log(err);
-      res.status(400).json({
-        message: err,
-      });
-    }
-  },
-  getProductbyBranch: async (req, res) => {
-    try {
-      const id = req.params.id;
-      const getProduct = await Product.findAll({
-        include: [
-          {
-            model: Category,
-            attributes: ["name"],
-          },
-        ],
+      const filterBranch = await User.count({
+        // attributes: [sequelize.fn("COUNT", sequelize.col("BranchId"))],
         where: {
           BranchId: id,
         },
       });
+
       res.status(200).json({
-        message: "get product",
-        result: getProduct,
+        message: "count user berdasarkan branch",
+        result: filterBranch,
       });
     } catch (err) {
       console.log(err);
@@ -1054,7 +882,6 @@ const userController = {
       });
     }
   },
-
   getUserDetail: async (req, res) => {
     try {
       const getUserDetail = await User_detail.findAll();
@@ -1066,68 +893,6 @@ const userController = {
       console.log(err);
       res.status(400).json({
         message: err,
-      });
-    }
-  },
-
-  getListAddressByUserId: async (req, res) => {
-    try {
-      const UserId = req.params.UserId;
-      const filterListAddress = await Address.findAll({
-        where: {
-          UserId: UserId,
-        },
-      });
-      res.status(200).json({
-        message: "filter address berdasarkan user id",
-        result: filterListAddress,
-      });
-    } catch (err) {
-      console.log(err);
-      res.status(400).json({
-        message: err,
-      });
-    }
-  },
-  getProductByName: async (req, res) => {
-    try {
-      const name = req.query.name;
-      const filterName = await Product.findAll({
-        where: {
-          name: {
-            [Op.like]: `%${name}%`,
-          },
-        },
-      });
-      res.status(200).json({
-        message: "find product berdasarkan nama",
-        result: filterName,
-      });
-    } catch (err) {
-      console.log(err);
-      res.status(400).json({
-        message: err,
-      });
-    }
-  },
-  deleteAddress: async (req, res) => {
-    try {
-      const { id } = req.query;
-
-      const address = await Address.findByPk(id);
-      if (!address) {
-        return res.status(404).json({
-          message: "Address not found",
-        });
-      }
-
-      await address.destroy();
-      return res.status(200).json({
-        message: "Address deleted successfully",
-      });
-    } catch (err) {
-      return res.status(400).json({
-        message: err.message,
       });
     }
   },
