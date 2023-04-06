@@ -30,6 +30,7 @@ export default function UpdateAdress(props) {
   const data = props.data;
   const location = useLocation();
 
+  const [idCity, setIdCity] = useState(0);
   const [isPrimary, setIsPrimary] = useState(0);
   const [id, setId] = useState(0);
   const [Ket, setKet] = useState("");
@@ -56,7 +57,7 @@ export default function UpdateAdress(props) {
       province: "",
     },
   ]);
-  const [province, setProvince] = useState("");
+  const [provinces, setProvinces] = useState("");
   const [cityAPI, setCityAPI] = useState([
     {
       city_id: 0,
@@ -102,19 +103,20 @@ export default function UpdateAdress(props) {
 
   const fetchaddressdetail = async (idAddress) => {
     await axiosInstance
-      .get("/user/update-address/" + idAddress)
+      .get("/address/update-address/" + idAddress)
       .then((response) => {
         setAddressDetail(response.data.result);
         console.log(response.data.result);
         setId(response.data.result.id);
         setDistrict(response.data.result.district);
-        setProvince(response.data.result.province);
+        setProvinces(response.data.result.province);
         setAddress(response.data.result.address);
         setPostalCode(response.data.result.postalCode);
         setCity(response.data.result.city);
         setIsPrimary(response.data.result.isPrimary);
         setKet(response.data.result.Ket);
         setUserId(response.data.result.UserId);
+        setIdCity(response.data.result.idCity);
       })
       .catch((error) => {
         console.log({ error });
@@ -126,7 +128,7 @@ export default function UpdateAdress(props) {
 
   useEffect(() => {
     axiosInstance
-      .get("/user/addresses")
+      .get("/address/addresses")
       .then((response) => {
         setAddresses(response.data);
       })
@@ -140,18 +142,19 @@ export default function UpdateAdress(props) {
     const Data = {
       id,
       district,
-      province,
+      provinces,
       postalCode,
       address,
       city,
       isPrimary,
       Ket,
       UserId,
+      idCity,
     };
 
     try {
       console.log(Data);
-      await axiosInstance.patch("/user/editaddress?id=" + Data.id, Data);
+      await axiosInstance.patch("/address/editaddress?id=" + Data.id, Data);
       navigate("/list-address");
       console.log("user edited");
     } catch (error) {
@@ -218,17 +221,6 @@ export default function UpdateAdress(props) {
                 bgColor="white"
               />
             </FormControl>
-            <FormControl id="lastname">
-              <FormLabel>District</FormLabel>
-              <Input
-                type="text"
-                value={district}
-                onChange={(e) => {
-                  setDistrict(e.target.value);
-                }}
-                bgColor="white"
-              />
-            </FormControl>
 
             <FormControl id="email">
               <FormLabel>Province</FormLabel>
@@ -237,14 +229,17 @@ export default function UpdateAdress(props) {
                 name="province"
                 bgColor="white"
                 onChange={(e) => {
-                  setProvince(e.target.value);
-                  handleId(e.target.value);
+                  const selectedProvince = provinceAPI.find(
+                    (val) => val.province === e.target.value
+                  );
+                  setProvinces(e.target.p.province);
+                  handleId(selectedProvince.province_id);
                 }}
               >
-                <option>{province}</option>
+                <option>{provinces}</option>
                 {provinceAPI.map((p) => {
                   return (
-                    <option key={p.province_id} value={p.province_id}>
+                    <option key={p.province_id} value={p.province}>
                       {p.province}
                     </option>
                   );
@@ -258,19 +253,35 @@ export default function UpdateAdress(props) {
                 name="city"
                 bgColor="white"
                 onChange={(e) => {
+                  const selectedCity = cityAPI.find(
+                    (val) => val.city_name === e.target.value
+                  );
                   setCity(e.target.value);
+                  setIdCity(selectedCity.city_id);
                 }}
               >
                 <option>{city}</option>
                 {cityAPI.map((c) => {
                   return (
-                    <option key={c.city_id} value={c.city_id}>
+                    <option key={c.city_id} value={c.city_name}>
                       {c.city_name}
                     </option>
                   );
                 })}
               </Select>
             </FormControl>
+            <FormControl id="lastname">
+              <FormLabel>District</FormLabel>
+              <Input
+                type="text"
+                value={district}
+                onChange={(e) => {
+                  setDistrict(e.target.value);
+                }}
+                bgColor="white"
+              />
+            </FormControl>
+
             <FormControl id="email">
               <FormLabel>Postal Code</FormLabel>
               <Input

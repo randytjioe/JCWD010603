@@ -99,7 +99,7 @@ export default function PageProducts() {
               filter={fetchFilPro}
             /> */}
           </Flex>
-          <Center marginLeft={["85px", "100px", "200px"]} w="100%">
+          <Center marginLeft={["85px", "100px", "150px"]} w="100%">
             <Products
               data={data}
               fin={fetchFinPro}

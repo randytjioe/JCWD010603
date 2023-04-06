@@ -15,7 +15,6 @@ const Category = db.category;
 const Product = db.product;
 const Voucher_type = db.voucher_type;
 const Voucher = db.voucher;
-const Category = db.category;
 
 const userController = {
   register: async (req, res) => {

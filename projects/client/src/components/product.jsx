@@ -331,20 +331,18 @@ export default function ProductPage(props) {
           h="full"
         >
           {data.slice(page * 6 - 6, page * 6)?.map((product, index) => {
-            console.log(product.imgProduct)
+            console.log(product.imgProduct);
             return (
               <>
                 <Box minW="246px" h="300px">
                   <Flex justifyContent="left">
-                    <Link to={`/`}>
-                      <Image
-                        w="190px"
-                        h="190px"
-                        src={product?.imgProduct}
-                        alt={`Picture of ${product?.name}`}
-                        roundedTop="lg"
-                      />
-                    </Link>
+                    <Image
+                      w="190px"
+                      h="190px"
+                      src={product?.imgProduct}
+                      alt={`Picture of ${product?.name}`}
+                      roundedTop="lg"
+                    />
                   </Flex>
                   <Flex
                     mt="1"

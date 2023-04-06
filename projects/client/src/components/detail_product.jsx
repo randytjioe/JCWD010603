@@ -19,7 +19,7 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   Link,
-  useToast, 
+  useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
@@ -34,7 +34,6 @@ import { useLocation } from "react-router-dom";
 export default function DetailProduct(props) {
   const [imgProduct, setImgProduct] = useState("");
   const [name, setName] = useState("");
-  const [addressList, setAddressList] = useState("");
   const [idProv, setIdProv] = useState(0);
   const [price, setPrice] = useState(0);
   const [stock, setStock] = useState(0);
@@ -113,7 +112,7 @@ export default function DetailProduct(props) {
 
   const fetchproductdetail = async (idProduct) => {
     await axiosInstance
-      .get("/user/detail-product/" + idProduct)
+      .get("/product/detail-product/" + idProduct)
       .then((response) => {
         setProductDetail(response.data.result);
         console.log(response.data.result);
@@ -131,12 +130,12 @@ export default function DetailProduct(props) {
   };
 
   async function addToCart() {
-    const userId = localStorage.getItem('userID')
+    const userId = localStorage.getItem("userID");
     const cartData = {
       qty: qty,
       ProductId: idProduct,
-      UserId: userId
-    }
+      UserId: userId,
+    };
     try {
       await axiosInstance.post("/cart/addCart", cartData);
       toast({
@@ -161,7 +160,7 @@ export default function DetailProduct(props) {
         <Flex
           spacing={4}
           maxW={"md"}
-          bgColor="#DCD7C9"
+          // bgColor="#DCD7C9"
           w="430px"
           h="100vh"
           flexDir="column"

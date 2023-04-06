@@ -23,6 +23,8 @@ import Cart from "../pages/cart";
 import Discount from "../pages/discount";
 import DetailProduct from "../pages/detail_product";
 import AddProductPage from "../pages/addproduct";
+import NewOrder from "../pages/neworder_page";
+import Upload from "../pages/upload_page";
 
 const routes = [
   {
@@ -60,6 +62,14 @@ const routes = [
   {
     path: "/setup-password",
     element: <ResetPassSetPage />,
+  },
+  {
+    path: "/new-order",
+    element: <NewOrder />,
+  },
+  {
+    path: "/upload-payment",
+    element: <Upload />,
   },
   {
     path: "/userpage",
@@ -112,7 +122,7 @@ const routes = [
   },
   {
     path: "/cart",
-    element: <Cart/>,
+    element: <Cart />,
   },
   {
     path: "/update-profile",
@@ -158,9 +168,9 @@ const routes = [
     path: "/discount_voucher",
     element: (
       <ProtectedPage adminLogin={true} adminGuest={false}>
-        <Discount/>
+        <Discount />
       </ProtectedPage>
-    )
+    ),
   },
   {
     path: "*",

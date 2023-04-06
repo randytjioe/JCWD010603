@@ -73,14 +73,16 @@ export default function Navbar(props) {
         >
           <Flex px={3} gap={5}>
             <Flex alignItems={"center"}>
-              <Image
-                fontSize={"26px"}
-                color="#F68522"
-                justifyContent="center"
-                src={Logo}
-                w="100px"
-                h="24px"
-              ></Image>
+              <Link href="/product-list-user">
+                <Image
+                  fontSize={"26px"}
+                  color="#F68522"
+                  justifyContent="center"
+                  src={Logo}
+                  w="100px"
+                  h="24px"
+                ></Image>
+              </Link>
               <Flex px={"70px"} alignItems="center"></Flex>
               <Flex px={3}>
                 <Icon
@@ -95,7 +97,7 @@ export default function Navbar(props) {
                 ></Icon>
               </Flex>
               <Flex px={3}>
-                <Link href='/cart'>
+                <Link href="/cart">
                   <Icon
                     boxSize={"7"}
                     as={SlBasket}
