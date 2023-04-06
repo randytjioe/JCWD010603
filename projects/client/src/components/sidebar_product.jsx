@@ -65,11 +65,11 @@ import {
 } from "react-icons/fi";
 import { FaPowerOff } from "react-icons/fa";
 import {Modal, ModalOverlay, ModalHeader, ModalCloseButton, ModalBody, FormControl, FormLabel, ModalFooter, FormHelperText, ModalContent, Textarea} from '@chakra-ui/react';
-
-import { useEffect, useState } from "react";
-import { axiosInstance } from "../config/config";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { axiosInstance } from "../config/config";
+
+import { useEffect, useState } from "react";
 
 
 export default function Sidebar(props) {

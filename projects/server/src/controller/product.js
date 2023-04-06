@@ -12,30 +12,30 @@ const Category = db.category;
 const Product = db.product;
 
 const productController = {
-  create: async (req, res) => {
-    const { stock, name } = req.body;
-
-    const t = await sequelize.transaction();
-    try {
-      if (!req.file) {
-        throw new Error("File is not compatible");
-      }
-
-      // get filename
-      let fileName = req.file.filename;
-      // rewrite filename and add url
-      fileName = process.env.render_img + fileName;
-
-      // combine object req.body and added image name
-      const data = {
-        ...req.body,
-        imgProduct: fileName,
-      };
-      console.log(data);
-      const result = await Product.create({ ...data }, { transaction: t });
-      if (!result) {
-        throw new Error("Failed add new product");
-      }
+    create : async (req,res) => {
+        const {stock, name} = req.body        
+        
+        const t = await sequelize.transaction();
+        try {
+            if(!req.file){
+                throw new Error("File is not compatible");
+            }
+            
+            // get filename
+        let fileName = req.file.filename
+        // rewrite filename and add url
+        fileName =  process.env.render_img + fileName
+        
+            // combine object req.body and added image name
+            const data = {
+                ...req.body,
+                imgProduct : fileName
+            }
+            console.log(data);
+            const result = await Product.create({...data}, { transaction: t })
+            if(!result){
+                throw new Error("Failed add new product");
+            }
 
       const record = {
         stockBefore: 0,
