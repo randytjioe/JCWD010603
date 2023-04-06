@@ -39,7 +39,6 @@ const productController = {
             }
 
             const stockReport = await Record_stock.create({...record}, { transaction: t })
-
             if(!stockReport){
                 throw new Error("Failed create record stock new product");
             }
