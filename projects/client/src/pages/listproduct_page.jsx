@@ -30,12 +30,12 @@ export default function PageProducts() {
   //     });
   // }
   async function fetchData() {
-    await axiosInstance.get("/user/productall").then((res) => {
+    await axiosInstance.get("/product/productall").then((res) => {
       setData(res.data.result);
     });
   }
   async function fetchDataCat() {
-    await axiosInstance.get("/user/category").then((res) => {
+    await axiosInstance.get("/product/category").then((res) => {
       setDataCat(res.data.result);
     });
   }
@@ -46,7 +46,7 @@ export default function PageProducts() {
 
     console.log(url);
 
-    await axiosInstance.get("/user/find?" + url).then((res) => {
+    await axiosInstance.get("/product/find?" + url).then((res) => {
       setData(res.data.result);
     });
   };
@@ -107,7 +107,7 @@ export default function PageProducts() {
               filter={fetchFilPro}
             /> */}
           </Flex>
-          <Center marginLeft={["85px", "100px", "200px"]} w="100%">
+          <Center marginLeft={["85px", "100px", "150px"]} w="100%">
             <Products
               data={data}
               fin={fetchFinPro}

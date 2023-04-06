@@ -92,7 +92,7 @@ export default function ListAddressPage() {
   }, []);
   const fetchuserdetail = async (User_id) => {
     await axiosInstance
-      .get("/user/listaddress/" + User_id)
+      .get("/address/listaddress/" + User_id)
       .then((response) => {
         setUserDetail(response.data.result);
         console.log(response.data.result);
@@ -106,17 +106,6 @@ export default function ListAddressPage() {
         console.log({ error });
       });
   };
-
-  async function categoryConfirmDelete() {
-    await axiosInstance
-      .delete(`/admin/delete_category/${addressId}`)
-      .then(() => {
-        fetchData();
-      })
-      .finally(() => {
-        setOpenAddressDialog(false);
-      });
-  }
 
   function inputHandler(event) {
     const { name, value } = event.target;
@@ -140,7 +129,7 @@ export default function ListAddressPage() {
 
     try {
       console.log(Data);
-      await axiosInstance.patch("/user/editaddress?id=" + User_id, Data);
+      await axiosInstance.patch("/address/editaddress?id=" + User_id, Data);
       navigate("/userpage");
       console.log("user edited");
     } catch (error) {
@@ -150,7 +139,7 @@ export default function ListAddressPage() {
 
   async function categoryConfirmDelete() {
     await axiosInstance
-      .delete(`/user/delete-address?id=${addressId}`)
+      .delete(`/address/delete-address?id=${addressId}`)
       .then(() => {
         fetchData();
       })
@@ -160,7 +149,7 @@ export default function ListAddressPage() {
   }
   async function fetchData() {
     await axiosInstance
-      .get("user/listaddress/" + userSelector?.id)
+      .get("address/listaddress/" + userSelector?.id)
       .then((res) => {
         setData(res.data.result);
         console.log(userSelector?.id);

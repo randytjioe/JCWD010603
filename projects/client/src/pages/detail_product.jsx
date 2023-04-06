@@ -1,4 +1,4 @@
-import NavBar from "../components/navbarhome";
+import NavBar from "../components/navbar";
 import DetailProduct from "../components/detail_product";
 import { Flex, Center, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";

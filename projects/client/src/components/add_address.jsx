@@ -53,11 +53,13 @@ import * as Yup from "yup";
 export default function AddAdress(props) {
   const [imgUser, setImgUser] = useState("");
   const [address, setAddress] = useState("");
-  const [isPrimary, setIsPrimary] = useState(0);
+  const [isPrimary, setIsPrimary] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [district, setDistrict] = useState("");
+
   const [addressList, setAddressList] = useState("");
   const [city, setCity] = useState("");
+  const [idCity, setidCity] = useState("");
   const [province, setProvince] = useState("");
   const [ket, setKet] = useState("");
   const [postalCode, setPostalCode] = useState("");
@@ -68,6 +70,7 @@ export default function AddAdress(props) {
   const [status, setStatus] = useState(false);
   const [msg, setMsg] = useState("");
   const userSelector = useSelector((state) => state.auth);
+  const [idProv, setIdProv] = useState(0);
   console.log(userSelector);
   const CheckUtama = (e, param) => {
     let newUtama;
@@ -92,6 +95,56 @@ export default function AddAdress(props) {
   });
   const [userdetail, setUserDetail] = useState([]);
   const [enable, setEnable] = useState(false);
+  const handleId = (e) => {
+    setIdProv(e);
+  };
+  const [cityAPI, setCityAPI] = useState([
+    {
+      city_id: 0,
+      city_name: "",
+      type: "",
+      postal_code: "",
+      province_id: 0,
+      province: "",
+    },
+  ]);
+  const [provinceAPI, setProvinceAPI] = useState([
+    {
+      province_id: 0,
+      province: "",
+    },
+  ]);
+  const fetchProvince = async () => {
+    try {
+      const response = await axiosInstance.get(
+        "http://localhost:8000/api_rajaongkir/province"
+      );
+      const result = response.data;
+
+      setProvinceAPI(result);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+  useEffect(() => {
+    fetchProvince();
+  }, []);
+
+  const fetchCity = async () => {
+    try {
+      console.log(idProv);
+      const response = await axiosInstance.get(
+        `http://localhost:8000/api_rajaongkir/city/${idProv}`
+      );
+      const result = response.data;
+      setCityAPI(result);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+  useEffect(() => {
+    fetchCity();
+  }, [idProv]);
 
   function inputHandler(event) {
     const { name, value } = event.target;
@@ -112,6 +165,7 @@ export default function AddAdress(props) {
       city: "",
       isPrimary: 0,
       Ket: "",
+      idCity: 0,
     },
     validationSchema: Yup.object().shape({
       city: Yup.string().required("City must be filled"),
@@ -123,7 +177,7 @@ export default function AddAdress(props) {
     onSubmit: async () => {
       console.log(formik.values);
       const res = await axiosInstance
-        .post("/user/addaddress", formik.values)
+        .post("/address/addaddress", formik.values)
         .then(async (res) => {
           toast({
             title: "Address created.",
@@ -174,11 +228,12 @@ export default function AddAdress(props) {
     formData.append("postalCode", postalCode);
     formData.append("isPrimary", isPrimary);
     formData.append("Ket", ket);
+    formData.append("idCity", idCity);
     console.log(formData);
 
     try {
       // alert("asd");
-      await axiosInstance.post("/user/addaddress", formData);
+      await axiosInstance.post("/address/addaddress", formData);
       navigate("/list-address");
       console.log("address added");
     } catch (error) {
@@ -248,6 +303,58 @@ export default function AddAdress(props) {
               </FormHelperText>
             </FormControl>
 
+            <FormControl id="email">
+              <FormLabel>Province</FormLabel>
+
+              <Select
+                name="province"
+                bgColor="white"
+                onChange={(e) => {
+                  const selectedProvince = provinceAPI.find(
+                    (val) => val.province === e.target.value
+                  );
+                  formik.setFieldValue("province", selectedProvince.province);
+                  handleId(selectedProvince.province_id);
+                }}
+              >
+                <option>{province}</option>
+                {provinceAPI?.map((val) => {
+                  return (
+                    <option key={val.province_id} value={val.province}>
+                      {val.province}
+                    </option>
+                  );
+                })}
+              </Select>
+              <FormHelperText w={"268px"}>
+                {formik.errors.province}
+              </FormHelperText>
+            </FormControl>
+            <FormControl id="email">
+              <FormLabel>City</FormLabel>
+
+              <Select
+                name="city"
+                bgColor="white"
+                onChange={(e) => {
+                  const selectedCity = cityAPI.find(
+                    (val) => val.city_name === e.target.value
+                  );
+                  formik.setFieldValue("city", e.target.value);
+                  formik.setFieldValue("idCity", selectedCity.city_id);
+                }}
+              >
+                <option>{city}</option>
+                {cityAPI.map((c) => {
+                  return (
+                    <option key={c.city_id} value={c.city_name}>
+                      {c.city_name}
+                    </option>
+                  );
+                })}
+              </Select>
+              <FormHelperText w={"268px"}>{formik.errors.city}</FormHelperText>
+            </FormControl>
             <FormControl id="district">
               <FormLabel>District</FormLabel>
               <Input
@@ -261,31 +368,6 @@ export default function AddAdress(props) {
                 {formik.errors.district}
               </FormHelperText>
             </FormControl>
-
-            <FormControl id="city">
-              <FormLabel>City</FormLabel>
-              <Input
-                type="text"
-                onChange={(e) => formik.setFieldValue("city", e.target.value)}
-                bgColor="white"
-              />
-              <FormHelperText w={"268px"}>{formik.errors.city}</FormHelperText>
-            </FormControl>
-
-            <FormControl id="province">
-              <FormLabel>Province</FormLabel>
-              <Input
-                type="text"
-                onChange={(e) =>
-                  formik.setFieldValue("province", e.target.value)
-                }
-                bgColor="white"
-              />
-              <FormHelperText w={"268px"}>
-                {formik.errors.province}
-              </FormHelperText>
-            </FormControl>
-
             <FormControl id="postalCode">
               <FormLabel>Postal Code</FormLabel>
               <Input
@@ -312,9 +394,8 @@ export default function AddAdress(props) {
               <Center gap={3}>
                 <Checkbox
                   onChange={(e) => {
-                    CheckUtama(e, "1");
                     setIsPrimary(!isPrimary);
-                    formik.setFieldValue("isPrimary", isPrimary);
+                    formik.setFieldValue("isPrimary", !isPrimary);
                   }}
                 >
                   Primary Address

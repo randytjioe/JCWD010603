@@ -9,22 +9,43 @@ import Navbar from "../components/navbar";
 export default function PageProducts() {
   const [data, setData] = useState();
   const [datacat, setDataCat] = useState();
+  const [dataBranch, setDataBranch] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [sort, setSort] = useState("ASC");
+  const [idBranch, setIdBranch] = useState(1);
   const [sortby, setSortBy] = useState("name");
   const [categories1, setCategories1] = useState([]);
   const [page, setPage] = useState(0);
+  const [branchProduct, setbranchProduct] = useState([]);
 
   async function fetchData() {
-    await axiosInstance.get("/user/productall").then((res) => {
+    await axiosInstance.get("/product/productall").then((res) => {
       setData(res.data.result);
     });
   }
   async function fetchDataCat() {
-    await axiosInstance.get("/user/category").then((res) => {
+    await axiosInstance.get("/product/category").then((res) => {
       setDataCat(res.data.result);
     });
   }
+  async function fetchDataBranch() {
+    await axiosInstance.get("/admin/branches").then((res) => {
+      setDataBranch(res.data.result);
+    });
+  }
+  const fetchProductBranch = async () => {
+    try {
+      console.log(idBranch);
+      const response = await axiosInstance.get(
+        `/product/productbybranch/${idBranch}`
+      );
+      const result = response.data.result;
+      setbranchProduct(result);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
   const fetchFinPro = async (search) => {
     let url = "";
 
@@ -32,7 +53,7 @@ export default function PageProducts() {
 
     console.log(url);
 
-    await axiosInstance.get("/user/find?" + url).then((res) => {
+    await axiosInstance.get("/product/find?" + url).then((res) => {
       setData(res.data.result);
     });
   };
@@ -43,18 +64,22 @@ export default function PageProducts() {
       idx ? (url += `&${val}=${val}`) : (url += `${val}=${val}`);
     });
 
-    url += `&order=${sort}&orderby=${sortby}`;
+    url += `&order=${sort}&orderby=${sortby}&BranchId=${idBranch}`;
 
     console.log(url);
 
-    await axiosInstance.get("/filter?" + url).then((res) => {
-      setData(res.data.result);
+    await axiosInstance.get("/filter-user?" + url).then((res) => {
+      setbranchProduct(res.data.result);
     });
   };
+  useEffect(() => {
+    fetchProductBranch();
+  }, [idBranch]);
   useEffect(() => {
     // fetchPosts();
     fetchData();
     fetchDataCat();
+    fetchDataBranch();
     setTimeout(() => {
       setIsLoading(false);
     }, 500);
@@ -78,8 +103,12 @@ export default function PageProducts() {
               fin={fetchFinPro}
               cat={[...categories1]}
               datacat={datacat}
+              databranch={dataBranch}
               setCat={setCategories1}
               sort={[...sort]}
+              branchProduct={branchProduct}
+              // idBranch={[...idBranch]}
+              setIdBranch={setIdBranch}
               sortby={[...sortby]}
               setSort={setSort}
               setSortBy={setSortBy}

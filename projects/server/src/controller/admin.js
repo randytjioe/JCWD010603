@@ -10,38 +10,50 @@ const Branch = db.branch;
 const Category = db.category;
 const Product = db.product;
 const Stock = db.stock;
+const Voucher_type = db.voucher_type;
+const Voucher = db.voucher;
 
 const adminController = {
   login: async (req, res) => {
-    const { email, password } = req.body;
-    const result = await Admins.findOne({
-      where: {
-        email: {
-          [Op.eq]: sequelize.literal(`BINARY '${email}'`),
+    try {
+      const { email, password } = req.body;
+      const result = await Admins.findOne({
+        where: {
+          email: {
+            [Op.eq]: sequelize.literal(`BINARY '${email}'`),
+          },
         },
-      },
-      raw: true,
-    });
-
-    if (!result) {
-      return res.status(400).json({
-        message: "User not found",
+        raw: true,
       });
-    }
-    const isValid = await bcrypt.compare(password, result.password);
-    if (!isValid) {
-      return res.status(401).json({
-        message: "email / password incorrect",
-      });
-    }
 
-    let payload = { id: result.id, isSuperAdmin: result.isSuperAdmin };
-    const token = jwt.sign(payload, secret_key);
-    return res.status(200).json({
-      token,
-      result: result,
-      message: "logged in",
-    });
+      if (!result) {
+        return res.status(400).json({
+          message: "User not found"
+        })
+      }
+      const isValid = await bcrypt.compare(password, result.password);
+      if (!isValid) {
+        throw new Error("Incorrect Email / Password")
+        // return res.status(401).json({
+        //     message: 'email / password incorrect'
+        // })
+      }
+      let payload = { id: result.id, isSuperAdmin: result.isSuperAdmin };
+      const token = jwt.sign(
+        payload,
+        secret_key
+      )
+      return res.status(200).json({
+        token,
+        result: result,
+        message: 'logged in'
+      })
+    } catch (error) {
+      console.log(error.message);
+      return res.status(error.statusCode || 500).send(
+        error.message
+      )
+    }
 
     // else {
     //     const check = bcrypt.compare(password, result.password)
@@ -96,6 +108,25 @@ const adminController = {
         include: {
           model: Branch,
           attributes: ["city"],
+        },
+      });
+      return res.status(200).json({
+        message: "admin data fetched",
+        result: result,
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err,
+      });
+    }
+  },
+
+  getCountAdmin: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const result = await Admins.count({
+        where: {
+          BranchId: id,
         },
       });
       return res.status(200).json({
@@ -308,22 +339,19 @@ const adminController = {
     try {
       const stock = await Stock.findOne({ where: { id: id } });
       if (!stock) {
-        throw new Error("Stock not found");
+        throw new Error('Stock not found');
       }
-      const updatedStock = await stock.update(
-        { qty: data.qty },
-        { transaction: t }
-      );
+      const updatedStock = await stock.update({ qty: data.qty }, { transaction: t });
       if (!updatedStock) {
-        throw new Error("update stock failed");
+        throw new Error('update stock failed');
       }
       await t.commit();
-      res.status(200).send("Update stock success");
+      res.status(200).send('Update stock success');
     } catch (err) {
       await t.rollback();
       return res.status(400).send(err.message);
     }
   },
-};
+}
 
 module.exports = adminController;

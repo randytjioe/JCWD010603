@@ -14,6 +14,7 @@ router.post(
 );
 router.get("/branches", adminController.getBranches);
 router.get("/adminlist", adminController.getAdmin);
+router.get("/countadmin/:id", adminController.getCountAdmin);
 router.delete("/deleteAdmin/:id", adminController.deleteAdmin);
 router.delete("/deleteBranch/:id", adminController.deleteBranches);
 router.post(

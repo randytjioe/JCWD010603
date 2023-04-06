@@ -15,8 +15,6 @@ function ProtectedPage({
   const adminSelector = useSelector((state) => state.adminAuth);
 
   useEffect(() => {
-    console.log("adminSelector:", adminSelector);
-    console.log("adminLogin:", adminLogin);
     if (userLogin && !userSelector.id) {
       return navigate("/userlogin", { replace: true });
     }

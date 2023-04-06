@@ -19,6 +19,7 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   Link,
+  useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
@@ -33,9 +34,9 @@ import { useLocation } from "react-router-dom";
 export default function DetailProduct(props) {
   const [imgProduct, setImgProduct] = useState("");
   const [name, setName] = useState("");
-  const [addressList, setAddressList] = useState("");
   const [idProv, setIdProv] = useState(0);
   const [price, setPrice] = useState(0);
+  const [stock, setStock] = useState(0);
   const [category, setCategory] = useState("");
   const data = props.data;
   const location = useLocation();
@@ -46,6 +47,7 @@ export default function DetailProduct(props) {
   const [qty, setQty] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const toast = useToast();
   const handleId = (e) => {
     setIdProv(e);
   };
@@ -110,7 +112,7 @@ export default function DetailProduct(props) {
 
   const fetchproductdetail = async (idProduct) => {
     await axiosInstance
-      .get("/user/detail-product/" + idProduct)
+      .get("/product/detail-product/" + idProduct)
       .then((response) => {
         setProductDetail(response.data.result);
         console.log(response.data.result);
@@ -119,12 +121,38 @@ export default function DetailProduct(props) {
         setPrice(response.data.result.price);
         setImgProduct(response.data.result.imgProduct);
         setCategory(response.data.result.Category.name);
-        setDescription(response.data.result.description);
+        setDescription(response.data.result.desc);
+        setStock(response.data.result.stock);
       })
       .catch((error) => {
         console.log({ error });
       });
   };
+
+  async function addToCart() {
+    const userId = localStorage.getItem("userID");
+    const cartData = {
+      qty: qty,
+      ProductId: idProduct,
+      UserId: userId,
+    };
+    try {
+      await axiosInstance.post("/cart/addCart", cartData);
+      toast({
+        title: "Item added to cart",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Error adding item to cart",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  }
 
   return (
     <>
@@ -132,7 +160,7 @@ export default function DetailProduct(props) {
         <Flex
           spacing={4}
           maxW={"md"}
-          bgColor="#DCD7C9"
+          // bgColor="#DCD7C9"
           w="430px"
           h="100vh"
           flexDir="column"
@@ -199,16 +227,16 @@ export default function DetailProduct(props) {
               <Flex px={5} fontSize={"12px"}>
                 {description}
               </Flex>
-              <Flex>Stock : </Flex>
+              <Flex>Stock : {stock} </Flex>
               <Center gap={2}>
                 Quantity :
                 <NumberInput
                   maxW={"100px"}
                   onChange={(valueString) => {
-                    if (valueString > props.product?.stock) {
+                    if (valueString > stock) {
                       // alert("melebihi stock");
 
-                      setQty(props.product?.stock);
+                      setQty(stock);
                     } else {
                       setQty(valueString);
                     }
@@ -228,7 +256,8 @@ export default function DetailProduct(props) {
               </Center>
               <Flex py={3}>
                 <Button
-                  onClick={() => props.handleAddToCart(props.product, qty)}
+                  // onClick={() => props.handleAddToCart(props.product, qty)}
+                  onClick={addToCart}
                   colorScheme="green"
                   w={"full"}
                 >

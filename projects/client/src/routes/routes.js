@@ -19,8 +19,12 @@ import AddAddressPage from "../pages/addadress_page";
 import VerifyEmail from "../pages/verify_email.jsx";
 import ResetPassReqPage from "../pages/reset_password_request";
 import ResetPassSetPage from "../pages/reset_password_set";
+import Cart from "../pages/cart";
+import Discount from "../pages/discount";
 import DetailProduct from "../pages/detail_product";
 import AddProductPage from "../pages/addproduct";
+import NewOrder from "../pages/neworder_page";
+import Upload from "../pages/upload_page";
 
 const routes = [
   {
@@ -58,6 +62,14 @@ const routes = [
   {
     path: "/setup-password",
     element: <ResetPassSetPage />,
+  },
+  {
+    path: "/new-order",
+    element: <NewOrder />,
+  },
+  {
+    path: "/upload-payment",
+    element: <Upload />,
   },
   {
     path: "/userpage",
@@ -109,6 +121,10 @@ const routes = [
     element: <ListProdukUser />,
   },
   {
+    path: "/cart",
+    element: <Cart />,
+  },
+  {
     path: "/update-profile",
     element: (
       <ProtectedPageUser userLogin={true}>
@@ -145,6 +161,14 @@ const routes = [
     element: (
       <ProtectedPage adminLogin={true} adminGuest={false}>
         <AdminCategory />
+      </ProtectedPage>
+    ),
+  },
+  {
+    path: "/discount_voucher",
+    element: (
+      <ProtectedPage adminLogin={true} adminGuest={false}>
+        <Discount />
       </ProtectedPage>
     ),
   },

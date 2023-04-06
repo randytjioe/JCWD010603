@@ -7,8 +7,8 @@ export default function ColumnChart(props) {
       options={props.chartOptions}
       series={props.chartData}
       type="bar"
-      width="100%"
-      height="100%"
+      width={props.w}
+      height={props.h}
     />
   );
 }
