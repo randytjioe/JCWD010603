@@ -22,6 +22,7 @@ const addressController = {
         isPrimary,
         UserId,
         Ket,
+        idCity,
       } = req.body;
       const data = {
         address,
@@ -32,29 +33,34 @@ const addressController = {
         UserId,
         isPrimary,
         Ket,
+        idCity,
       };
       console.log(data);
-      const checkAddress = await Address.findOne({
-        where: {
-          address: address,
-        },
+      const checkPrimaryAddress = await Address.findOne({
+        where: { [Op.and]: [{ isPrimary: true }, { UserId: UserId }] },
       });
-
-      if (checkAddress) {
-        return res.status(400).json({
-          message: "address sudah tersedia",
-        });
+      console.log(isPrimary);
+      console.log(checkPrimaryAddress.dataValues);
+      if (isPrimary) {
+        if (checkPrimaryAddress) {
+          await Address.update(
+            {
+              isPrimary: false,
+            },
+            {
+              where: {
+                id: checkPrimaryAddress.dataValues.id,
+              },
+            }
+          );
+        }
       }
-
-      const addAddress = await Address.create({ ...data });
-      return res.status(200).json({
-        message: "address berhasil ditambahkan",
-        result: addAddress,
-      });
-    } catch (err) {
-      console.log(err);
-      return res.status(400).json({
-        message: err,
+      const result = await Address.create({ ...data });
+      res.send(result);
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        message: error,
       });
     }
   },
@@ -71,6 +77,7 @@ const addressController = {
         isPrimary,
         UserId,
         Ket,
+        idCity,
       } = req.body;
       const data = {
         address,
@@ -80,9 +87,16 @@ const addressController = {
         postalCode,
         isPrimary,
         Ket,
+        idCity,
       };
       const checkPrimaryAddress = await Address.findOne({
-        where: { [Op.and]: [{ isPrimary: true }, { UserId: UserId }] },
+        where: {
+          [Op.and]: [
+            { isPrimary: true },
+            { UserId: UserId },
+            { deletedAt: null },
+          ],
+        },
       });
       console.log(isPrimary);
       console.log(checkPrimaryAddress.dataValues);
@@ -125,6 +139,23 @@ const addressController = {
         where: {
           id: id,
         },
+      });
+      res.status(200).json({
+        message: "filter address berdasarkan id",
+        result: filterAddressId,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+  getAddressByisPrimary: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const filterAddressId = await Address.findOne({
+        where: { [Op.and]: [{ isPrimary: true }, { UserId: id }] },
       });
       res.status(200).json({
         message: "filter address berdasarkan id",
