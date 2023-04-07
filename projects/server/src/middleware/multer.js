@@ -16,6 +16,8 @@ const fileUploader = ({
       const filename = `${prefix}_${nanoid()}.${fileExtension}`;
 
       cb(null, filename);
+
+      console.log(filename);
     },
   });
 
@@ -32,9 +34,8 @@ const fileUploader = ({
       fileSize: 1000000, // Byte
     },
     fileFilter: (req, file, cb) => {
-      console.log(file.mimetype);
-
        if (file.mimetype.split("/")[0] != fileType) {
+        console.log('error file type');
        return cb(null, false);      
        }
       if (!allowedFileTypes.includes(file.mimetype)) {
@@ -47,17 +48,17 @@ const fileUploader = ({
   return uploader;
 };
 
-const upload = multer({
-  limits: {
-    fileSize: 1000000, //Byte
-  },
-  fileFilter: (req, file, cb) => {
-    console.log(file);
-    if (file.mimetype.split("/")[0] != "image") {
-      return cb(null, false);
-    }
-    cb(null, true);
-  },
-});
+// const upload = multer({
+//   limits: {
+//     fileSize: 1000000, //Byte
+//   },
+//   fileFilter: (req, file, cb) => {
+//     console.log(file);
+//     if (file.mimetype.split("/")[0] != "image") {
+//       return cb(null, false);
+//     }
+//     cb(null, true);
+//   },
+// });
 
-module.exports = { fileUploader, upload };
+module.exports = { fileUploader};

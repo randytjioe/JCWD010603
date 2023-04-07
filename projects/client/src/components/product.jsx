@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-
-import axios from "axios";
+import { axiosInstance } from "../config/config";
 import {
+  Spacer,
   Flex,
   Image,
   Drawer,
@@ -21,57 +21,50 @@ import {
   AccordionIcon,
   AccordionPanel,
   Divider,
-  InputRightElement,
   Input,
-  InputRightAddon,
-  InputLeftAddon,
-  List,
   Checkbox,
-  ListItem,
   Button,
   Select,
-  Grid,
-  GridItem,
   Box,
   Icon,
   Center,
-  IconButton,
-  Slide,
   Text,
   Stack,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
+  useToast,
+  Modal, ModalOverlay, ModalHeader, ModalCloseButton, ModalBody, FormControl, ModalFooter, FormHelperText, ModalContent
 } from "@chakra-ui/react";
 import {
-  FaSignOutAlt,
-  FaChalkboardTeacher,
-  FaBoxes,
-  FaRegCreditCard,
-  FaChartLine,
-  FaCashRegister,
-  FaCog,
-  FaFolder,
+  FaFolder
 } from "react-icons/fa";
-import { BsStar, BsStarFill, BsStarHalf } from "react-icons/bs";
 import { BiLeftArrowAlt, BiRightArrowAlt } from "react-icons/bi";
 import { AiOutlineSearch } from "react-icons/ai";
+import { MdOutlineDelete, MdBorderColor } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { TbFilter } from "react-icons/tb";
 import { BsPlusCircleFill } from "react-icons/bs";
 import React from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
 
 export default function ProductPage(props) {
   const data = props.data;
   const datacat = props.datacat;
-  console.log(data);
+  // console.log(data);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const firstField = React.useRef();
   const secondField = React.useRef();
   const [search, setSearch] = useState("");
   const [product, setProduct] = useState([]);
   const [page, setPage] = useState(1);
+  
+  
+  const { isOpen : isOpenModal, onOpen : onOpenModal, onClose : onCloseModal} = useDisclosure();
+  const { isOpen : isOpenEditModal, onOpen : onOpenEditModal, onClose : onCloseEditModal} = useDisclosure();
+  const { isOpen : isOpenDelModal, onOpen : onOpenDelModal, onClose : onCloseDelModal} = useDisclosure();
+  const initialRef = React.useRef(null);
+
+
   const selectPageHandle = (selectPage) => {
     if (
       selectPage >= 1 &&
@@ -102,6 +95,213 @@ export default function ProductPage(props) {
           [name]: value,
         });
   }
+
+
+
+  // IAN
+  const [imgProduct, setImgProduct] = useState("");
+  const [saveImage, setSaveImage] = useState(null);
+  const [cat, setCat] = useState([{
+    'id' : 0,
+    'name': ""
+  }])
+
+  const [msg, setMsg] = useState("");
+  
+  const NotifyError = useToast({
+    title: "Failed",
+    description: msg,
+    status: "error",
+    duration: 5000,
+    isClosable: true,
+    position: "bottom-left",
+  });
+
+  const NotifySuccess = useToast({
+    title: "Success",
+    status: "success",
+    duration: 5000,
+    isClosable: true,
+    position: "bottom-left",
+  });
+
+
+  const handleFile = (event) => {
+    const uploaded = event.target.files[0];
+    console.log(uploaded);
+    formikEdit.setFieldValue("imgProduct", uploaded)
+  };
+
+  const [editProd, setEditProd] = useState([{
+    'id' : 0,
+    'name': "",
+    'price': 0,
+    'stock': 0,
+    'weight': 0,
+    'CategoryId': 0,
+    'imgProduct': ""
+  }])
+
+  const deleteSubmit = async (id) => {
+      try {
+        await axiosInstance.delete(`/product/delete/${id}`)
+        setTimeout(()=> {
+          NotifySuccess()
+          onCloseDelModal()
+      }, 300)
+      } catch (err) {
+        console.log(err.response.data.message)
+        setMsg(err.response.data.message)
+        setTimeout(()=> {
+          NotifyError()
+          onCloseDelModal()
+        }, 300)
+      }
+  }
+
+  const editSubmit = () => {
+    formikEdit.setFieldValue("id", editProd.id)
+    formikEdit.handleSubmit()
+  }
+  
+  const editHandlerModal = async (id) => {
+    const response = await axiosInstance(`/user/detail-product/${id}`)
+    const result = response.data.result
+    // console.log(result);
+    setEditProd(result)
+    onOpenEditModal()
+  }
+
+  const deleteHandlerModal = async (id) => {
+    const response = await axiosInstance(`/user/detail-product/${id}`)
+    const result = response.data.result
+    // console.log(result);
+    setEditProd(result)
+    onOpenDelModal()
+  }
+
+  const fetchCategory = async () => {
+    const response = await axiosInstance("/admin/categories")
+    const result = response.data.result
+    // console.log(result)
+    setCat(result)
+    
+  }
+  useEffect(() => {
+    fetchCategory()
+  },[])
+
+  const formik = useFormik({
+      initialValues : {   
+          name : "",
+          price : 0,
+          stock : 0,
+          weight : 0,
+          desc : "",
+          imgProduct : "",
+          category : 0,
+      } ,
+      validationSchema : Yup.object().shape({
+          name: Yup.string().required("Product name must be filled"),
+          price: Yup.number("Price must be a number").nullable(),
+          imgProduct: Yup.mixed()
+          .nullable()
+          .required("Product image must be a filled")
+          .test(
+            "type",
+            "Invalid file format selection",
+            (e) => {
+            return e && (e.type === "image/jpg" || e.type === "image/jpeg" || e.type === "image/png" || e.type === "image/gif")}
+          ).test(
+            "size",
+            "File size is too big",
+            (e) => {return e && e.size <= 1000 * 1000} // 1MB
+          )
+         
+    
+      }),
+      onSubmit:  async (values) => {
+          try{
+            const {name, price, stock, weight, desc, imgProduct, category} = values
+            const formData = new FormData()
+
+            formData.append("name", name)
+            formData.append("price", price)
+            formData.append("stock", stock)
+            formData.append("weight", weight)
+            formData.append("desc", desc)
+            formData.append("imgProduct", imgProduct)
+            formData.append("CategoryId", category)
+
+            await axiosInstance.post("/product/create", formData)
+            setTimeout(()=> {
+              NotifySuccess()
+              onCloseModal()
+             }, 300)
+          }catch(err){
+            console.log(err);
+            setMsg(err.response.data.message);
+            setTimeout(()=> {
+              NotifyError()
+              onCloseModal()
+             }, 300)
+          }
+          
+      }
+    })
+  
+  const formikEdit = useFormik({
+      initialValues : {
+          id : editProd?.id || 0, 
+          name : editProd?.name ||  "",
+          price : editProd?.price || 0,
+          stock : editProd?.stock || 0,
+          weight :editProd?.weight || 0,
+          category : editProd?.CategoryId || 0,
+          imgProduct : editProd?.imgProduct || ""
+      } ,
+      validationSchema : Yup.object().shape({
+          imgProduct: Yup.mixed()
+          .test(
+            "type",
+            "Invalid file format selection",
+            (e) => {
+            return !e || (e.type === "image/jpg" || e.type === "image/jpeg" || e.type === "image/png" || e.type === "image/gif")}
+          ).test(
+            "size",
+            "File size is too big",
+            (e) => {return !e || e.size <= 1000 * 1000} // 1MB
+          )
+      }),
+      onSubmit:  async (values)=> {
+          console.log(values);
+          try{
+            const {id, imgProduct, name, price, stock, weight, category} = values
+            
+            const formData = new FormData()
+            formData.append("imgProduct", imgProduct)
+            formData.append("name", name)
+            formData.append("price", price)
+            formData.append("stock", stock)
+            formData.append("weight", weight)
+            formData.append("CategoryId", category)
+
+            await axiosInstance.patch(`/product/edit/${id}`, formData)
+            setTimeout(()=> {
+              NotifySuccess()
+              onCloseEditModal()
+             }, 300)
+          }catch(err){
+            console.log(err);
+            setMsg(err.response.data.message);
+            setTimeout(()=> {
+              NotifyError()
+              onCloseEditModal()
+             }, 300)
+          }
+          
+      }
+    })
   return (
     <>
       <Flex
@@ -111,7 +311,7 @@ export default function ProductPage(props) {
         paddingTop="20px"
         paddingBottom={"20px"}
         justifyContent="start"
-        fontFamily={"Tw Cen MT"}
+        fontFamily={"Roboto"}
         flexWrap="wrap"
         flexDir={"column"}
         overflowX={"auto"}
@@ -306,7 +506,7 @@ export default function ProductPage(props) {
                 </DrawerFooter>
               </DrawerContent>
             </Drawer>
-            <Button leftIcon={<BsPlusCircleFill />} colorScheme="red">
+            <Button leftIcon={<BsPlusCircleFill />} colorScheme="blue" onClick={onOpenModal}>
               Add Product
             </Button>
           </InputGroup>
@@ -331,18 +531,23 @@ export default function ProductPage(props) {
           h="full"
         >
           {data.slice(page * 6 - 6, page * 6)?.map((product, index) => {
-            console.log(product.imgProduct);
+            {/* console.log(product.imgProduct) */}
             return (
               <>
                 <Box minW="246px" h="300px">
                   <Flex justifyContent="left">
-                    <Image
-                      w="190px"
-                      h="190px"
-                      src={product?.imgProduct}
-                      alt={`Picture of ${product?.name}`}
-                      roundedTop="lg"
-                    />
+                    <Link to={`/`}>
+                    <Box roundedTop="lg" w="190px" h="190px">
+                      <Image
+                        src={product?.imgProduct}
+                        alt={`Picture of ${product?.name}`}
+                        w="inherit"                        
+                        h="inherit"                        
+                        roundedTop={"inherit"}                        
+                        zIndex="0"
+                      />
+                      </Box>
+                    </Link>
                   </Flex>
                   <Flex
                     mt="1"
@@ -359,7 +564,7 @@ export default function ProductPage(props) {
                     >
                       {product?.category}
                     </Box>
-                    <Box fontSize="14px" as="h4" lineHeight="tight">
+                    <Box fontSize="16px" fontWeight={"Bold"} as="h4" lineHeight="tight">
                       {product?.name}
                     </Box>
 
@@ -369,7 +574,12 @@ export default function ProductPage(props) {
                         Harga : Rp. {product?.price.toLocaleString()}
                       </Text>
                     </Box>
-                    <Box fontSize="14px" as="h4"></Box>
+                    <Stack w={"inherit"} borderRadius={"50%"} marginY={"5px"} height={"2px"} bgColor={`rgb(111,111,111,0.1)`} />
+                    <Flex marginTop={"3px"} paddingX={"35px"}>
+                      <Button onClick={()=> {editHandlerModal(product?.id)}} colorScheme="yellow" h={"25px"} fontSize={"14px"}><MdBorderColor color="white" size={15}/></Button>
+                      <Spacer/>
+                      <Button onClick={()=> {deleteHandlerModal(product?.id)}} colorScheme="red" h={"25px"} fontSize={"14px"}><MdOutlineDelete size={18}/></Button>
+                      </Flex>
                   </Flex>
                 </Box>
               </>
@@ -443,6 +653,215 @@ export default function ProductPage(props) {
           )}
         </Center>
       </Flex>
+
+      <Modal
+          initialFocusRef={initialRef}
+          isOpen={isOpenEditModal}
+          onClose={onCloseEditModal}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Edit Product</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={6}>
+            <Input type="hidden" name="id" defaultValue={editProd?.id} onChange={(e)=> formikEdit.setFieldValue("id", e.target.value )} />
+              <FormControl id="name">
+                <FormLabel>Product Name</FormLabel>
+                <Input placeholder="Name" type="text" name="name" defaultValue={editProd?.name} onChange={(e)=> formikEdit.setFieldValue("name", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+                    {formikEdit.errors.name}
+                </FormHelperText>
+              </FormControl>
+              <FormControl id="price">
+                <FormLabel>Product Price</FormLabel>
+                <Input placeholder="Price" type="text" name="price" defaultValue={editProd?.price} onChange={(e)=> formikEdit.setFieldValue("price", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+                    {formikEdit.errors.price}
+                </FormHelperText>
+              </FormControl>
+              <FormControl id="weight">
+                <FormLabel>Product Weight</FormLabel>
+                <Input placeholder="In grams" type="text" name="weight" defaultValue={editProd?.weight} onChange={(e)=> formikEdit.setFieldValue("weight", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+                    {formikEdit.errors.weight}
+                </FormHelperText>
+              </FormControl>
+              <FormControl id="stock">
+                <FormLabel>Product Stock</FormLabel>
+                <Input placeholder="Stock" type="text" name="stock" defaultValue={editProd?.stock} onChange={(e)=> formikEdit.setFieldValue("stock", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+                    {formikEdit.errors.stock}
+                </FormHelperText>
+              </FormControl>
+              <FormControl id="category">
+                <FormLabel>Product Category</FormLabel>
+                <Select  name='category' placeholder='Select' defaultValue={editProd?.CategoryId} onChange={(e)=> formikEdit.setFieldValue("category", e.target.value )}>
+                {
+                      cat.map((c)=> {
+                        return (
+                        <option key = {c.id} value= {c.id}>{c.name}</option>
+                        )
+                      })
+                    }
+                </Select>
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+                    {formikEdit.errors.category}
+                </FormHelperText>
+              </FormControl>
+              <FormControl id="address">
+              <FormLabel>Product Description</FormLabel>
+              <Textarea
+                placeholder="Description"
+                type="text"
+                name="address"
+                bgColor="white"
+                maxH={"150px"}
+                validationSchema
+                defaultValue={editProd?.desc}
+                onChange={(e) =>
+                  formikEdit.setFieldValue("desc", e.target.value)
+                }
+              />
+              <FormHelperText
+                w={"inherit"}
+                marginTop={"5px"}
+                color={"red.500"}
+                fontSize={"9px"}
+              >
+                {formikEdit.errors.desc}
+              </FormHelperText>
+            </FormControl>
+              <FormControl id="imgProduct">
+                <FormLabel>Product Image</FormLabel>
+                <Input paddingTop="4px" type="file" name="imgProduct" onChange={handleFile} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+                    {formikEdit.errors.imgProduct}
+                </FormHelperText>
+              </FormControl>
+            </ModalBody>
+            <ModalFooter>
+              <Button colorScheme='blue' mr={3} onClick={editSubmit}>
+                Submit
+              </Button>
+              <Button onClick={onCloseEditModal}>Cancel</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+
+      <Modal
+          initialFocusRef={initialRef}
+          isOpen={isOpenModal}
+          onClose={onCloseModal}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Add New Products</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={6}>
+  
+              <FormControl id="name">
+                <FormLabel>Product Name</FormLabel>
+                <Input placeholder="Name" type="text" name="name" onChange={(e)=> formik.setFieldValue("name", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+                    {formik.errors.name}
+                </FormHelperText>
+              </FormControl>
+              <FormControl id="price">
+                <FormLabel>Product Price</FormLabel>
+                <Input placeholder="Price" type="text" name="price" onChange={(e)=> formik.setFieldValue("price", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+                    {formik.errors.price}
+                </FormHelperText>
+              </FormControl>
+              <FormControl id="weight">
+                <FormLabel>Product Weight</FormLabel>
+                <Input placeholder="In grams" type="text" name="weight" onChange={(e)=> formik.setFieldValue("weight", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+                    {formik.errors.weight}
+                </FormHelperText>
+              </FormControl>
+              <FormControl id="stock">
+                <FormLabel>Product Stock</FormLabel>
+                <Input placeholder="Stock" type="text" name="stock" onChange={(e)=> formik.setFieldValue("stock", e.target.value )} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+                    {formik.errors.stock}
+                </FormHelperText>
+              </FormControl>
+              <FormControl id="category">
+                <FormLabel>Product Category</FormLabel>
+                <Select  name='category' placeholder='Select' onChange={(e)=> formik.setFieldValue("category", e.target.value )}>
+                {
+                      cat.map((c)=> {
+                        return (
+                        <option key = {c.id} value= {c.id}>{c.name}</option>
+                        )
+                      })
+                    }
+                </Select>
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+                    {formik.errors.category}
+                </FormHelperText>
+              </FormControl>
+              <FormControl id="address">
+              <FormLabel>Product Description</FormLabel>
+              <Textarea
+                placeholder="Description"
+                type="text"
+                name="address"
+                bgColor="white"
+                maxH={"150px"}
+                onChange={(e) =>
+                  formik.setFieldValue("desc", e.target.value)
+                }
+              />
+              <FormHelperText
+                w={"inherit"}
+                marginTop={"5px"}
+                color={"red.500"}
+                fontSize={"9px"}
+              >
+                {formik.errors.desc}
+              </FormHelperText>
+            </FormControl>
+              <FormControl id="imgProduct">
+                <FormLabel>Product Image</FormLabel>
+                <Input paddingTop="4px" type="file" name="imgProduct" onChange={(e)=>formik.setFieldValue("imgProduct", e.target.files[0])} />
+                <FormHelperText  w={"inherit"} marginTop={"5px"} color={"red.500"} fontSize={"9px"} >
+                    {formik.errors.imgProduct}
+                </FormHelperText>
+              </FormControl>
+            </ModalBody>
+            <ModalFooter>
+              <Button colorScheme='blue' mr={3} onClick={formik.handleSubmit}>
+                Submit
+              </Button>
+              <Button onClick={onCloseModal}>Cancel</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        
+      <Modal
+          initialFocusRef={initialRef}
+          isOpen={isOpenDelModal}
+          onClose={onCloseDelModal}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Delete Product</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            Are you sure want to delete product {editProd?.name}?
+          </ModalBody>
+
+          <ModalFooter>
+            <Button mr={3} colorScheme={"red"} onClick={ ()=> {deleteSubmit(editProd?.id)}}>Delete</Button>
+            <Button onClick={onCloseDelModal}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      
     </>
   );
 }

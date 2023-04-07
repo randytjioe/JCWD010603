@@ -32,15 +32,14 @@ export default function Register() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [msg, setMsg] = useState("");
-
+  
   const [province, setProvince] = useState([
     {
       province_id: 0,
       province: "",
     },
   ]);
-
+  
   const [city, setCity] = useState([
     {
       city_id: 0,
@@ -51,7 +50,9 @@ export default function Register() {
       province: "",
     },
   ]);
-
+  
+  const [msg, setMsg] = useState("");
+  
   const NotifyError = useToast({
     title: "Failed",
     description: msg,
@@ -239,7 +240,7 @@ export default function Register() {
               <Flex textAlign={"left"} color="white" py={3} px={3}>
                 <Icon
                   boxSize={"7"}
-                  // as={IoIosArrowBack}
+                  as={IoIosArrowBack}
                   color="white"
                   sx={{
                     _hover: {
@@ -387,7 +388,6 @@ export default function Register() {
                 placeholder="Select"
                 name="province"
                 textAlign={"center"}
-                bgColor="white"
                 onChange={(e) => {
                   formik.setFieldValue("province", e.target.value);
                   handleId(e.target.value);
@@ -418,7 +418,6 @@ export default function Register() {
                   placeholder="Select "
                   name="city"
                   textAlign={"center"}
-                  bgColor="white"
                   onChange={(e) => formik.setFieldValue("city", e.target.value)}
                 >
                   {city.map((c) => {
@@ -444,7 +443,6 @@ export default function Register() {
                   bgColor={"white"}
                   type="text"
                   name="postalCode"
-                  bgColor="white"
                   onChange={(e) =>
                     formik.setFieldValue("postalCode", e.target.value)
                   }

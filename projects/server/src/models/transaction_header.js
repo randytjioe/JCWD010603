@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   Transaction_header.init({
     noTrans: DataTypes.STRING,
     grandPrice: DataTypes.INTEGER,
+    totalWeight: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Transaction_header',
