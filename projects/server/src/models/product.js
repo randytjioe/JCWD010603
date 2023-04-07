@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       stock: DataTypes.INTEGER,
       imgProduct: DataTypes.TEXT,
       desc: DataTypes.TEXT,
+      weight: DataTypes.INTEGER,
     },
     {
       sequelize,

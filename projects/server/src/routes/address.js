@@ -10,4 +10,5 @@ router.get("/update-address/:id", addressController.getAddressById);
 router.get("/primaryaddress/:id", addressController.getAddressByisPrimary);
 router.patch("/editaddress", addressController.updateAddress);
 router.post("/addaddress", addressController.addAddress);
+router.get("/address-branches/:id", addressController.getAddressBranches);
 module.exports = router;

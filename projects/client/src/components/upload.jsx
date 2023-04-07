@@ -51,7 +51,7 @@ import { useRef } from "react";
 import user_types from "../redux/auth/types";
 export default function UpdateProfile(props) {
   const [imgUser, setImgUser] = useState(
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGQ1xn3jeQG9KYz1e3z3JvW1ReMb76qrdGb5e7sJft5yLrh-TpByxo1u41GDl--anOzLI&usqp=CAU"
+    "https://support.photoshelterbrands.com/hc/article_attachments/115000967094/Screen_Shot_2017-07-12_at_5.32.17_PM.png"
   );
   const data = props.data;
   const [firstName, setFirstName] = useState("");
@@ -70,7 +70,6 @@ export default function UpdateProfile(props) {
 
   useEffect(() => {
     setUser_id(userSelector?.id);
-    fetchuserdetail(userSelector?.id);
   }, []);
 
   const dispatch = useDispatch();
@@ -81,27 +80,6 @@ export default function UpdateProfile(props) {
     password: "",
   });
   const [userdetail, setUserDetail] = useState([]);
-
-  useEffect(() => {
-    fetchuserdetail(User_id);
-  }, []);
-  const fetchuserdetail = async (User_id) => {
-    await axiosInstance
-      .get("/user/" + User_id)
-      .then((response) => {
-        setUserDetail(response.data.result);
-        console.log(response.data.result);
-        setFirstName(response.data.result.User_detail.firstname);
-        setLastName(response.data.result.User_detail.lastname);
-        setEmail(response.data.result.email);
-        setbirthDate(response.data.result.User_detail.birthDate);
-        setImgUser(response.data.result.User_detail.imgUser);
-        setGender(response.data.result.User_detail.gender);
-      })
-      .catch((error) => {
-        console.log({ error });
-      });
-  };
 
   const handleFile = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -149,10 +127,6 @@ export default function UpdateProfile(props) {
         .patch(`user/updatefoto/${props?.user.id}`, formData)
         .then(async (res) => {
           console.log(res.data.result);
-          // await dispatch({
-          //   type: user_types.USER_LOGIN,
-          //   payload: res.data.result,
-          // });
           toast({
             title: "Account created",
             description: " Your Profile has been Updated",
@@ -181,34 +155,6 @@ export default function UpdateProfile(props) {
     }
   }, [formik.values]);
 
-  function inputHandler(event) {
-    const { name, value } = event.target;
-
-    setUser({
-      ...user,
-      [name]: value,
-    });
-  }
-
-  const saveUser = async (e) => {
-    e.preventDefault();
-    const Data = {
-      User_id,
-      firstName,
-      lastName,
-      birthDate,
-      email,
-      gender,
-    };
-
-    try {
-      await axiosInstance.patch("/user/editprofile/" + User_id, Data);
-      navigate("/userpage");
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return (
     <>
       <Center flex={1} align={"center"} justifyContent={"center"}>
@@ -220,15 +166,9 @@ export default function UpdateProfile(props) {
           h="932px"
           color="white"
           flexDir="column"
-          gap={8}
+          gap={2}
         >
-          <Flex
-            w="430px"
-            h="120px"
-            bgColor="#2C3639"
-            flexDir={"column"}
-            gap={5}
-          >
+          <Flex w="430px" h="80px" bgColor="#2C3639" flexDir={"column"}>
             <Link to="/userpage" as={ReachLink}>
               <Flex textAlign={"left"} color="white">
                 <Icon
@@ -254,37 +194,35 @@ export default function UpdateProfile(props) {
           <FormControl id="productName">
             <FormLabel> </FormLabel>
 
-            <Stack
-              direction={["column"]}
-              spacing={6}
-              py={3}
-              gap={3}
-              justifyContent={"center"}
-            >
-              <Flex flexDir={"column"}>
-                <Flex flexDir={"column"}>
+            <Stack direction={["column"]} gap={3} justifyContent={"center"}>
+              <Flex flexDir={"column"} gap={2} color="black">
+                Preview
+                <Center flexDir={"column"}>
                   <Image
                     src={formik.values.avatar_url || imgUser}
                     id="avatar"
+                    w="350px"
+                    h="540px"
                   ></Image>
-                  <FormHelperText color={"white"}>
+                  <FormHelperText color={"black"}>
                     {formik.errors.avatar}
                   </FormHelperText>
-                </Flex>
+                </Center>
                 <Center
                   w="full"
                   justifyContent={"center"}
                   flexDir="column"
-                  gap={3}
+                  gap={2}
                 >
                   <Flex flexDir={"column"}>
                     <Text
-                      color="#0095F6"
+                      color="black"
                       fontWeight="bold"
                       cursor={"pointer"}
                       onClick={() => inputFileRef.current.click()}
                     >
-                      Upload Payment
+                      {" "}
+                      Select File
                     </Text>
 
                     <Input
@@ -304,22 +242,23 @@ export default function UpdateProfile(props) {
                   </Flex>
                 </Center>
               </Flex>
-
-              <Button
-                colorScheme={"black"}
-                variant={"solid"}
-                w="350px"
-                color="white"
-                _hover={{
-                  bg: "white",
-                  color: "#2C3639",
-                }}
-                type="submit"
-                onClick={formik.handleSubmit}
-                isDisabled={enable ? true : null}
-              >
-                Send
-              </Button>
+              <Center>
+                <Button
+                  colorScheme={"black"}
+                  variant={"solid"}
+                  w="350px"
+                  color="black"
+                  _hover={{
+                    bg: "white",
+                    color: "black",
+                  }}
+                  type="submit"
+                  onClick={formik.handleSubmit}
+                  isDisabled={enable ? true : null}
+                >
+                  Upload Payment
+                </Button>
+              </Center>
             </Stack>
           </FormControl>
         </Flex>

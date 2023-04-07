@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       postalCode: DataTypes.STRING,
       Ket: DataTypes.STRING,
       isPrimary: DataTypes.BOOLEAN,
-      idCity: DataTypes.INTEGER,
+      idCity: DataTypes.STRING,
     },
     {
       sequelize,
