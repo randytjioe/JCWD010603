@@ -62,8 +62,73 @@ export default function NewOrder(props) {
   const data = props.data;
   const dataaddress = props.dataaddress;
   console.log(data);
-
+  const [cost, setCost] = useState(18000);
+  const [origin, setOrigin] = useState(1);
+  const [destination, setDestination] = useState(2);
+  const [weight, setWeight] = useState(1000);
+  const [service, setService] = useState([]);
+  const [courier, setCourier] = useState("jne");
   const [cartTotal, setCartTotal] = useState(0);
+  const [nameBranch, setNameBranch] = useState("");
+
+  const fetchorigin = async (User_id) => {
+    await axiosInstance
+      .get("/address/address-branches/" + localStorage.getItem("branchID"))
+      .then((response) => {
+        setOrigin(response.data.result.idCity);
+        setNameBranch(response.data.result.name);
+      })
+      .catch((error) => {
+        console.log({ error });
+      });
+  };
+  const fetchdestination = async () => {
+    await axiosInstance
+      .get("/address/primaryaddress/" + localStorage.getItem("userID"))
+      .then((response) => {
+        setDestination(response.data.result.idCity);
+      })
+      .catch((error) => {
+        console.log({ error });
+      });
+  };
+  const fetchweight = async () => {
+    await axiosInstance
+      .get("/cart/getweightcartbyUserId/" + localStorage.getItem("userID"))
+      .then((response) => {
+        setWeight(response.data.result.totalWeight);
+      })
+      .catch((error) => {
+        console.log({ error });
+      });
+  };
+  useEffect(() => {
+    fetchorigin();
+    fetchdestination();
+    fetchweight();
+    setCartTotal(parseInt(data?.totalPrice) + parseInt(cost));
+  }, []);
+  const fetchCost = async () => {
+    try {
+      const response = await axiosInstance.post(
+        `http://localhost:8000/api_rajaongkir/cost/${origin}/${destination}/${weight}/${courier}`
+      );
+      const result = response.data[0];
+      const serv = response.data[0].costs;
+      setService(serv);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+  useEffect(() => {
+    fetchCost();
+  }, [courier]);
+  console.log(destination);
+  console.log(origin);
+  console.log(weight);
+  console.log(courier);
+  console.log(cost);
+  console.log(service);
   return (
     <>
       <Center flex={1} align={"center"} justifyContent={"center"}>
@@ -142,7 +207,7 @@ export default function NewOrder(props) {
                 </Flex>
                 <Flex>
                   {" "}
-                  <Flex flexDir={"column"} w="260px" px={7}>
+                  <Flex flexDir={"column"} w="350px" px={7} textAlign={"left"}>
                     <Flex gap={2}>
                       <Flex fontSize="12px" color="#2C3639">
                         {dataaddress?.Ket} |
@@ -158,13 +223,12 @@ export default function NewOrder(props) {
                     <Flex fontSize="12px" color="#2C3639">
                       {dataaddress?.address}
                     </Flex>
-                    <Flex fontSize="12px" color="#2C3639">
-                      {dataaddress?.district}, {dataaddress?.city},{" "}
-                      {dataaddress?.province}
-                    </Flex>
-                    <Flex fontSize="12px" color="#2C3639">
-                      {dataaddress?.postalCode}
-                    </Flex>
+                    <Text fontSize="12px" color="#2C3639">
+                      {dataaddress?.district}, {dataaddress?.city}
+                    </Text>
+                    <Text fontSize="12px" color="#2C3639">
+                      {dataaddress?.province}, {dataaddress?.postalCode}
+                    </Text>
                   </Flex>
                 </Flex>
               </Flex>
@@ -191,7 +255,7 @@ export default function NewOrder(props) {
               <Flex fontSize={["xs", "sm"]} fontWeight="bold" gap={2}>
                 <Flex gap={2}>
                   <Icon as={BsShop} w="20px" h="20px"></Icon>
-                  KOPIO CABANG PADANG
+                  {nameBranch}
                 </Flex>
               </Flex>
             </Flex>
@@ -262,7 +326,7 @@ export default function NewOrder(props) {
             <Flex
               flexDir={"column"}
               w="85%"
-              h="100px"
+              h="150px"
               m="0 auto"
               align="left"
               color={"black"}
@@ -274,28 +338,49 @@ export default function NewOrder(props) {
                 fontSize={["xs", "sm"]}
                 fontWeight="bold"
                 flexDir={"column"}
-                gap={3}
+                gap={2}
               >
                 <Flex gap={2}>
                   <Icon as={FaShippingFast} w="20px" h="20px"></Icon>
                   Shipping Option
                 </Flex>
-                <Flex>
-                  <Select bgColor={"white"}>
-                    <option> JNE</option>
-                    <option> TIKI</option>
-                    <option> POS</option>
+                <Flex flexDir={"column"} gap={3}>
+                  <Select
+                    bgColor={"white"}
+                    onChange={(e) => {
+                      setCourier(e.target.value);
+                    }}
+                  >
+                    <option value="jne"> JNE</option>
+                    <option value="tiki"> TIKI</option>
+                    <option value="pos"> POS</option>
+                  </Select>
+                  <Select
+                    bgColor={"white"}
+                    fontSize="14px"
+                    onChange={(e) => {
+                      setCost(e.target.value);
+                    }}
+                  >
+                    {service.map((val) => {
+                      return (
+                        <option value={val.cost[0].value}>
+                          {val.service} - Harga : Rp{" "}
+                          {val.cost[0].value.toLocaleString()} - Estimasi :{" "}
+                          {val.cost[0].etd} days
+                        </option>
+                      );
+                    })}
                   </Select>
                 </Flex>
+                <Flex
+                  justify="flex-end"
+                  w="100%"
+                  h={["5px", "10px", "15px"]}
+                  borderBottom="1px solid white"
+                  align="center"
+                ></Flex>
               </Flex>
-
-              <Flex
-                justify="flex-end"
-                w="100%"
-                h={["5px", "10px", "15px"]}
-                borderBottom="1px solid white"
-                align="center"
-              ></Flex>
             </Flex>
             <Flex
               flexDir={"column"}
@@ -391,10 +476,13 @@ export default function NewOrder(props) {
                   <Text fontSize={["xs", "sm"]}>
                     : Rp {data?.totalPrice.toLocaleString()}
                   </Text>
-                  <Text fontSize={["xs", "sm"]}> : Rp 0</Text>
+                  <Text fontSize={["xs", "sm"]}>
+                    {" "}
+                    : Rp {parseInt(cost).toLocaleString()}
+                  </Text>
                   <Text fontSize={["xs", "sm"]}> : Rp 0</Text>
                   <Text fontSize={["md", "lg", "xl"]}>
-                    : Rp {data?.totalPrice.toLocaleString()}
+                    : Rp {cartTotal.toLocaleString()}
                   </Text>
                 </Flex>
               </Flex>
@@ -424,9 +512,7 @@ export default function NewOrder(props) {
               textAlign={"right"}
             >
               <Text>Total Payment</Text>
-              <Text fontWeight="bold">
-                Rp {data?.totalPrice.toLocaleString()}
-              </Text>
+              <Text fontWeight="bold">Rp {cartTotal.toLocaleString()}</Text>
             </Flex>
 
             <Center bgColor="#2C3639" color="white" w="50%" fontWeight="bold">

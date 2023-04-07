@@ -113,6 +113,7 @@ export default function ProductUserPage(props) {
       props.setCat([...newCat]);
     }
   };
+
   return (
     <>
       <Center
@@ -382,7 +383,9 @@ export default function ProductUserPage(props) {
                 return (
                   <>
                     <Box minW="135px" h="250px">
-                      <Flex>
+                      <Flex
+                        onClick={localStorage.setItem("branchID", idBranch)}
+                      >
                         <Link
                           to={"/detail-product/" + product?.id}
                           as={ReachLink}

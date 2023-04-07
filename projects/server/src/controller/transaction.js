@@ -110,6 +110,40 @@ const transactionController = {
       });
     }
   },
+  // uploadFoto: async (req, res) => {
+  //   try {
+  //     const UserId = req.params.UserId;
+
+  //     const data = {};
+
+  //     if (req.file) {
+  //       console.log(req.file);
+  //       data.imgUser = process.env.render_avatar + req.file.filename;
+  //     }
+
+  //     await User_detail.update(
+  //       {
+  //         ...data,
+  //       },
+  //       {
+  //         where: {
+  //           UserId,
+  //         },
+  //       }
+  //     );
+
+  //     const result = await User_detail.findByPk(UserId);
+
+  //     return res.status(200).json({
+  //       message: "user edited",
+  //       result: result,
+  //     });
+  //   } catch (err) {
+  //     return res.status(400).json({
+  //       message: err.toString(),
+  //     });
+  //   }
+  // },
 };
 
 module.exports = transactionController;

@@ -15,4 +15,13 @@ router.get(
   "/transaction-detail/:id",
   transactionController.getTransactionDetail
 );
+// router.patch(
+//   "/uploadfoto/:id",
+//   fileUploader({
+//     destinationFolder: "IMAGE_PRODUCT",
+//     fileType: "image",
+//     prefix: "POST",
+//   }).single("image"),
+//   transactionController.uploadFoto
+// );
 module.exports = router;

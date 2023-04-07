@@ -132,6 +132,34 @@ const cartController = {
       });
     }
   },
+  getCartByWeight: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const filterCartW = await Cart.findAll({
+        include: [
+          {
+            model: Product,
+            attributes: ["weight"],
+          },
+        ],
+        where: {
+          UserId: id,
+        },
+      });
+      const totalWeight = filterCartW.reduce((acc, item) => {
+        return acc + item.Product.weight;
+      }, 0);
+      res.status(200).json({
+        message: "filter chart berdasarkan weight",
+        result: { filterCartW, totalWeight },
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
 };
 
 module.exports = cartController;

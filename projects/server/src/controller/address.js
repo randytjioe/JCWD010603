@@ -168,6 +168,23 @@ const addressController = {
       });
     }
   },
+  getAddressBranches: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const filterBranches = await Branch.findOne({
+        where: { id: id },
+      });
+      res.status(200).json({
+        message: "filter address branches berdasarkan id",
+        result: filterBranches,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
   getAddress: async (req, res) => {
     try {
       const getAddress = await Address.findAll();
