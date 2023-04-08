@@ -6,5 +6,7 @@ router.post("/addvouchertype", voucherDiscountController.createVoucherType);
 router.get("/vouchertype", voucherDiscountController.getVoucherType);
 router.delete("/deletevouchertype/:id", voucherDiscountController.deleteVoucherType);
 router.post("/addvoucher", voucherDiscountController.createVoucher);
+router.get("/getvoucher", voucherDiscountController.getVoucher);
+router.delete("/deletevoucher/:id", voucherDiscountController.deleteVoucher);
 
 module.exports = router
