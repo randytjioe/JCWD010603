@@ -8,7 +8,7 @@ const uploadSingle = fileUploader({
 
 router.post("/create", uploadSingle, productController.create);
 router.patch("/edit/:id", uploadSingle, productController.edit);
-router.delete("/delete/:id", uploadSingle, productController.delete);
+router.delete("/delete/:id", productController.delete);
 router.get(
   "/countproductbybranch/:id",
   productController.getCountProductByBranch
