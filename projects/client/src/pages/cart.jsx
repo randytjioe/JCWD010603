@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
 import { axiosInstance } from "../config/config";
 import { BiTrash, BiEdit, BiChevronRight, BiChevronLeft } from "react-icons/bi";
-
+import { Link as ReachLink } from "react-router-dom";
 export default function Cart() {
   const [cartData, setCartData] = useState([]);
   const [pages, setPages] = useState(1);
@@ -140,7 +140,9 @@ export default function Cart() {
                 >
                   Your cart is empty
                 </Text>
-                <Button>Start Shopping 🛒</Button>
+                <Link to="/product-list-user" as={ReachLink}>
+                  <Button>Start Shopping 🛒</Button>
+                </Link>
               </Flex>
             </Center>
           ) : (

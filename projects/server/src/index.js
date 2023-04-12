@@ -208,7 +208,10 @@ app.use("/transaction", route.transactionRoute);
 app.use("/api_rajaongkir", route.rajaOngkirRoute);
 app.use("/image_product", express.static(`${__dirname}/public/IMAGE_PRODUCT`));
 app.use("/user/avatar", express.static(`${__dirname}/public/IMAGE_USER`));
-
+app.use(
+  "/post_image/upload",
+  express.static(`${__dirname}/public/IMAGE_UPLOAD`)
+);
 // ===========================
 
 // not found

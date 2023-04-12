@@ -111,7 +111,7 @@ const cartController = {
         include: [
           {
             model: Product,
-            attributes: ["name", "price", "imgProduct"],
+            attributes: ["name", "price", "imgProduct", "weight"],
           },
         ],
         where: {
@@ -135,6 +135,7 @@ const cartController = {
   getCartByWeight: async (req, res) => {
     try {
       const id = req.params.id;
+
       const filterCartW = await Cart.findAll({
         include: [
           {
