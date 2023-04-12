@@ -62,14 +62,13 @@ export default function UpdateProfile(props) {
   const [gender, setGender] = useState(0);
   const location = useLocation();
   const toast = useToast();
-  const [User_id, setUser_id] = useState(0);
+  const [noTrans, setNoTrans] = useState(0);
   const userSelector = useSelector((state) => state.auth);
   const [selectedFile, setSelectedFile] = useState(null);
   const inputFileRef = useRef(null);
   const [enable, setEnable] = useState(false);
-
   useEffect(() => {
-    setUser_id(userSelector?.id);
+    setNoTrans(location.pathname?.split("/")[2]);
   }, []);
 
   const dispatch = useDispatch();
@@ -84,26 +83,21 @@ export default function UpdateProfile(props) {
   const handleFile = (event) => {
     setSelectedFile(event.target.files[0]);
     const url = URL.createObjectURL(event.target.files[0]);
-    formik.setFieldValue("avatar_url", url);
+    formik.setFieldValue("image_url", url);
   };
 
-  const SUPPORTED_FORMATS = [
-    "image/jpg",
-    "image/png",
-    "image/jpeg",
-    "image/gif",
-  ];
+  const SUPPORTED_FORMATS = ["image/jpg", "image/png", "image/jpeg"];
   const formik = useFormik({
     initialValues: {
       firstName: "",
       email: "",
-      avatar: selectedFile,
-      avatar_url: data?.imgUser || imgUser,
+      image: selectedFile,
+      image_url: data?.imgUser || imgUser,
     },
     validationSchema: Yup.object().shape({
       email: Yup.string().email("Mohon isi email @"),
       firstName: Yup.string().min(3, "min 3 huruf"),
-      avatar: Yup.mixed()
+      image: Yup.mixed()
         .nullable()
         .required("Required Field")
         .test(
@@ -120,11 +114,11 @@ export default function UpdateProfile(props) {
         ),
     }),
     onSubmit: async (value) => {
-      const { avatar } = value;
+      const { image } = value;
       const formData = new FormData();
-      formData.append("image", avatar);
+      formData.append("image", image);
       await axiosInstance
-        .patch(`user/updatefoto/${props?.user.id}`, formData)
+        .patch(`transaction/uploadfoto/${noTrans}`, formData)
         .then(async (res) => {
           console.log(res.data.result);
           toast({
@@ -144,11 +138,12 @@ export default function UpdateProfile(props) {
             isClosable: true,
           });
         });
+      navigate("/product-list-user");
     },
   });
   useEffect(() => {
-    let { avatar } = formik.values;
-    if (!avatar) {
+    let { image } = formik.values;
+    if (!image) {
       setEnable(true);
     } else {
       setEnable(false);
@@ -199,13 +194,13 @@ export default function UpdateProfile(props) {
                 Preview
                 <Center flexDir={"column"}>
                   <Image
-                    src={formik.values.avatar_url || imgUser}
-                    id="avatar"
+                    src={formik.values.image_url || imgUser}
+                    id="image"
                     w="350px"
                     h="540px"
                   ></Image>
                   <FormHelperText color={"black"}>
-                    {formik.errors.avatar}
+                    {formik.errors.image}
                   </FormHelperText>
                 </Center>
                 <Center
@@ -231,7 +226,7 @@ export default function UpdateProfile(props) {
                       accept="image/*"
                       onChange={(e) => {
                         handleFile(e);
-                        formik.setFieldValue("avatar", e.target.files[0]);
+                        formik.setFieldValue("image", e.target.files[0]);
                       }}
                       w="full"
                       placeholder="Image URL"

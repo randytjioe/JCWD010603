@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { IoIosArrowBack } from "react-icons/io";
 import { useDispatch } from "react-redux";
 import { axiosInstance } from "../config/config";
 import { useNavigate } from "react-router-dom";
@@ -32,14 +33,13 @@ export default function Register() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  
   const [province, setProvince] = useState([
     {
       province_id: 0,
       province: "",
     },
   ]);
-  
+
   const [city, setCity] = useState([
     {
       city_id: 0,
@@ -50,9 +50,9 @@ export default function Register() {
       province: "",
     },
   ]);
-  
+
   const [msg, setMsg] = useState("");
-  
+
   const NotifyError = useToast({
     title: "Failed",
     description: msg,

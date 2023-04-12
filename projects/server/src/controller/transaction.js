@@ -7,9 +7,10 @@ const Branch = db.branch;
 const User = db.user;
 const User_detail = db.user_detail;
 const Address = db.address;
-
+const moment = require("moment");
 const Category = db.category;
 const Product = db.product;
+const Cart = db.cart;
 
 const transactionController = {
   getCountTransactionByBranch: async (req, res) => {
@@ -23,6 +24,22 @@ const transactionController = {
 
       res.status(200).json({
         message: "count transaction berdasarkan branch",
+        result: filterTransaction,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  },
+  getCountTransaction: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const filterTransaction = await Transaction_header.count();
+
+      res.status(200).json({
+        message: "count transaction",
         result: filterTransaction,
       });
     } catch (err) {
@@ -110,40 +127,127 @@ const transactionController = {
       });
     }
   },
-  // uploadFoto: async (req, res) => {
-  //   try {
-  //     const UserId = req.params.UserId;
+  addTranscation: async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+      // const tgl = moment().format("YYYYMMDD");
+      // const countHeader = await Transaction_header.count();
+      // const noTrans = `TRS-${tgl}000${countHeader + 1}`;
+      const { grandPrice, BranchId, totalWeight, noTrans } = req.body;
+      const UserId = req.params.id;
 
-  //     const data = {};
+      const addHeader = await Transaction_header.create(
+        {
+          noTrans: noTrans,
+          grandPrice: grandPrice,
+          BranchId: BranchId,
+          UserId: UserId,
+          totalWeight: totalWeight,
+        },
+        { transaction: t }
+      );
+      const noTransl = JSON.stringify(noTrans);
+      const id = addHeader.dataValues.id;
+      // const filterCart = await Cart.findAll({
+      //   where: {
+      //     UserId: UserId,
+      //   },
+      // });
+      const orderlist = JSON.parse(req.body.orderList);
+      const arrItem = [];
+      orderlist.map(async (val) => {
+        let obj = {
+          qty: val.qty,
+          // totalPrice: val.qty * val.Product.price,
+          ProductId: val.ProductId,
+          TransactionHeaderId: id,
+          // subWeight: val.qty * val.Product.weight,
+        };
+        console.log(obj);
+        arrItem.push(obj);
+        const product = await Product.findByPk(val.ProductId, {
+          transaction: t,
+        });
+        if (product.stock < val.qty) {
+          throw new Error("stocknya kurang");
+        }
+        await Product.update(
+          { stock: product.dataValues.stock - val.qty },
+          {
+            where: {
+              id: product.dataValues.id,
+            },
+          },
+          { transaction: t }
+        );
+      });
 
-  //     if (req.file) {
-  //       console.log(req.file);
-  //       data.imgUser = process.env.render_avatar + req.file.filename;
-  //     }
+      console.log(arrItem);
+      // console.log(filterCart);
+      await Transaction_item.bulkCreate(
+        // qty: filterCart.dataValues.qty,
+        // TransactionHeaderId: id,
+        // ProductId: filterCart.dataValues.ProductId,
+        arrItem,
 
-  //     await User_detail.update(
-  //       {
-  //         ...data,
-  //       },
-  //       {
-  //         where: {
-  //           UserId,
-  //         },
-  //       }
-  //     );
+        { transaction: t }
+      );
 
-  //     const result = await User_detail.findByPk(UserId);
+      const deletecart = await Cart.destroy(
+        { where: { UserId: UserId } },
+        { transaction: t }
+      );
+      if (!deletecart) {
+        throw new Error("Delete cart failed");
+      }
 
-  //     return res.status(200).json({
-  //       message: "user edited",
-  //       result: result,
-  //     });
-  //   } catch (err) {
-  //     return res.status(400).json({
-  //       message: err.toString(),
-  //     });
-  //   }
-  // },
+      await t.commit();
+
+      res.status(200).json({
+        message: "transaction successfull",
+      });
+    } catch (error) {
+      console.log(error);
+      await t.rollback();
+
+      res.status(400).json({
+        message: error,
+      });
+    }
+  },
+  uploadFoto: async (req, res) => {
+    try {
+      const noTrans = req.params.noTrans;
+
+      const data = {};
+
+      if (req.file) {
+        console.log(req.file);
+        data.imgUpload = process.env.upload + req.file.filename;
+      }
+      console.log(data);
+
+      const result = await Transaction_header.update(
+        {
+          ...data,
+        },
+        {
+          where: {
+            noTrans: noTrans,
+          },
+        }
+      );
+
+      return res.status(200).json({
+        message: "upload foto success",
+        result: result,
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err.toString(),
+      });
+    }
+  },
 };
 
 module.exports = transactionController;

@@ -44,7 +44,7 @@ export default function DetailProduct(props) {
   const [id, setId] = useState(0);
   const [description, setDescription] = useState("");
   const [idProduct, setidProduct] = useState(0);
-  const [qty, setQty] = useState(0);
+  const [qty, setQty] = useState(1);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const toast = useToast();

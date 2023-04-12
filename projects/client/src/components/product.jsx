@@ -50,6 +50,7 @@ import * as Yup from "yup";
 export default function ProductPage(props) {
   const data = props.data;
   const datacat = props.datacat;
+  const fetchData = props.fetchData;
   // console.log(data);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const firstField = React.useRef();
@@ -99,8 +100,6 @@ export default function ProductPage(props) {
 
 
   // IAN
-  const [imgProduct, setImgProduct] = useState("");
-  const [saveImage, setSaveImage] = useState(null);
   const [cat, setCat] = useState([{
     'id' : 0,
     'name': ""
@@ -139,7 +138,8 @@ export default function ProductPage(props) {
     'stock': 0,
     'weight': 0,
     'CategoryId': 0,
-    'imgProduct': ""
+    'imgProduct': "",
+    'desc': "",
   }])
 
   const deleteSubmit = async (id) => {
@@ -147,6 +147,7 @@ export default function ProductPage(props) {
         await axiosInstance.delete(`/product/delete/${id}`)
         setTimeout(()=> {
           NotifySuccess()
+          fetchData()
           onCloseDelModal()
       }, 300)
       } catch (err) {
@@ -154,6 +155,7 @@ export default function ProductPage(props) {
         setMsg(err.response.data.message)
         setTimeout(()=> {
           NotifyError()
+          fetchData()
           onCloseDelModal()
         }, 300)
       }
@@ -165,23 +167,33 @@ export default function ProductPage(props) {
   }
   
   const editHandlerModal = async (id) => {
-    const response = await axiosInstance(`/user/detail-product/${id}`)
+    const response = await axiosInstance.get(`/product/detail-product/${id}`)
+    // .then((res)=> {
+    //   setEditProd(res.data.result)
+    //   console.log(res.data.result.CategoryId);
+    // })    
     const result = response.data.result
-    // console.log(result);
     setEditProd(result)
-    onOpenEditModal()
+    
+    setTimeout(() =>{
+      console.log(editProd.CategoryId);
+      // console.log(editProd.CategoryId);
+      onOpenEditModal()
+    }, 100)
   }
 
   const deleteHandlerModal = async (id) => {
-    const response = await axiosInstance(`/user/detail-product/${id}`)
+    const response = await axiosInstance.get(`/product/detail-product/${id}`)
     const result = response.data.result
     // console.log(result);
     setEditProd(result)
+
+    console.log(result);
     onOpenDelModal()
   }
 
   const fetchCategory = async () => {
-    const response = await axiosInstance("/admin/categories")
+    const response = await axiosInstance.get("/admin/categories")
     const result = response.data.result
     // console.log(result)
     setCat(result)
@@ -243,23 +255,27 @@ export default function ProductPage(props) {
             setMsg(err.response.data.message);
             setTimeout(()=> {
               NotifyError()
+              fetchData()
               onCloseModal()
              }, 300)
           }
           
       }
     })
-  
+
   const formikEdit = useFormik({
+      
       initialValues : {
-          id : editProd?.id || 0, 
-          name : editProd?.name ||  "",
-          price : editProd?.price || 0,
-          stock : editProd?.stock || 0,
-          weight :editProd?.weight || 0,
-          category : editProd?.CategoryId || 0,
-          imgProduct : editProd?.imgProduct || ""
+          id : editProd?.id ?? "", 
+          name : editProd?.name ?? "",
+          price : editProd?.price ?? 0,
+          stock : editProd?.stock ?? 0,
+          weight :editProd?.weight ?? 0,
+          category : editProd?.CategoryId ?? 0,
+          imgProduct : editProd?.imgProduct ?? "",
+          desc : editProd?.desc ?? "",
       } ,
+      enableReinitialize : true,
       validationSchema : Yup.object().shape({
           imgProduct: Yup.mixed()
           .test(
@@ -274,21 +290,25 @@ export default function ProductPage(props) {
           )
       }),
       onSubmit:  async (values)=> {
-          console.log(values);
-          try{
-            const {id, imgProduct, name, price, stock, weight, category} = values
-            
-            const formData = new FormData()
-            formData.append("imgProduct", imgProduct)
-            formData.append("name", name)
-            formData.append("price", price)
-            formData.append("stock", stock)
-            formData.append("weight", weight)
-            formData.append("CategoryId", category)
-
+        console.log(values);
+        try{
+          const {id, imgProduct, name, price, stock, weight, category, desc} = values
+          
+          const formData = new FormData()
+          formData.append("id", id)
+          formData.append("imgProduct", imgProduct)
+          formData.append("name", name)
+          formData.append("price", price)
+          formData.append("stock", stock)
+          formData.append("weight", weight)
+          formData.append("CategoryId", category)
+          formData.append("desc", desc)
+          
+          // console.log(formData);
             await axiosInstance.patch(`/product/edit/${id}`, formData)
             setTimeout(()=> {
               NotifySuccess()
+              fetchData()
               onCloseEditModal()
              }, 300)
           }catch(err){
@@ -296,6 +316,7 @@ export default function ProductPage(props) {
             setMsg(err.response.data.message);
             setTimeout(()=> {
               NotifyError()
+              fetchData()
               onCloseEditModal()
              }, 300)
           }

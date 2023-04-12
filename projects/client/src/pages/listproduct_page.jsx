@@ -78,12 +78,20 @@ export default function PageProducts() {
   console.log(`data nya = ${data}`);
   useEffect(() => {
     // fetchPosts();
-    // fetchData();
+    fetchData();
     fetchDataCat();
     setTimeout(() => {
       setIsLoading(false);
     }, 500);
-  }, [data]);
+  }, []);
+  // useEffect(() => {
+  //   // fetchPosts();
+  //   fetchData();
+  //   fetchDataCat();
+  //   setTimeout(() => {
+  //     setIsLoading(false);
+  //   }, 500);
+  // }, [data]);
   useEffect(() => {
     console.log(categories1);
   }, [categories1]);
@@ -113,6 +121,7 @@ export default function PageProducts() {
               data={data}
               fin={fetchFinPro}
               cat={[...categories1]}
+              fetchData = {fetchData}
               datacat={datacat}
               setCat={setCategories1}
               sort={[...sort]}
