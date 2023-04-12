@@ -8,5 +8,6 @@ router.delete("/deletevouchertype/:id", voucherDiscountController.deleteVoucherT
 router.post("/addvoucher", voucherDiscountController.createVoucher);
 router.get("/getvoucher", voucherDiscountController.getVoucher);
 router.delete("/deletevoucher/:id", voucherDiscountController.deleteVoucher);
+router.get("/getallvoucher", voucherDiscountController.getAllVoucher);
 
 module.exports = router

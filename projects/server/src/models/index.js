@@ -78,6 +78,8 @@ db.cart.belongsTo(db.user)
 db.user.hasMany(db.cart)
 db.product.hasMany(db.cart)
 
+db.voucher.belongsTo(db.branch)
+db.branch.hasMany(db.voucher)
 db.voucher.belongsTo(db.product)
 db.voucher.belongsTo(db.voucher_type)
 db.voucher_type.hasMany(db.voucher)

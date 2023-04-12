@@ -234,10 +234,10 @@ export default function ProductPage(props) {
             formData.append("CategoryId", category)
 
             await axiosInstance.post("/product/create", formData)
-            setTimeout(()=> {
-              NotifySuccess()
-              onCloseModal()
-             }, 300)
+              setTimeout(()=> {
+                NotifySuccess()
+                onCloseModal()
+               }, 300)
           }catch(err){
             console.log(err);
             setMsg(err.response.data.message);
