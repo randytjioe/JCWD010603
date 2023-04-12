@@ -104,6 +104,7 @@ const cartController = {
       });
     }
   },
+
   getCartByUserId: async (req, res) => {
     try {
       const id = req.params.id;
@@ -132,6 +133,7 @@ const cartController = {
       });
     }
   },
+
   getCartByWeight: async (req, res) => {
     try {
       const id = req.params.id;
@@ -161,6 +163,31 @@ const cartController = {
       });
     }
   },
+
+  patchCartData: async (req, res) => {
+    const { id } = req.params;
+    const { qty } = req.body;
+
+    try {
+      const cartItem = await Cart.findOne({ where: { id } });
+
+      if (!cartItem) {
+        return res.status(404).json({ message: "Cart item not found" });
+      }
+
+      await cartItem.update({ qty });
+
+      return res.status(200).json({
+        message: "Cart item updated successfully",
+        cartItem,
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({
+        message: err,
+      });
+    }
+  }
 };
 
 module.exports = cartController;

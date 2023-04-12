@@ -35,6 +35,7 @@ import { FiBell } from "react-icons/fi";
 import { GrMenu } from "react-icons/gr";
 import { SlBasket } from "react-icons/sl";
 import { useEffect, useState } from "react";
+import LogoHD from "../asset/logo.png"
 
 export default function Navbar(props) {
   const userSelector = useSelector((state) => state.auth);
@@ -67,7 +68,7 @@ export default function Navbar(props) {
                 fontSize={"26px"}
                 color="#F68522"
                 justifyContent="center"
-                src={Logo}
+                src={LogoHD}
                 w="100px"
                 h="24px"
               ></Image>

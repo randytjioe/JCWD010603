@@ -1,46 +1,23 @@
 import {
-  Flex,
-  Image,
-  InputGroup,
-  InputRightElement,
-  Box,
-  List,
-  Input,
-  Menu,
-  Link,
-  Button,
-  Divider,
-  Icon,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  useDisclosure,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverHeader,
-  PopoverBody,
-  ListItem,
-  Avatar,
-  Center,
+  Flex, Heading, Button
 } from "@chakra-ui/react";
+import BannerImg from "../asset/bannerImage.jpg"
+
 export default function Banner() {
   return (
-    <>
-      <Center flex={1} align={"center"} justifyContent={"center"}>
-        <Flex
-          px={2}
-          h="686px"
-          backgroundColor="#DCD7C9"
-          w="430px"
-          padding="20px"
-          borderBottom={"2px solid #E2E8F0"}
-          display={"flex"}
-          pos="sticky"
-        ></Flex>
-      </Center>
-    </>
+    <Flex
+      h="636px" w="430px" m='0 auto' p={6} direction='column'
+      justify='space-between' alignItems="flex-end" 
+      backgroundImage={BannerImg} backgroundPosition="center"
+      backgroundRepeat="no-repeat" backgroundSize='cover'
+    >
+      <Heading color='white' textAlign='center' size="lg" >
+        Freshly Roasted Coffee Beans Delivered to You
+      </Heading>
+      
+      <Button w='30%' borderRadius='3xl' bg='#2C3639' color='white'>
+        Shop now
+      </Button>
+    </Flex>
   );
 }
