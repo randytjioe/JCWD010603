@@ -68,7 +68,7 @@ const routes = [
     element: <NewOrder />,
   },
   {
-    path: "/upload-payment",
+    path: "/upload-payment/:noTrans",
     element: <Upload />,
   },
   {

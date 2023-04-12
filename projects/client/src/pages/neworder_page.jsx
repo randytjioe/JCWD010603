@@ -29,7 +29,7 @@ export default function NewOrderPage() {
     setTimeout(() => {
       setIsLoading(false);
       // if (!state) navigate("/");
-    }, 500);
+    }, 1500);
   }, []);
 
   return (

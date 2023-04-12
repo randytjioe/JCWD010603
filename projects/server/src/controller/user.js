@@ -428,7 +428,7 @@ const userController = {
         },
         {
           where: {
-            UserId,
+            UserId: UserId,
           },
         }
       );

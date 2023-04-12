@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Transaction_header extends Model {
     /**
@@ -13,14 +11,18 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  Transaction_header.init({
-    noTrans: DataTypes.STRING,
-    grandPrice: DataTypes.INTEGER,
-    totalWeight: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'Transaction_header',
-    paranoid: true
-  });
+  Transaction_header.init(
+    {
+      noTrans: DataTypes.STRING,
+      grandPrice: DataTypes.INTEGER,
+      totalWeight: DataTypes.INTEGER,
+      imgUpload: DataTypes.STRING,
+    },
+    {
+      sequelize,
+      modelName: "Transaction_header",
+      paranoid: true,
+    }
+  );
   return Transaction_header;
 };

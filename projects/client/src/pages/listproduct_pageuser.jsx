@@ -82,7 +82,7 @@ export default function PageProducts() {
     fetchDataBranch();
     setTimeout(() => {
       setIsLoading(false);
-    }, 500);
+    }, 1000);
   }, []);
   useEffect(() => {
     console.log(categories1);

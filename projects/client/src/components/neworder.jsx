@@ -50,7 +50,6 @@ import { BiTrash, BiEdit, BiChevronRight, BiChevronLeft } from "react-icons/bi";
 import { AiFillCamera } from "react-icons/ai";
 import { userLogin } from "../redux/middleware/userauth";
 import { useDispatch } from "react-redux";
-
 import { useNavigate } from "react-router-dom";
 import { Link as ReachLink } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -59,9 +58,11 @@ import { useSelector } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 export default function NewOrder(props) {
+  const moment = require("moment");
   const data = props.data;
   const dataaddress = props.dataaddress;
   console.log(data);
+  const [orderList, setOrderList] = useState([]);
   const [cost, setCost] = useState(18000);
   const [origin, setOrigin] = useState(1);
   const [destination, setDestination] = useState(2);
@@ -69,8 +70,22 @@ export default function NewOrder(props) {
   const [service, setService] = useState([]);
   const [courier, setCourier] = useState("jne");
   const [cartTotal, setCartTotal] = useState(0);
+  const [countHeader, setCountHeader] = useState(0);
+  const [cartData, setCartData] = useState();
   const [nameBranch, setNameBranch] = useState("");
-
+  const navigate = useNavigate();
+  const tgl = moment().format("YYYYMMDD");
+  const BranchId = localStorage.getItem("branchID");
+  const fetchcounttransaction = async () => {
+    await axiosInstance
+      .get("/transaction/counttransaction")
+      .then((response) => {
+        setCountHeader(response.data.result);
+      })
+      .catch((error) => {
+        console.log({ error });
+      });
+  };
   const fetchorigin = async (User_id) => {
     await axiosInstance
       .get("/address/address-branches/" + localStorage.getItem("branchID"))
@@ -102,10 +117,19 @@ export default function NewOrder(props) {
         console.log({ error });
       });
   };
+  const fetchCartData = async () => {
+    const userId = localStorage.getItem("userID");
+    await axiosInstance.get(`/cart/getcartbyUserId/${userId}`).then((res) => {
+      setCartData(res.data.result);
+      setOrderList(res.data.result.filterCart);
+    });
+  };
   useEffect(() => {
+    fetchcounttransaction();
     fetchorigin();
     fetchdestination();
     fetchweight();
+    fetchCartData();
     setCartTotal(parseInt(data?.totalPrice) + parseInt(cost));
   }, []);
   const fetchCost = async () => {
@@ -123,12 +147,28 @@ export default function NewOrder(props) {
   useEffect(() => {
     fetchCost();
   }, [courier]);
-  console.log(destination);
-  console.log(origin);
-  console.log(weight);
-  console.log(courier);
-  console.log(cost);
-  console.log(service);
+  const noTrans = `TRS-${tgl}000${countHeader + 1}`;
+  async function ConfirmTransaction() {
+    setOrderList([...orderList]);
+    const userId = localStorage.getItem("userID");
+    const BranchId = localStorage.getItem("branchID");
+    await axiosInstance
+      .post("/transaction/create-transaction/" + userId, {
+        noTrans: noTrans,
+        grandPrice: cartTotal,
+        orderList: JSON.stringify([...orderList]),
+        totalWeight: weight,
+        BranchId: BranchId,
+      })
+
+      .then((res) => {
+        if (res.status === 200) {
+          navigate("/upload-payment/" + noTrans);
+          setOrderList([]);
+        }
+      });
+  }
+
   return (
     <>
       <Center flex={1} align={"center"} justifyContent={"center"}>
@@ -516,7 +556,16 @@ export default function NewOrder(props) {
             </Flex>
 
             <Center bgColor="#2C3639" color="white" w="50%" fontWeight="bold">
-              <Link href="/upload-payment">Create Order</Link>
+              <Button
+                bgColor={"#2C3639"}
+                _hover={{
+                  bg: "white",
+                  color: "#2C3639",
+                }}
+                onClick={ConfirmTransaction}
+              >
+                Create Order
+              </Button>
             </Center>
           </Flex>
         </Flex>
