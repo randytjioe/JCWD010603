@@ -6,6 +6,7 @@ import { axiosInstance } from "../config/config";
 import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+
 export default function UserPage() {
   const navigate = useNavigate();
   const [data, setData] = useState();

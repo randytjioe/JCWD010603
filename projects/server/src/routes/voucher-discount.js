@@ -11,5 +11,6 @@ router.delete(
 router.post("/addvoucher", voucherDiscountController.createVoucher);
 router.get("/getvoucher", voucherDiscountController.getVoucher);
 router.delete("/deletevoucher/:id", voucherDiscountController.deleteVoucher);
+router.get("/getallvoucher", voucherDiscountController.getAllVoucher);
 router.get("/listvoucher", voucherDiscountController.listVoucher);
 module.exports = router;

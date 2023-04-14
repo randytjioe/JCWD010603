@@ -352,6 +352,28 @@ const adminController = {
       return res.status(400).send(err.message);
     }
   },
+
+  getBranchById: async (req, res) => {
+    try {
+      const branch = await Branch.findOne({
+        where: { id: req.params.id },
+        attributes: ["id", "name", "district", "city", "province", "postalCode"]
+      });
+      if (!branch) {
+        return res.status(404).json({
+          message: "Branch not found"
+        });
+      }
+      return res.status(200).json({
+        message: "Branch data fetched",
+        result: branch
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err
+      });
+    }
+  },
 }
 
 module.exports = adminController;

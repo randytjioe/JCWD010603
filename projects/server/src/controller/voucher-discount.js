@@ -4,6 +4,7 @@ const db = require("../models");
 const Voucher = db.voucher;
 const Voucher_type = db.voucher_type;
 const Product = db.product;
+const Branch = db.branch;
 
 const voucherDiscountController = {
   createVoucherType: async (req, res) => {
@@ -110,6 +111,7 @@ const voucherDiscountController = {
         code: data.code,
         expiredDate: data.expiredDate,
         VoucherTypeId: data.VoucherTypeId,
+        BranchId: data.BranchId,
       };
 
       if (data.ProductId) {
@@ -160,12 +162,80 @@ const voucherDiscountController = {
     }
   },
 
+  getAllVoucher: async (req, res) => {
+    const page = parseInt(req.query.page) || 1; // default to page 1 if not provided
+    const pageSize = 10;
+    const branchId = req.query.BranchId;
+
+    try {
+      let whereClause = {
+        deletedAt: null, // check if voucher is not deleted
+      };
+
+      if (branchId) {
+        whereClause.BranchId = branchId; // Filter by BranchId
+      }
+
+      const totalCount = await Voucher.count({
+        where: whereClause,
+      });
+      const totalPages = Math.ceil(totalCount / pageSize);
+
+      // Adjust the page number to the last page if it is greater than the total number of pages
+      if (page > totalPages) {
+        page = totalPages;
+      }
+
+      const result = await Voucher.findAll({
+        attributes: [
+          "id",
+          "name",
+          "code",
+          "expiredDate",
+          "nominal",
+          "presentase",
+          "ProductId",
+        ],
+        where: whereClause,
+        include: [
+          {
+            model: Voucher_type,
+            attributes: ["name"],
+          },
+          {
+            model: Product,
+            attributes: ["name"],
+          },
+        ],
+      });
+
+      return res.status(200).json({
+        message: "Voucher data successfully fetched",
+        result: result.slice((page - 1) * pageSize, page * pageSize), // Only send the data for the requested page
+        page: page,
+        pageSize: pageSize,
+        totalCount: totalCount,
+        totalPages: totalPages,
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err,
+      });
+    }
+  },
+
   getVoucher: async (req, res) => {
     const page = parseInt(req.query.page) || 1; // default to page 1 if not provided
     const pageSize = 10;
+    const branchId = req.query.BranchId;
 
     try {
-      const totalCount = await Voucher.count();
+      const totalCount = await Voucher.count({
+        where: {
+          BranchId: branchId, // Filter by BranchId
+          deletedAt: null, // check if voucher is not deleted
+        },
+      });
       const totalPages = Math.ceil(totalCount / pageSize);
 
       // Adjust the page number to the last page if it is greater than the total number of pages
@@ -184,6 +254,7 @@ const voucherDiscountController = {
           "ProductId",
         ],
         where: {
+          BranchId: branchId, // Filter by BranchId
           deletedAt: null, // check if voucher is not deleted
         },
         include: [
