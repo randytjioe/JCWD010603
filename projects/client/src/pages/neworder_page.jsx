@@ -9,6 +9,7 @@ export default function NewOrderPage() {
   const [pages, setPages] = useState(1);
   const [numOfPage, setNumOfPage] = useState(0);
   const [cartTotal, setCartTotal] = useState(0);
+  const [voucher, setVoucher] = useState();
   const [isLoading, setIsLoading] = useState(true);
   async function fetchCartData() {
     const userId = localStorage.getItem("userID");
@@ -22,10 +23,17 @@ export default function NewOrderPage() {
       setisPrimary(res.data.result);
     });
   }
+  async function fetchVouchersData() {
+    const userId = localStorage.getItem("userID");
+    await axiosInstance.get(`/voucher_discount/listvoucher`).then((res) => {
+      setVoucher(res.data.result);
+    });
+  }
   console.log(cartData);
   useEffect(() => {
     fetchCartData();
     fetchAddressData();
+    fetchVouchersData();
     setTimeout(() => {
       setIsLoading(false);
       // if (!state) navigate("/");
@@ -41,7 +49,11 @@ export default function NewOrderPage() {
       ) : (
         <>
           <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
-            <NewOrder data={cartData} dataaddress={isPrimary} />
+            <NewOrder
+              data={cartData}
+              dataaddress={isPrimary}
+              voucher={voucher}
+            />
           </Stack>{" "}
         </>
       )}
