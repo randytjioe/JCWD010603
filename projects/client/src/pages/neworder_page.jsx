@@ -12,32 +12,40 @@ export default function NewOrderPage() {
   const [voucher, setVoucher] = useState();
   const [isLoading, setIsLoading] = useState(true);
   async function fetchCartData() {
+    setIsLoading(true);
     const userId = localStorage.getItem("userID");
-    await axiosInstance.get(`/cart/getcartbyUserId/${userId}`).then((res) => {
-      setCartData(res.data.result);
-    });
+    await axiosInstance
+      .get(`/cart/getcartbyUserId/${userId}`)
+      .then((res) => {
+        setCartData(res.data.result);
+      })
+      .finally(() => setIsLoading(false));
   }
   async function fetchAddressData() {
+    setIsLoading(true);
     const userId = localStorage.getItem("userID");
-    await axiosInstance.get(`/address/primaryaddress/${userId}`).then((res) => {
-      setisPrimary(res.data.result);
-    });
+    await axiosInstance
+      .get(`/address/primaryaddress/${userId}`)
+      .then((res) => {
+        setisPrimary(res.data.result);
+      })
+      .finally(() => setIsLoading(false));
   }
   async function fetchVouchersData() {
+    setIsLoading(true);
     const userId = localStorage.getItem("userID");
-    await axiosInstance.get(`/voucher_discount/listvoucher`).then((res) => {
-      setVoucher(res.data.result);
-    });
+    await axiosInstance
+      .get(`/voucher_discount/listvoucher`)
+      .then((res) => {
+        setVoucher(res.data.result);
+      })
+      .finally(() => setIsLoading(false));
   }
   console.log(cartData);
   useEffect(() => {
     fetchCartData();
     fetchAddressData();
     fetchVouchersData();
-    setTimeout(() => {
-      setIsLoading(false);
-      // if (!state) navigate("/");
-    }, 1500);
   }, []);
 
   return (

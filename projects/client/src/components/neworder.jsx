@@ -85,6 +85,7 @@ export default function NewOrder(props) {
   const dataaddress = props.dataaddress;
   console.log(data);
   const [voucherInput, setVoucherInput] = useState("Use Promo");
+  const [serviceInput, setServiceInput] = useState("Select Service Shipping");
   const [voucherApply, setVoucherApply] = useState("");
   const [orderList, setOrderList] = useState([]);
   const [cost, setCost] = useState(0);
@@ -99,7 +100,7 @@ export default function NewOrder(props) {
   const [cartData, setCartData] = useState();
   const [nameBranch, setNameBranch] = useState("");
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const tgl = moment().format("YYYYMMDD");
   const BranchId = localStorage.getItem("branchID");
   const cancelRef = React.useRef();
@@ -113,6 +114,7 @@ export default function NewOrder(props) {
     },
   };
   const fetchcounttransaction = async () => {
+    setIsLoading(true);
     await axiosInstance
       .get("/transaction/counttransaction")
       .then((response) => {
@@ -120,9 +122,11 @@ export default function NewOrder(props) {
       })
       .catch((error) => {
         console.log({ error });
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
   const fetchorigin = async (User_id) => {
+    setIsLoading(true);
     await axiosInstance
       .get("/address/address-branches/" + localStorage.getItem("branchID"))
       .then((response) => {
@@ -131,9 +135,11 @@ export default function NewOrder(props) {
       })
       .catch((error) => {
         console.log({ error });
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
   const fetchdestination = async () => {
+    setIsLoading(true);
     await axiosInstance
       .get("/address/primaryaddress/" + localStorage.getItem("userID"))
       .then((response) => {
@@ -141,9 +147,11 @@ export default function NewOrder(props) {
       })
       .catch((error) => {
         console.log({ error });
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
   const fetchweight = async () => {
+    setIsLoading(true);
     await axiosInstance
       .get("/cart/getweightcartbyUserId/" + localStorage.getItem("userID"))
       .then((response) => {
@@ -151,14 +159,19 @@ export default function NewOrder(props) {
       })
       .catch((error) => {
         console.log({ error });
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
   const fetchCartData = async () => {
+    setIsLoading(true);
     const userId = localStorage.getItem("userID");
-    await axiosInstance.get(`/cart/getcartbyUserId/${userId}`).then((res) => {
-      setCartData(res.data.result);
-      setOrderList(res.data.result.filterCart);
-    });
+    await axiosInstance
+      .get(`/cart/getcartbyUserId/${userId}`)
+      .then((res) => {
+        setCartData(res.data.result);
+        setOrderList(res.data.result.filterCart);
+      })
+      .finally(() => setIsLoading(false));
   };
   useEffect(() => {
     fetchcounttransaction();
@@ -174,21 +187,21 @@ export default function NewOrder(props) {
   }, [nominal, cost]);
 
   const fetchCost = async () => {
-    try {
-      const response = await axiosInstance.post(
+    setIsLoading(true);
+    await axiosInstance
+      .post(
         `http://localhost:8000/api_rajaongkir/cost/${origin}/${destination}/${weight}/${courier}`
-      );
-
-      setService(response.data[0].costs);
-    } catch (err) {
-      console.log(err.message);
-    }
+      )
+      .then((response) => {
+        setService(response.data[0].costs);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      })
+      .finally(() => setIsLoading(false));
   };
   useEffect(() => {
     fetchCost();
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
   }, [courier]);
   console.log(courier);
   const noTrans = `TRS-${tgl}000${countHeader + 1}`;
@@ -442,14 +455,17 @@ export default function NewOrder(props) {
                   <Flex flexDir={"column"} gap={3}>
                     <Select
                       bgColor={"white"}
+                      value={courier}
                       onChange={(e) => {
                         setCourier(e.target.value);
+                        setServiceInput("Select Service Shipping");
                       }}
                     >
                       <option value="jne"> JNE</option>
                       <option value="tiki"> TIKI</option>
                       <option value="pos"> POS</option>
                     </Select>
+
                     <Button
                       gap={2}
                       _hover={{
@@ -458,8 +474,9 @@ export default function NewOrder(props) {
                       }}
                       onClick={onOpenService}
                     >
-                      Select service shipping
+                      {serviceInput}
                     </Button>
+
                     <AlertDialog
                       isOpen={isOpenService}
                       leastDestructiveRef={cancelRef}
@@ -484,6 +501,7 @@ export default function NewOrder(props) {
                                 gap={3}
                                 onClick={(e) => {
                                   setCost(e.target.value);
+                                  setServiceInput("Service Shipping Applied");
                                 }}
                               >
                                 {service.map((val) => {
@@ -524,7 +542,12 @@ export default function NewOrder(props) {
                           </AlertDialogBody>
 
                           <AlertDialogFooter>
-                            <Flex>
+                            <Flex
+                              onClick={(e) => {
+                                setServiceInput("Select Service Shipping");
+                                setCost(0);
+                              }}
+                            >
                               <Button ref={cancelRef} onClick={onCloseService}>
                                 Cancel
                               </Button>
@@ -602,7 +625,6 @@ export default function NewOrder(props) {
                     setVoucherInput("Use Promo");
                   }}
                 >
-                  {isLoading ? <Loading /> : null}
                   <Button
                     gap={2}
                     _hover={{
@@ -641,7 +663,7 @@ export default function NewOrder(props) {
                                   w="400px"
                                   onClick={(e) => {
                                     setNominal(e.target.value);
-                                    setVoucherInput("Promo Applies");
+                                    setVoucherInput("Promo Applied");
                                   }}
                                   p={3}
                                 >
@@ -684,22 +706,6 @@ export default function NewOrder(props) {
                             Cancel
                           </Button>
                         </Flex>
-                        {/* <Flex
-                          onClick={(e) => {
-                            setVoucherInput("Promo Applies");
-                            setVoucherApply("Voucher Applied");
-                          }}
-                        >
-                          <Button
-                            bg="#2C3639"
-                            color="white"
-                            ml={3}
-                            sx={confirmButtonStyle}
-                            onClick={onCloseType}
-                          >
-                            Apply
-                          </Button>
-                        </Flex> */}
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialogOverlay>
