@@ -320,7 +320,7 @@ export default function Discount() {
                             voucherType?.map((val, idx) => {
                                 return <>
                                     <Flex key={idx} borderBottom='1px solid #2c3639' w='90%' m='5px auto' justify='space-between' align='center'>
-                                        <Flex w={['100%', '100%', '70%', '40%']} align='center'>
+                                        <Flex w='80%' align='center'>
                                             <Text fontWeight='bold'>
                                                 {idx + 1}.
                                             </Text>
@@ -422,7 +422,7 @@ export default function Discount() {
                             branchData?.map((val) => {
                                 return (
                                     <Heading textAlign='center' size='md' mb={5}>
-                                        {val.name}
+                                        {val.city}
                                     </Heading>
                                 );
                             })
