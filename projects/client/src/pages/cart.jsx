@@ -104,7 +104,7 @@ export default function Cart() {
   function handleEditInput(value) {
     setEditInput(value)
   }
-  console.log("berapa input nomor = "+editInput);
+  console.log("berapa input nomor = " + editInput);
   function editCart(id) {
     setEditId(id);
     setEditDialog(true);
@@ -132,6 +132,7 @@ export default function Cart() {
   function handleCloseDeleteDialog() {
     setDeleteDialog(false);
   }
+
   async function confirmDelete() {
     await axiosInstance.delete(`/cart/deleteCart/${cartId}`).then(() => {
       fetchCartData();
@@ -139,6 +140,7 @@ export default function Cart() {
       setDeleteDialog(false);
     })
   }
+  console.log(`my cart data = ${cartData}`);
 
   return (
     <Flex direction="column">

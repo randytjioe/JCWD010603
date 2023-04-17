@@ -175,6 +175,21 @@ const cartController = {
         return res.status(404).json({ message: "Cart item not found" });
       }
 
+      const checkProduct = await Product.findByPk(cartItem.ProductId);
+
+      if (!checkProduct) {
+        return res.status(401).json({
+          message: `Product id ${cartItem.ProductId} does not exist`,
+        });
+      }
+
+      const availableStock = checkProduct.stock - qty;
+      if (availableStock < 0) {
+        return res.status(401).json({
+          message: `Stock is not enough. Available stock is ${checkProduct.stock}.`,
+        });
+      }
+
       await cartItem.update({ qty });
 
       return res.status(200).json({
@@ -187,7 +202,74 @@ const cartController = {
         message: err,
       });
     }
-  }
+  },
+
+  addCart: async (req, res) => {
+    const { qty, ProductId, UserId } = req.body;
+
+    try {
+      const checkProduct = await Product.findByPk(ProductId);
+      if (!checkProduct) {
+        return res.status(401).json({
+          message: `Product id ${ProductId} does not exist`,
+        });
+      }
+
+      const branchId = checkProduct.BranchId; // get branch id of the product
+
+      const cartItems = await Cart.findAll({
+        where: {
+          UserId: UserId,
+        },
+        include: {
+          model: Product,
+          attributes: ["BranchId", "stock"],
+        },
+      }); // get all cart items of the user
+
+      if (cartItems.length > 0) {
+        const firstCartItemBranchId = cartItems[0].Product.BranchId;
+        if (branchId !== firstCartItemBranchId) {
+          return res.status(401).json({
+            message:
+              "You cannot add products from different branch. Please remove all items in your cart before changing location.",
+          });
+        }
+      }
+
+      const availableStock = checkProduct.stock - qty;
+      if (availableStock < 0) {
+        return res.status(401).json({
+          message: `Stock is not enough. Available stock is ${checkProduct.stock}.`,
+        });
+      }
+
+      const [cartItem, created] = await Cart.findOrCreate({
+        where: {
+          ProductId: ProductId,
+          UserId: UserId,
+        },
+        defaults: {
+          qty: qty,
+        },
+      });
+
+      if (!created) {
+        cartItem.qty = qty;
+        await cartItem.save();
+      }
+
+      return res.status(200).json({
+        message: "Cart item created/updated",
+        result: cartItem,
+      });
+    } catch (err) {
+      return res.status(400).json({
+        message: err.message,
+      });
+    }
+  },
+
 };
 
 module.exports = cartController;

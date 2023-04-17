@@ -37,7 +37,8 @@ import { SlBasket } from "react-icons/sl";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import user_types from "../redux/auth/types";
-import LogoHD from "../asset/logo.png"
+import LogoHD from "../asset/logo.png";
+import { BiBell, BiCartAlt, BiMenu } from "react-icons/bi";
 
 
 export default function Navbar(props) {
@@ -57,7 +58,7 @@ export default function Navbar(props) {
     window.location.reload(true);
   }
 
-  console.log(userSelector);
+  // console.log(userSelector);
 
   return (
     <>
@@ -75,7 +76,7 @@ export default function Navbar(props) {
         >
           <Flex px={3} gap={5}>
             <Flex alignItems={"center"}>
-              <Link href="/product-list-user">
+              <Link href="/">
                 <Image
                   fontSize={"26px"}
                   color="#F68522"
@@ -89,7 +90,7 @@ export default function Navbar(props) {
                 <Icon
                   boxSize={"7"}
                   as={FiBell}
-                  color="#DCD7C9"
+                  color="white"
                   sx={{
                     _hover: {
                       cursor: "pointer",
@@ -102,7 +103,7 @@ export default function Navbar(props) {
                   <Icon
                     boxSize={"7"}
                     as={SlBasket}
-                    color="#DCD7C9"
+                    color="white"
                     sx={{
                       _hover: {
                         cursor: "pointer",
@@ -118,7 +119,7 @@ export default function Navbar(props) {
                     <Icon
                       boxSize={"7"}
                       as={AiOutlineMenu}
-                      color="#DCD7C9"
+                      color="white"
                       sx={{
                         _hover: {
                           cursor: "pointer",

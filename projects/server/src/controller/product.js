@@ -12,30 +12,30 @@ const Category = db.category;
 const Product = db.product;
 
 const productController = {
-    create : async (req,res) => {
-        const {stock, name} = req.body        
-        
-        const t = await sequelize.transaction();
-        try {
-            if(!req.file){
-                throw new Error("File is not compatible");
-            }
-            
-            // get filename
-        let fileName = req.file.filename
-        // rewrite filename and add url
-        fileName =  process.env.render_img + fileName
-        
-            // combine object req.body and added image name
-            const data = {
-                ...req.body,
-                imgProduct : fileName
-            }
-            console.log(data);
-            const result = await Product.create({...data}, { transaction: t })
-            if(!result){
-                throw new Error("Failed add new product");
-            }
+  create: async (req, res) => {
+    const { stock, name } = req.body
+
+    const t = await sequelize.transaction();
+    try {
+      if (!req.file) {
+        throw new Error("File is not compatible");
+      }
+
+      // get filename
+      let fileName = req.file.filename
+      // rewrite filename and add url
+      fileName = process.env.render_img + fileName
+
+      // combine object req.body and added image name
+      const data = {
+        ...req.body,
+        imgProduct: fileName
+      }
+      console.log(data);
+      const result = await Product.create({ ...data }, { transaction: t })
+      if (!result) {
+        throw new Error("Failed add new product");
+      }
 
       const record = {
         stockBefore: 0,
@@ -392,6 +392,38 @@ const productController = {
       });
     }
   },
+
+  getProductSuggestion: async (req, res) => {
+    const { BranchId } = req.params;
+
+    try {
+      const getProduct = await Product.findAll({
+        where: {
+          BranchId,
+          stock: { [Op.gt]: 0 } // only fetch products with available stock
+        },
+        limit: 6,
+        include: [
+          {
+            model: Category,
+            attributes: ["name"],
+          },
+        ],
+      });
+
+      res.status(200).json({
+        message: `get product suggestion for branch ${BranchId} with available stock`,
+        result: getProduct,
+      });
+
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  }
+
 };
 
 module.exports = productController;
