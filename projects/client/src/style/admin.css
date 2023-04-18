@@ -1,0 +1,131 @@
+.adminLoader {
+    width: 48px;
+    height: 48px;
+    margin: auto;
+    position: relative;
+}
+
+.adminLoader:before {
+    content: '';
+    width: 48px;
+    height: 5px;
+    background: #000;
+    opacity: 0.25;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    border-radius: 50%;
+    animation: adminLoadershadow 0.5s linear infinite;
+}
+
+.adminLoader:after {
+    content: '';
+    width: 100%;
+    height: 100%;
+    background: #8D7B68;
+    animation: adminbxSpin 0.5s linear infinite;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 4px;
+}
+
+@keyframes adminbxSpin {
+    17% {
+        border-bottom-right-radius: 3px;
+    }
+
+    25% {
+        transform: translateY(9px) rotate(22.5deg);
+    }
+
+    50% {
+        transform: translateY(18px) scale(1, .9) rotate(45deg);
+        border-bottom-right-radius: 40px;
+    }
+
+    75% {
+        transform: translateY(9px) rotate(67.5deg);
+    }
+
+    100% {
+        transform: translateY(0) rotate(90deg);
+    }
+}
+
+@keyframes adminLoadershadow {
+
+    0%,
+    100% {
+        transform: scale(1, 1);
+    }
+
+    50% {
+        transform: scale(1.2, 1);
+    }
+}
+
+/* BUTTON PAGE 404 */
+.bn32 {
+    border-color: #ffffff;
+    padding: 0.6em 2.3em;
+    cursor: pointer;
+    font-size: 1em;
+    color: #ffffff;
+    background-image: linear-gradient(45deg, transparent 50%, #2c3639 50%);
+    background-position: 25%;
+    background-size: 400%;
+    -webkit-transition: background 500ms ease-in-out, color 500ms ease-in-out;
+    transition: background 250ms ease-in-out, color 500ms ease-in-out;
+    font-weight: bold;
+}
+
+.bn32:hover {
+    color: #ffffff;
+    background-position: 100%;
+}
+
+/* BUTTON PAGE 404 */
+
+/* ADMIN-LOGIN */
+@media (max-width: 800px) {
+    .login-container {
+        flex-direction: column;
+    }
+
+    .login-img-container {
+        display: none;
+    }
+}
+
+/* ADMIN-LOGIN */
+
+/* DASHBOARD */
+.sidebar {
+    width: 325px;
+}
+.admin-setting-container {
+    width: 80%;
+}
+.small-logo {
+    display: none;
+    width: 30px;
+}
+@MEDIA (max-width: 1000px) {
+    .sidebar {
+        width: 80px;
+    }
+    .sidebar-text {
+        display: none;
+    }
+    .sidebar-link {
+        padding: 6px;
+    }
+    .admin-setting-container {
+        width: 95%;
+    }
+    .small-logo {
+        display: block;
+    }
+}
+/* DASHBOARD */
