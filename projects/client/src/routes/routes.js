@@ -114,7 +114,11 @@ const routes = [
 
   {
     path: "/list-product",
-    element: <ListProduk />,
+    element: (
+      <ProtectedPage adminLogin={true} adminGuest={false}>
+        <ListProduk />
+      </ProtectedPage>
+    ),
   },
   {
     path: "/product-list-user",
