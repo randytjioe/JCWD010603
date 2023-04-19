@@ -110,8 +110,9 @@ export default function UserPage() {
         isClosable: true,
       });
     } catch (error) {
+      // console.log(error.response.data);
       toast({
-        title: "Please remove all items in your cart before changing location",
+        title: error.response.data.message,
         status: "warning",
         duration: 2000,
         isClosable: true,
