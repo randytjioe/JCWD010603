@@ -7,7 +7,8 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import React from "react";
-import Navbar from "../components/navbar";
+import NavBar from "../components/navbarhome"; //not loggedin
+import Navbar from "../components/navbar"; //loggedin
 import { axiosInstance } from "../config/config";
 import { BiTrash, BiEdit, BiChevronRight, BiChevronLeft } from "react-icons/bi";
 import { Link as ReachLink } from "react-router-dom";
@@ -90,7 +91,8 @@ export default function Cart() {
 
   // CART DATA
   async function fetchCartData() {
-    await axiosInstance.get(`/cart/getcart?page=${pages}`).then((res) => {
+    const userId = localStorage.getItem("userID");
+    await axiosInstance.get(`/cart/getcart/${userId}?page=${pages}`).then((res) => {
       setCartData(res.data.result);
       setNumOfPage(res.data.totalPages);
       setCartTotal(res.data.totalPrice);
@@ -135,7 +137,13 @@ export default function Cart() {
 
   async function confirmDelete() {
     await axiosInstance.delete(`/cart/deleteCart/${cartId}`).then(() => {
-      fetchCartData();
+      if (cartData.length > 1) {
+        fetchCartData();
+      } else {
+        setCartData([]);
+        setNumOfPage(1);
+        setCartTotal(0);
+      }
     }).finally(() => {
       setDeleteDialog(false);
     })
@@ -144,7 +152,9 @@ export default function Cart() {
 
   return (
     <Flex direction="column">
-      <Navbar />
+      {
+        localStorage.getItem("userID") ? (<Navbar />) : (<NavBar />)
+      }
 
       <Flex w="430px" h="90vh" m="0 auto" direction="column" sx={scrollStyle}>
         {" "}
@@ -409,16 +419,20 @@ export default function Cart() {
           w="85%"
           h="40px"
           m="20px auto 0px"
-          bg="#2C3639"
+          bg={cartData.length > 0 ? "#2C3639" : "#BEBEBE"}
           color="white"
-          sx={confirmButtonStyle}
+          sx={cartData.length > 0 ? confirmButtonStyle : {}}
+          disabled={cartData.length === 0}
           p="0px"
+          cursor={cartData.length > 0 ? "pointer" : "context-menu"}
         >
-          <Link href="/new-order" w='100%' h='100%'>
-            <Center h='100%'>
-              Confirm & Buy
-            </Center>
-          </Link>
+          {cartData.length > 0 ? (
+            <Link href="/new-order" w="100%" h="100%" _hover={{ textStyle: 'none' }}>
+              <Center h="100%">Confirm & Buy</Center>
+            </Link>
+          ) : (
+            <Center h="100%">Confirm & Buy</Center>
+          )}
         </Button>
       </Flex>
     </Flex>
