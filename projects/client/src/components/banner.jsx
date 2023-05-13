@@ -17,7 +17,7 @@ export default function Banner() {
         color: "white",
         boxShadow: "xl",
       }}>
-        <Link href="/product-list-user" _hover={{textStyle:"none"}}>
+        <Link to="/product-list-user" _hover={{textStyle:"none"}}>
           Shop now
         </Link>
       </Button>
