@@ -3,8 +3,13 @@ import Banner from "../components/banner";
 import { Flex, Center, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { axiosInstance } from "../config/config";
-
+import { useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 export default function UserPage() {
+  const navigate = useNavigate();
+  const [data, setData] = useState();
+
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     // fetchPosts();

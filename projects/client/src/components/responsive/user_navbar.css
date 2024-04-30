@@ -1,0 +1,28 @@
+.logo_sm {
+    display: none;
+    width: 35px;
+}
+.logo_lg {
+    width: 140px;
+}
+
+.navbar_container {
+    padding: 0px 2em;
+    height: 70px;
+    position: sticky;
+    top: 0;
+    
+}
+
+@media (max-width: 420px) {
+    .logo_lg{
+        display: none;
+    }
+    .logo_sm{
+        display: block;
+    }
+    .navbar_container{
+        padding: 0px 1em;
+        height: 55px
+    }
+}

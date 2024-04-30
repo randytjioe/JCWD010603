@@ -1,144 +1,281 @@
-import { Flex, Image, Center, Link, Text } from "@chakra-ui/react";
+import { Flex, Image, Center, Link, Text, useToast, Heading, useMediaQuery } from "@chakra-ui/react";
 import Logo from "../asset/logo.png";
-import { FaSignOutAlt } from "react-icons/fa";
-import { useDispatch } from 'react-redux';
+import LogoSM from "../asset/coffee.png";
+import {
+  FaSignOutAlt,
+  FaChalkboardTeacher,
+  FaBoxes,
+  FaRegCreditCard,
+  FaChartLine,
+  FaCashRegister,
+  FaCog,
+  FaFolder,
+} from "react-icons/fa";
+import { AiOutlineHistory } from "react-icons/ai";
+import { useDispatch } from "react-redux";
 import user_types from "../redux/auth/types";
-import { useLocation } from "react-router-dom";
 
+import { useNavigate } from "react-router-dom";
+import { Link as ReachLink } from "react-router-dom";
 export default function SidebarAdmin() {
+  let navigate = useNavigate();
+  let dispatch = useDispatch();
 
-    let dispatch = useDispatch();
-    function logOut() {
-        dispatch({
-            type: user_types.USER_LOGOUT,
-        });
-        localStorage.clear();
-        window.location.reload(true);
-    }
+  const toast = useToast();
+  const superAdmin = JSON.parse(localStorage.getItem("data"))
+    ? JSON.parse(localStorage.getItem("data")).isSuperAdmin
+    : null;
 
-    return (
-        <>
-            <Flex h='100vh' w='325px' bg='#2c3639' direction='column' justify='space-between'>
+  const linkStyles = {
+    fontSize: "2xl",
+    pl: 4,
+    userSelect: "none",
+    _hover: {
+      backdropFilter: "blur(10px) saturate(100%)",
+      bgColor: "rgba(255, 255, 255, 0.05)",
+      transform: "scale(1.05)",
+      transition: "1ms all",
+      color: "white",
+    },
+    _active: {
+      transform: "scale(1.04)",
+      transition: "1ms all",
+      backdropFilter: "blur(20px) saturate(150%)",
+      bgColor: "rgba(255, 255, 255, 0.05)",
+    },
+  };
+  const spacing = {
+    ml: "1.2em",
+  };
 
-                <Flex direction='column' w='80%' color='white' m='0 auto'>
-                    <Center w='80%' h='150px' m='0 auto' mb="4em">
-                        <Image src={Logo} h='auto' />
-                    </Center>
+  function logOut() {
+    dispatch({
+      type: user_types.USER_LOGOUT,
+    });
+    localStorage.clear();
+    // window.location.reload(true);
+    navigate('/admin-login')
 
-                    <Link fontSize="2xl" pl={8} borderRadius='lg' userSelect="none"
-                        sx={{
-                            _hover: {
-                                bg: '#DCD7C9',
-                                color: '#2c3639',
-                                fontWeight: 'bold',
-                                boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px"
-                            },
-                            _active: {
-                                transform: "scale(0.95)",
-                                transition: "1ms all",
-                                bg: "#d9d9d9"
-                            }
-                        }}
-                    >
-                        Dashboard
-                    </Link>
-                    <Link fontSize="2xl" pl={8} borderRadius='lg' userSelect="none"
-                        sx={{
-                            _hover: {
-                                bg: '#DCD7C9',
-                                color: '#2c3639',
-                                fontWeight: 'bold',
-                                boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px"
-                            },
-                            _active: {
-                                transform: "scale(0.95)",
-                                transition: "1ms all",
-                                bg: "#d9d9d9"
-                            }
-                        }}
-                    >
-                        Product
-                    </Link>
-                    <Link fontSize="2xl" pl={8} borderRadius='lg' userSelect="none"
-                        sx={{
-                            _hover: {
-                                bg: '#DCD7C9',
-                                color: '#2c3639',
-                                fontWeight: 'bold',
-                                boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px"
-                            },
-                            _active: {
-                                transform: "scale(0.95)",
-                                transition: "1ms all",
-                                bg: "#d9d9d9"
-                            }
-                        }}
-                    >
-                        Transaction
-                    </Link>
-                    <Link fontSize="2xl" pl={8} borderRadius='lg' userSelect="none"
-                        sx={{
-                            _hover: {
-                                bg: '#DCD7C9',
-                                color: '#2c3639',
-                                fontWeight: 'bold',
-                                boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px"
-                            },
-                            _active: {
-                                transform: "scale(0.95)",
-                                transition: "1ms all",
-                                bg: "#d9d9d9"
-                            }
-                        }}
-                    >
-                        Report
-                    </Link>
-                    <Link fontSize="2xl" pl={8} borderRadius='lg' userSelect="none"
-                        sx={{
-                            _hover: {
-                                bg: '#DCD7C9',
-                                color: '#2c3639',
-                                fontWeight: 'bold',
-                                boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px"
-                            },
-                            _active: {
-                                transform: "scale(0.95)",
-                                transition: "1ms all",
-                                bg: "#d9d9d9"
-                            }
-                        }}
-                    >
-                        Discount
-                    </Link>
-                    <Link fontSize="2xl" pl={8} borderRadius='lg' userSelect="none"
-                        href="/admin_setting"
-                        sx={{
-                            _hover: {
-                                bg: '#DCD7C9',
-                                color: '#2c3639',
-                                fontWeight: 'bold',
-                                boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px"
-                            },
-                            _active: {
-                                transform: "scale(0.95)",
-                                transition: "1ms all",
-                                bg: "#d9d9d9"
-                            }
-                        }}
-                    >
-                        Setting
-                    </Link>
-                </Flex>
+  }
+  const userData = JSON.parse(localStorage.getItem("data"));
+  const [isSmallerThan1000] = useMediaQuery("(max-width: 1000px)");
 
-                <Flex color='white' justify='flex-end' pr="6" mb={6} align='center'>
-                    <Link fontSize="xl" mr={2} display='flex' alignItems='center' onClick={logOut}>
-                        <Text mr={2}>
-                            Logout
-                        </Text>
-                        <FaSignOutAlt />
-                    </Link>
-                </Flex>
-            </Flex>
-        </>
-    );
+  return (
+    <>
+      <Flex
+        h="100vh"
+        direction="column"
+        justify="space-between"
+        bg="#2C3639"
+        boxShadow="rgba(0,0,0,0.56) 4px 0px 19px -2px"
+        className="sidebar"
+      >
+        <Flex direction="column" w="80%" color="white" m="0 auto">
+          <Flex justify='center' align='center' mb={5} color='white' w='100%' h={isSmallerThan1000 ? '30%' : '10%'} display={isSmallerThan1000 ? "none" : "flex"}>
+            <Heading size='md' fontWeight='light' transform={isSmallerThan1000 ? "rotate(-90deg)" : null} whiteSpace="nowrap">
+              Welcome, <b>{JSON.parse(localStorage.getItem("data"))
+                ? JSON.parse(localStorage.getItem("data")).username
+                : null}</b>!
+            </Heading>
+          </Flex>
+          <Center w="80%" h="150px" m="0 auto">
+            <Image src={Logo} h="auto" className="sidebar-text" />
+            <Image src={LogoSM} h="auto" className="small-logo" />
+          </Center>
+          <Link
+            sx={linkStyles}
+            to="/dashboard"
+            as={ReachLink}
+            display="flex"
+            alignItems="center"
+            className="sidebar-link"
+          >
+            <FaChalkboardTeacher />
+            <Text sx={spacing} className="sidebar-text">
+              Dashboard
+            </Text>
+          </Link>
+
+          {superAdmin === 0 ?
+            <Link
+              to="/list-product"
+              as={ReachLink}
+              sx={linkStyles}
+              display="flex"
+              alignItems="center"
+              className="sidebar-link"
+              onClick={() => {
+                if (!userData || userData.isSuperAdmin) {
+                  toast({
+                    title: "Unauthorized",
+                    description: "You are not authorized to access this page.",
+                    status: "warning",
+                    duration: 3000,
+                    isClosable: true,
+                  });
+                }
+              }}
+            >
+              <FaBoxes />
+              <Text sx={spacing} className="sidebar-text">
+                Products
+              </Text>
+            </Link>
+            : null
+          }
+          {
+            superAdmin === 1 ?
+              <Link
+                sx={linkStyles}
+                to="/category"
+                as={ReachLink}
+                display="flex"
+                alignItems="center"
+                onClick={() => {
+                  if (!userData || !userData.isSuperAdmin) {
+                    toast({
+                      title: "Unauthorized",
+                      description: "You are not authorized to access this page.",
+                      status: "warning",
+                      duration: 3000,
+                      isClosable: true,
+                    });
+                  }
+                }}
+              >
+                <FaFolder />
+                <Text sx={spacing} className="sidebar-text">
+                  Categories
+                </Text>
+              </Link>
+              : null
+          }
+
+          {
+            superAdmin === 0 ?
+              <Link
+                sx={linkStyles}
+                to="/record-stock"
+                as={ReachLink}
+                display="flex"
+                alignItems="center"
+                className="sidebar-link"
+                onClick={() => {
+                  if (!userData || userData.isSuperAdmin) {
+                    toast({
+                      title: "Unauthorized",
+                      description: "You are not authorized to access this page.",
+                      status: "warning",
+                      duration: 3000,
+                      isClosable: true,
+                    });
+                  }
+                }}
+              >
+                <AiOutlineHistory />
+                <Text sx={spacing} className="sidebar-text">
+                  Record Stock
+                </Text>
+              </Link>
+              :
+              null
+          }
+
+
+
+
+          <Link
+            sx={linkStyles}
+            to="/all-branch-transactions"
+            as={ReachLink}
+            display="flex"
+            alignItems="center"
+            className="sidebar-link"
+          >
+            <FaRegCreditCard />
+            <Text sx={spacing} className="sidebar-text">
+              Transaction
+            </Text>
+          </Link>
+          <Link
+            sx={linkStyles}
+            to="/sales-report"
+            as={ReachLink}
+            display="flex"
+            alignItems="center"
+            className="sidebar-link"
+          >
+            <FaChartLine />
+            <Text sx={spacing} className="sidebar-text">
+              Report
+            </Text>
+          </Link>
+          <Link
+            sx={linkStyles}
+            to="/discount_voucher"
+            as={ReachLink}
+            display="flex"
+            alignItems="center"
+            className="sidebar-link"
+          >
+            <FaCashRegister />
+            <Text sx={spacing} className="sidebar-text">
+              Discount
+            </Text>
+          </Link>
+          <Link
+            sx={linkStyles}
+            to={!userData.isSuperAdmin ? null : "/admin-setting"}
+            as={ReachLink}
+            display="flex"
+            alignItems="center"
+            className="sidebar-link"
+            onClick={() => {
+              if (!userData || !userData.isSuperAdmin) {
+                toast({
+                  title: "Unauthorized",
+                  description: "You are not authorized to access this page.",
+                  status: "warning",
+                  duration: 3000,
+                  isClosable: true,
+                });
+              }
+            }}
+          >
+            <FaCog />
+            <Text sx={spacing} className="sidebar-text">
+              Setting
+            </Text>
+          </Link>
+        </Flex>
+
+        <Flex justify='center' align='center' mb={5} color='white' w='100%' h={isSmallerThan1000 ? '30%' : '10%'} display={isSmallerThan1000 ? "flex" : "none"}>
+          <Heading size='md' fontWeight='light' transform={isSmallerThan1000 ? "rotate(-90deg)" : null} whiteSpace="nowrap">
+            Welcome, <b>{JSON.parse(localStorage.getItem("data"))
+              ? JSON.parse(localStorage.getItem("data")).username
+              : null}</b>!
+          </Heading>
+        </Flex>
+
+        <Flex color="white" justify="flex-end" pr="6" mb={6} align="center">
+          <Link
+            fontSize="xl"
+            mr={2}
+            to="/admin-login"
+            as={ReachLink}
+            display="flex"
+            alignItems="center"
+            onClick={logOut}
+            className="sidebar-link"
+            _hover={{ color: 'gray.400' }}
+          >
+            <Text mr={2} className="sidebar-text">
+              Logout
+            </Text>
+            <FaSignOutAlt />
+          </Link>
+        </Flex>
+      </Flex>
+    </>
+  );
 }

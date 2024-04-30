@@ -17,7 +17,10 @@ module.exports = (sequelize, DataTypes) => {
     username: DataTypes.STRING,
     email: DataTypes.STRING,
     password: DataTypes.STRING,
-    isVerify: DataTypes.BOOLEAN
+    isVerify: DataTypes.BOOLEAN,
+    referralCode: DataTypes.STRING,
+    referralBy: DataTypes.STRING,
+    voucherUsed: DataTypes.BOOLEAN,
   }, {
     sequelize,
     modelName: 'User',

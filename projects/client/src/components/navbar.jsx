@@ -1,163 +1,147 @@
 import {
   Flex,
   Image,
-  InputGroup,
-  InputRightElement,
-  Box,
   List,
-  Input,
-  Menu,
   Link,
-  Button,
   Divider,
   Icon,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  useDisclosure,
   Popover,
   PopoverTrigger,
   PopoverContent,
   PopoverArrow,
-  PopoverCloseButton,
   PopoverHeader,
   PopoverBody,
   ListItem,
-  Avatar,
   Center,
+  useMediaQuery,
 } from "@chakra-ui/react";
-import Logo from "../assets/logo.png";
+
 import { Link as ReachLink } from "react-router-dom";
-import { useRef } from "react";
 import { useSelector } from "react-redux";
-import { FiBell } from "react-icons/fi";
-import { GrMenu } from "react-icons/gr";
+import { AiOutlineMenu } from "react-icons/ai";
 import { SlBasket } from "react-icons/sl";
-import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import user_types from "../redux/auth/types";
+import LogoHD from "../asset/logo.png";
 
 export default function Navbar(props) {
-  const data = props.data;
   const userSelector = useSelector((state) => state.auth);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [search, setSearch] = useState("");
-  const initialRef = useRef(null);
-  const finalRef = useRef(null);
-  const [products, setProducts] = useState([]);
-  const [product, setProduct] = useState([]);
-  function inputHandler(event) {
-    const { value, name } = event.target;
 
-    name === "search"
-      ? setSearch(value)
-      : setProduct({
-          ...product,
-          [name]: value,
-        });
+  let dispatch = useDispatch();
+  function logOut() {
+    dispatch({
+      type: user_types.USER_LOGOUT,
+    });
+    localStorage.clear();
+    window.location.reload(true);
   }
+  const [isSmallerThan430] = useMediaQuery("(max-width: 430px)");
 
   return (
     <>
-      <Center flex={1} align={"center"} justifyContent={"center"}>
+      {/* <Center flex={1} align={"center"} justifyContent={"center"}> */}
         <Flex
           zIndex={100}
-          px={2}
+          m='0 auto'
           h="70px"
           backgroundColor="#2C3639"
-          w="430px"
+          w={isSmallerThan430 ? "100%" : "430px"}
           padding="20px"
           borderBottom={"2px solid #E2E8F0"}
           display={"flex"}
           pos="sticky"
         >
-          <Flex px={3} gap={5}>
-            <Flex alignItems={"center"}>
-              <Image
-                fontSize={"26px"}
-                color="#F68522"
-                justifyContent="center"
-                src={Logo}
-                w="100px"
-                h="24px"
-              ></Image>
-              <Flex px={"70px"} alignItems="center"></Flex>
-              <Flex px={3}>
-                <Icon
-                  boxSize={"7"}
-                  as={FiBell}
-                  color="#DCD7C9"
-                  sx={{
-                    _hover: {
-                      cursor: "pointer",
-                    },
-                  }}
-                ></Icon>
-              </Flex>
-              <Flex px={3}>
-                <Icon
-                  boxSize={"7"}
-                  as={SlBasket}
-                  color="#DCD7C9"
-                  sx={{
-                    _hover: {
-                      cursor: "pointer",
-                    },
-                  }}
-                ></Icon>
-              </Flex>
+          <Flex w='100%' gap={5}>
+            <Flex w='100%' alignItems={"center"} justify='space-between'>
+              <Link to="/" as={ReachLink}>
+                <Image
+                  fontSize={"26px"}
+                  color="#F68522"
+                  justifyContent="center"
+                  src={LogoHD}
+                  w="100px"
+                ></Image>
+              </Link>
+              {/* <Flex px={"70px"} alignItems="center"></Flex> */}
 
-              <Popover trigger={"hover"} placement={"bottom-start"}>
-                <PopoverTrigger>
-                  <Flex flexDir={"rows"} px={2} alignContent={"center"}>
-                    <Icon
-                      boxSize={"7"}
-                      as={GrMenu}
-                      color="#DCD7C9"
-                      sx={{
-                        _hover: {
-                          cursor: "pointer",
-                        },
-                      }}
-                    ></Icon>
-                  </Flex>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <PopoverArrow backgroundColor={"#A27B5C"} />
-
-                  <PopoverHeader
-                    bgColor={"#A27B5C"}
-                    fontFamily="Bebas"
+              <Flex w='85px' justify='space-between'>
+                <Link to="/cart" as={ReachLink}>
+                  <Icon
+                    boxSize={"7"}
+                    as={SlBasket}
                     color="white"
-                  >
-                    {" "}
-                    SELAMAT DATANG!
-                  </PopoverHeader>
-                  <PopoverBody>
-                    <List
-                      fontSize={"14px"}
-                      fontFamily="Bebas"
-                      color="#7D7D7D"
-                      gap={2}
-                    >
-                      <ListItem>
-                        <Link to="/login" as={ReachLink}>
-                          SIGN IN
-                        </Link>
-                      </ListItem>
+                    sx={{
+                      _hover: {
+                        cursor: "pointer",
+                      },
+                    }}
+                  ></Icon>
+                </Link>
 
-                      <Divider orientation="horizontal" py={2} />
-                      <ListItem>
-                        <Link to="/login" as={ReachLink}>
-                          Logout{" "}
-                        </Link>{" "}
-                      </ListItem>
-                    </List>
-                  </PopoverBody>
-                </PopoverContent>
-              </Popover>
+
+                <Popover trigger={"hover"} placement="bottom-end" gap={10}>
+                  <PopoverTrigger>
+                    <Flex flexDir={"rows"} px={2} alignContent={"center"}>
+                      <Icon
+                        boxSize={"7"}
+                        as={AiOutlineMenu}
+                        color="white"
+                        sx={{
+                          _hover: {
+                            cursor: "pointer",
+                          },
+                        }}
+                      ></Icon>
+                    </Flex>
+                  </PopoverTrigger>
+                  <PopoverContent minW={{ base: "100%", lg: "max-content" }}>
+                    <PopoverArrow backgroundColor={"#A27B5C"} />
+
+                    <PopoverHeader bgColor={"#A27B5C"} color="white" textAlign='center'>
+                      {" "}
+                      WELCOME {userSelector?.username}!
+                    </PopoverHeader>
+                    <PopoverBody>
+                      <List fontSize={"14px"} color="#7D7D7D" gap={5} textAlign='center'>
+                        <Divider orientation="horizontal" m={2} />
+                        <ListItem>
+                          <Link to="/user-transactions" as={ReachLink}>
+                            TRANSACTION LIST
+                          </Link>
+                        </ListItem>
+                        <Divider orientation="horizontal" m={2} />
+                        <ListItem>
+                          <Link to="/profile" as={ReachLink}>
+                            PROFILE
+                          </Link>
+                        </ListItem>
+                        <Divider orientation="horizontal" m={2} />
+                        <ListItem>
+                          <Link to="/address" as={ReachLink}>
+                            ADDRESS
+                          </Link>
+                        </ListItem>
+                        <Divider orientation="horizontal" m={2} />
+                        <ListItem>
+                          <Link to="/password-change" as={ReachLink}>
+                            CHANGE PASSWORD
+                          </Link>
+                        </ListItem>
+                        <Divider orientation="horizontal" m={2} />
+                        <ListItem>
+                          <Link to="/login" as={ReachLink} onClick={logOut}>
+                            LOGOUT{" "}
+                          </Link>{" "}
+                        </ListItem>
+                      </List>
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover>
+              </Flex>
             </Flex>
           </Flex>
         </Flex>
-      </Center>
+      {/* </Center> */}
     </>
   );
 }
